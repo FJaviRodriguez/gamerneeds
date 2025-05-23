@@ -1,0 +1,229 @@
+import Stripe from 'stripe';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import * as compraModel from '../models/compraModel.js';
+import * as bibliotecaModel from '../models/bibliotecaModel.js';
+import pool from '../config/db.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+dotenv.config({ path: join(__dirname, '../..', '.env') });
+
+if (!process.env.STRIPE_SECRET_KEY) {
+    console.error('Environment variables not loaded properly');
+    console.error('Current environment variables:', process.env);
+    throw new Error('Missing Stripe secret key');
+}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: '2023-10-16'
+});
+export const crearSesionPago = async (req, res) => {
+    try {
+        const { items, usuarioId } = req.body;
+        if (!items || items.length === 0) {
+            return res.status(400).json({ message: 'No hay items en el carrito' });
+        }
+        if (!usuarioId) {
+            return res.status(400).json({ message: 'Usuario no identificado' });
+        }
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            mode: 'payment',
+            line_items: items.map(item => ({
+                price_data: {
+                    currency: 'eur',
+                    product_data: {
+                        name: item.nombre,
+                        images: [item.url_portada],
+                        metadata: {
+                            idjuego: item.idjuego.toString()
+                        }
+                    },
+                    unit_amount: Math.round(item.precio),
+                },
+                quantity: 1,
+            })),
+            success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.FRONTEND_URL}/carrito`,
+            metadata: {
+                usuarioId: usuarioId.toString(),
+                items: JSON.stringify(items.map(item => item.idjuego))
+            }
+        });
+        res.json({ sessionId: session.id });
+    } catch (error) {
+        console.error('Error creating checkout session:', error);
+        res.status(500).json({ 
+            message: 'Error al crear la sesión de pago',
+            error: error.message 
+        });
+    }
+};
+export const verificarPago = async (req, res) => {
+    try {
+        const { sessionId } = req.params;
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+        res.json({ status: session.payment_status });
+    } catch (error) {
+        console.error('Error al verificar pago:', error);
+        res.status(500).json({ error: 'Error al verificar el pago' });
+    }
+};
+export const webhookHandler = async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+    try {
+        event = stripe.webhooks.constructEvent(
+            req.rawBody || req.body,
+            sig,
+            process.env.STRIPE_WEBHOOK_SECRET
+        );
+        if (event.type === 'checkout.session.completed') {
+            const session = event.data.object;
+            const usuarioId = session.metadata.usuarioId;
+            const juegosIds = JSON.parse(session.metadata.items);
+            if (!usuarioId || !juegosIds) {
+                throw new Error('Metadata incompleta en la sesión');
+            }
+            try {
+                const connection = await pool.getConnection();
+                try {
+                    await connection.beginTransaction();
+                    for (const juegoId of juegosIds) {
+                        await connection.query(
+                            `INSERT IGNORE INTO biblioteca (usuario_idusuario, juego_idjuego, fecha_adquisicion) 
+                             VALUES (?, ?, NOW())`,
+                            [usuarioId, juegoId]
+                        );
+                    }
+                    await connection.commit();
+                    const fs = require('fs').promises;
+                    await fs.appendFile(
+                        'webhook_log.txt',`${new Date().toISOString()} - Juegos añadidos: ${juegosIds.join(',')} para usuario ${usuarioId}\n`
+                    );
+                } catch (error) {
+                    await connection.rollback();
+                    throw error;
+                } finally {
+                    connection.release();
+                }
+            } catch (error) {
+                const fs = require('fs').promises;
+                await fs.appendFile(
+                    'webhook_error_log.txt',
+                    `${new Date().toISOString()} - Error: ${error.message}\n`
+                );
+                throw error;
+            }
+        }
+        res.json({ received: true });
+    } catch (error) {
+        console.error('Error en webhook:', error);
+        res.status(400).json({ error: error.message });
+    }
+};
+export const addToCart = async (req, res) => {
+    try {
+        const { item, sessionId } = req.body;
+        let session;
+        if (sessionId) {
+            session = await stripe.checkout.sessions.retrieve(sessionId);
+            session = await stripe.checkout.sessions.update(sessionId, {
+                line_items: [...session.line_items, item]
+            });
+        } else {
+            session = await stripe.checkout.sessions.create({
+                payment_method_types: ['card'],
+                mode: 'payment',
+                line_items: [item],
+                success_url: `${process.env.FRONTEND_URL}/success`,
+                cancel_url: `${process.env.FRONTEND_URL}/carrito`,
+            });
+        }
+        res.json({ session });
+    } catch (error) {
+        console.error('Error en addToCart:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+export const removeFromCart = async (req, res) => {
+    try {
+        const { sessionId, idjuego } = req.body;
+        if (!sessionId) {
+            return res.status(400).json({ error: 'No session ID provided' });
+        }
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+        const updatedItems = session.line_items.filter(
+            item => item.price_data.product_data.metadata.idjuego !== idjuego
+        );
+        await stripe.checkout.sessions.update(sessionId, {
+            line_items: updatedItems
+        });
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error en removeFromCart:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+export const createLineItem = async (req, res) => {
+    try {
+        const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Timeout')), 5000)
+        );
+        const createItemPromise = (async () => {
+            const { title, price, image } = req.body;
+            const product = await stripe.products.create({
+                name: title,
+                images: [image]
+            });
+            const priceObj = await stripe.prices.create({
+                product: product.id,
+                unit_amount: Math.round(price * 100),
+                currency: 'eur'
+            });
+            return { id: priceObj.id, product_id: product.id };
+        })();
+        const result = await Promise.race([
+            createItemPromise,
+            timeoutPromise
+        ]);
+        res.json(result);
+    } catch (error) {
+        console.error('Error creating line item:', error);
+        res.status(error.message === 'Timeout' ? 504 : 500)
+           .json({ error: error.message });
+    }
+};
+export const removeLineItem = async (req, res) => {
+    try {
+        const { price_id } = req.body;
+        const price = await stripe.prices.retrieve(price_id);
+        await stripe.prices.update(price_id, { active: false });
+        await stripe.products.update(price.product, { active: false });
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error removing line item:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+export const createCheckoutSession = async (req, res) => {
+    try {
+        const { items } = req.body;
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: items.map(item => ({
+                price: item.stripe_line_item_id,
+                quantity: 1
+            })),
+            mode: 'payment',
+            success_url: `${process.env.FRONTEND_URL}/success`,
+            cancel_url: `${process.env.FRONTEND_URL}/carrito`
+        });
+        res.json({ id: session.id });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: error.message });
+    }
+};

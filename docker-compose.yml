@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: gamerneeds-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./Backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - gamerneeds-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: 
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: gamerneeds-backend
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - BACKEND_URL=http://localhost:5000
+      - FRONTEND_URL=http://localhost:5173
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./Backend/public:/app/public
+      - ./Backend/logs:/app/logs
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - gamerneeds-network
+    restart: unless-stopped
+
+  frontend:
+    build: 
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: gamerneeds-frontend
+    environment:
+      - NODE_ENV=production
+      - VITE_API_URL=http://localhost:5000/api
+      - VITE_STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - gamerneeds-network
+    restart: unless-stopped
+
+networks:
+  gamerneeds-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local

@@ -1,0 +1,11 @@
+DB_HOST='host'
+DB_PORT='puerto'
+DB_DATABASE='nombre_bd'
+DB_USERNAME='tu_usuario'
+DB_PASSWORD='tu_contraseña'
+
+JWT_SECRET='clave'
+BACKEND_URL=
+
+STRIPE_SECRET=
+STRIPE_WEBHOOK_SECRET=
