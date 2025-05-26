@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { loadStripe } from '@stripe/stripe-js';
 import { toast } from 'react-hot-toast';
 import logo from '../../assets/logo.png';
-import Footer from '../common/Footer';
+import Footer from '../common/footer';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 

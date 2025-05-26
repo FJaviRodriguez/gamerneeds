@@ -1,11 +1,13 @@
 import { useCarrito } from '../../context/carritoContext';
 import { useStripe, useElements, Elements, CardElement } from '@stripe/react-stripe-js';
-import stripePromise from '../../config/stripe';
+import { loadStripe } from '@stripe/stripe-js';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.png';
 import { crearSesionPago } from '../../services/pagoService';
 import toast from 'react-hot-toast';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const CheckoutForm = () => {
   const stripe = useStripe();
