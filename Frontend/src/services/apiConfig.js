@@ -1,10 +1,13 @@
 import axios from 'axios';
 
 const crearInstanciaApi = () => {
-    const apiUrl = import.meta.env.VITE_API_URL;
+    const desarrollo = process.env.NODE_ENV === 'development';
+    const apiUrl = desarrollo 
+        ? 'http://localhost:5000/api'
+        : 'http://107.22.32.241:5000/api';
     
     if (!apiUrl) {
-        console.error('VITE_API_URL is not defined in environment variables');
+        console.error('API URL not configured');
         throw new Error('API URL not configured');
     }
 
@@ -16,17 +19,7 @@ const crearInstanciaApi = () => {
         timeout: 10000 
     });
 
-    api.interceptors.request.use(
-        config => {
-            return config;
-        },
-        error => {
-            if (error.code === 'ERR_NETWORK') {
-                }
-            return Promise.reject(error);
-        }
-    );
-
+    // Add error handling for network issues
     api.interceptors.response.use(
         response => response,
         error => {
@@ -35,7 +28,7 @@ const crearInstanciaApi = () => {
                     baseURL: api.defaults.baseURL,
                     error: error.message
                 });
-                throw new Error('Error de conexión con el servidor. Por favor, verifica que el servidor esté ejecutándose y sea accesible.');
+                throw new Error('Error de conexión con el servidor. Verifica que el servidor esté ejecutándose y sea accesible.');
             }
             return Promise.reject(error);
         }
