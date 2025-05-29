@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import Header from '../components/common/header';
 import Footer from '../components/common/footer';
 import AvatarUpload from '../components/usuario/avatar';

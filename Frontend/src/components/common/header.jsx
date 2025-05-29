@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { buscarJuegos, filtrarGenero } from '../../services/busquedaService';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/authContext';
 import logo from '../../assets/logo.png';
 import FilterMenu from '../juegos/busquedaGenero';
 

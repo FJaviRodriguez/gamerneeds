@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Header from '../components/common/header';
 import Footer from '../components/common/footer';
 import JuegoGrid from '../components/juegos/juegoGrid';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/authContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const HomePage = () => {

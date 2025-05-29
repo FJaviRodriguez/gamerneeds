@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/authContext';
 import { mostrarBiblioteca } from '../../services/bibliotecaService';
 import Header from '../common/header';
 import Footer from '../common/footer';
