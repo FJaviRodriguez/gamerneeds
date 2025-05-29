@@ -35,20 +35,17 @@ const upload = multer({
 export const mostrarJuegos = async (req, res) => {
   try {
     const juegos = await juegoModel.mostrarJuegos();
-    if (!juegos) {
-      return res.status(404).json({ message: 'No se encontraron juegos' });
+    if (!juegos || juegos.length === 0) {
+      return res.status(404).json({ 
+        message: 'No se encontraron juegos' 
+      });
     }
-    const juegosConUrls = juegos.map(juego => ({
-      ...juego,
-      url_portada: juego.url_portada 
-        ? `${process.env.BACKEND_URL}/public/juegos/${juego.url_portada}`
-        : null
-    }));
-    res.json(juegosConUrls);
+    res.json(juegos);
   } catch (error) {
+    console.error('Error en mostrarJuegos:', error);
     res.status(500).json({ 
-      message: 'Hubo un error al mostrar los juegos',
-      error: error.message
+      message: 'Error al obtener los juegos',
+      error: error.message 
     });
   }
 };

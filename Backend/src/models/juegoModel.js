@@ -4,17 +4,10 @@ export const mostrarJuegos = async () => {
   try {
     const [rows] = await pool.query(`
       SELECT 
-        juego.idjuego,
-        juego.titulo,
-        juego.url_portada,
-        juego.descripcion,
-        juego.precio,
-        juego.fecha_lanzamiento,
-        juego.clasificacion_edad,
-        juego.url_trailer,
-        GROUP_CONCAT(DISTINCT desarrollador.nombre) nombre_desarrollador,
-        GROUP_CONCAT(DISTINCT editor.nombre) nombre_editor,
-        GROUP_CONCAT(DISTINCT genero.nombre) nombre_genero
+        juego.*,
+        GROUP_CONCAT(DISTINCT desarrollador.nombre) AS desarrollador,
+        GROUP_CONCAT(DISTINCT editor.nombre) AS editor,
+        GROUP_CONCAT(DISTINCT genero.nombre) AS generos
       FROM juego
       LEFT JOIN juego_has_desarrollador ON juego.idjuego = juego_has_desarrollador.juego_idjuego
       LEFT JOIN desarrollador ON juego_has_desarrollador.desarrollador_iddesarrollador = desarrollador.iddesarrollador
@@ -23,14 +16,18 @@ export const mostrarJuegos = async () => {
       LEFT JOIN juego_has_genero ON juego.idjuego = juego_has_genero.juego_idjuego
       LEFT JOIN genero ON juego_has_genero.genero_idgenero = genero.idgenero
       GROUP BY juego.idjuego`);
-    const juegosConUrls = rows.map(juego => ({
+
+    return rows.map(juego => ({
       ...juego,
       url_portada: juego.url_portada 
         ? `${process.env.BACKEND_URL}/public/juegos/${juego.url_portada}`
-        : '/icons/default-game.png'
+        : '/icons/default-game.png',
+      desarrollador: juego.desarrollador?.split(',')[0] || 'No especificado',
+      editor: juego.editor?.split(',')[0] || 'No especificado',
+      generos: juego.generos ? juego.generos.split(',') : []
     }));
-    return juegosConUrls;
   } catch (error) {
+    console.error('Error en mostrarJuegos:', error);
     throw error;
   }
 };
