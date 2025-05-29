@@ -36,10 +36,15 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
-      - BACKEND_URL=${BACKEND_URL}
-      - FRONTEND_URL=${FRONTEND_URL}
+      - BACKEND_URL=http://107.22.32.241:5000
+      - FRONTEND_URL=http://107.22.32.241:5173
     ports:
       - "5000:5000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://107.22.32.241:5000/api/generos"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     volumes:
       - ./Backend/public:/app/public
       - ./Backend/logs:/app/logs
@@ -55,7 +60,7 @@ services:
       context: ./Frontend
       dockerfile: Dockerfile
       args:
-        - VITE_API_URL=${BACKEND_URL}/api
+        - VITE_API_URL=http://107.22.32.241:5000/api
         - VITE_STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
     container_name: gamerneeds-frontend
     environment:
