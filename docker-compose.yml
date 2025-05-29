@@ -29,10 +29,11 @@ services:
     ports:
       - "5000:5000"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://107.22.32.241:5000/api/generos"]
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 30s
     volumes:
       - ./Backend/public:/app/public
       - ./Backend/logs:/app/logs

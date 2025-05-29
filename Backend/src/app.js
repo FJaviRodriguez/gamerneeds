@@ -10,6 +10,7 @@ import usuarioRoutes from './routes/usuario.js';
 import bibliotecaRouter from './routes/biblioteca.js';
 import multer from 'multer';
 import dotenv from 'dotenv';
+import healthRoutes from './routes/health.js';
 
 dotenv.config();
 
@@ -77,6 +78,7 @@ app.use('/api/pagos', stripeRoutes);
 app.use('/api/usuario', usuarioRoutes);
 app.use('/api/biblioteca', bibliotecaRouter);
 app.use('/api', routes);
+app.use('/api', healthRoutes);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
