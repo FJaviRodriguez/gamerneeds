@@ -8,7 +8,8 @@ const FiltradoGenero = ({ isOpen, onClose, onFilterSelect }) => {
     useEffect(() => {
         const fetchGeneros = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/generos');
+                const apiUrl = import.meta.env.VITE_API_URL;
+                const response = await axios.get(`${apiUrl}/generos`);
                 setGeneros(response.data);
             } catch (error) {
                 console.error('Hubo un error al cargar los generos:', error);
