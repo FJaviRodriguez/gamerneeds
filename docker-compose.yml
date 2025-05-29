@@ -54,11 +54,12 @@ services:
     build: 
       context: ./Frontend
       dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${BACKEND_URL}/api
+        - VITE_STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
     container_name: gamerneeds-frontend
     environment:
       - NODE_ENV=production
-      - VITE_API_URL=${BACKEND_URL}/api
-      - VITE_STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
     ports:
       - "5173:5173"
     depends_on:
