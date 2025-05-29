@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import LoadingSpinner from '../components/common/loading';
 
 const AuthContext = createContext(undefined);
 
