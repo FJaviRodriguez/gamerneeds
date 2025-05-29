@@ -18,11 +18,15 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 5000;
 const corsOptions = {
-  origin: process.env.FRONTEND_URL,
+  origin: [
+    'http://107.22.32.241:5173',
+    'http://localhost:5173'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
+
 app.use(cors(corsOptions));
 
 if (!process.env.STRIPE_SECRET_KEY) {
