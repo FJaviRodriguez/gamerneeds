@@ -38,6 +38,7 @@ services:
         condition: service_healthy
     networks:
       - gamerneeds-network
+    restart: unless-stopped
 
   frontend:
     build:
