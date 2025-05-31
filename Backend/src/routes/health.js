@@ -9,11 +9,18 @@ router.get('/health', async (req, res) => {
         if (!dbConnected) {
             throw new Error('Database connection failed');
         }
-        res.json({ status: 'healthy', database: 'connected' });
+        res.status(200).json({ 
+            status: 'healthy',
+            timestamp: new Date().toISOString(),
+            database: 'connected',
+            message: 'Backend service is running'
+        });
     } catch (error) {
-        res.status(500).json({ 
-            status: 'unhealthy', 
-            error: error.message 
+        console.error('Health check failed:', error);
+        res.status(503).json({ 
+            status: 'unhealthy',
+            timestamp: new Date().toISOString(),
+            error: error.message
         });
     }
 });
