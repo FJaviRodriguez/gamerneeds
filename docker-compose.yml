@@ -30,7 +30,7 @@ services:
     env_file: ./Backend/.env
     environment:
       - DB_HOST=host.docker.internal
-      - NODE_ENV=production
+      - NODE_ENV=development
     ports:
       - "5000:5000"
     depends_on:
@@ -39,6 +39,11 @@ services:
     networks:
       - gamerneeds-network
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   frontend:
     build:
