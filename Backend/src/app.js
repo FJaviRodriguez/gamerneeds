@@ -11,6 +11,7 @@ import bibliotecaRouter from './routes/biblioteca.js';
 import multer from 'multer';
 import dotenv from 'dotenv';
 import healthRoutes from './routes/health.js';
+import { conexionbdd } from './config/db.js';
 
 dotenv.config();
 
@@ -20,14 +21,16 @@ const app = express();
 const port = process.env.PORT || 5000;
 const host = process.env.HOST || '0.0.0.0';
 
-
+// Enhanced CORS configuration
 const corsOptions = {
-    origin: '*',
+    origin: [
+        'http://107.22.32.241:5173',
+        'http://localhost:5173',
+        'http://127.0.0.1:5173'
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
-    exposedHeaders: ['set-cookie'],
-    optionsSuccessStatus: 200
+    allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cors(corsOptions));
@@ -42,6 +45,27 @@ app.use('/api/stripe', stripeRoutes);
 
 app.use(express.json());
 
+// Health check endpoint
+app.get('/api/health', async (req, res) => {
+    try {
+        const dbConnected = await conexionbdd();
+        if (!dbConnected) {
+            throw new Error('Database connection failed');
+        }
+        res.status(200).json({
+            status: 'healthy',
+            database: 'connected'
+        });
+    } catch (error) {
+        console.error('Health check failed:', error);
+        res.status(503).json({
+            status: 'unhealthy',
+            error: error.message
+        });
+    }
+});
+
+// Static files configuration
 app.use('/public', express.static(path.join(__dirname, '../public')));
 app.use('/images', express.static('public/juegos'));
 app.use('/public/avatars', express.static('public/avatars'));
@@ -74,6 +98,7 @@ const upload = multer({
   }
 });
 
+// API routes
 app.use('/api/juegos', juegosRoutes);
 app.use('/api/generos', generosRoutes);
 app.use('/api/pagos', stripeRoutes);
@@ -82,16 +107,30 @@ app.use('/api/biblioteca', bibliotecaRouter);
 app.use('/api', routes);
 app.use('/api', healthRoutes);
 
+// Enhanced error handling
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    console.error('Error occurred:', {
+        message: err.message,
+        stack: err.stack,
+        path: req.path,
+        method: req.method
+    });
+    
     res.status(500).json({
-        error: err.message
+        error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error',
+        path: req.path
     });
 });
 
-// Modificar el listen para usar el host
-app.listen(port, host, () => {
-    console.log(`Servidor corriendo en http://${host}:${port}`);
+// Start server with enhanced logging
+const server = app.listen(port, host, () => {
+    console.log(`Server running at http://${host}:${port}`);
+});
+
+// Handle server errors
+server.on('error', (error) => {
+    console.error('Server error:', error);
+    process.exit(1);
 });
 
 export default app;
