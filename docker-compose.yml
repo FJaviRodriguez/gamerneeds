@@ -2,7 +2,7 @@ services:
   mysql:
     image: mysql:8.0
     container_name: gamerneeds-mysql
-    env_file: .env
+    env_file: ./Backend/.env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -27,7 +27,7 @@ services:
       context: ./Backend
       dockerfile: Dockerfile
     container_name: gamerneeds-backend
-    env_file: .env
+    env_file: ./Backend/.env
     environment:
       - DB_HOST=host.docker.internal
       - NODE_ENV=production
@@ -44,9 +44,7 @@ services:
       context: ./Frontend
       dockerfile: Dockerfile
     container_name: gamerneeds-frontend
-    env_file: .env
-    environment:
-      - VITE_API_URL=http://107.22.32.241:5000/api
+    env_file: ./Frontend/.env
     ports:
       - "5173:5173"
     depends_on:
