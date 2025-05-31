@@ -56,8 +56,10 @@ services:
     build: 
       context: ./Frontend
       dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL}
+        - VITE_STRIPE_PUBLIC_KEY=${VITE_STRIPE_PUBLIC_KEY}
     container_name: gamerneeds-frontend
-    env_file: .env
     environment:
       - VITE_API_URL=${VITE_API_URL}
       - VITE_STRIPE_PUBLIC_KEY=${VITE_STRIPE_PUBLIC_KEY}
