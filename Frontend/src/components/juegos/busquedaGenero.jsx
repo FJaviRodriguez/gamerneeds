@@ -1,22 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import crearInstanciaApi from '../../services/apiConfig';
 
 const FiltradoGenero = ({ isOpen, onClose, onFilterSelect }) => {
     const [generos, setGeneros] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState(new Set());
+    const [error, setError] = useState(null);
+    const api = crearInstanciaApi();
 
     useEffect(() => {
         const fetchGeneros = async () => {
             try {
-                const apiUrl = import.meta.env.VITE_API_URL;
-                const response = await axios.get(`${apiUrl}/generos`);
+                if (!api) {
+                    throw new Error('API client not initialized');
+                }
+                const response = await api.get('/generos');
                 setGeneros(response.data);
+                setError(null);
             } catch (error) {
-                console.error('Hubo un error al cargar los generos:', error);
+                console.error('Error fetching genres:', error.response || error);
+                setError('Error al cargar los géneros');
+                setGeneros([]);
             }
         };
-        fetchGeneros();
-    }, []);
+        
+        if (isOpen) {
+            fetchGeneros();
+        }
+    }, [isOpen]);
+
     const handleGenreToggle = (genero) => {
         const newSelected = new Set(selectedGenres);
         if (newSelected.has(genero.idgenero)) {
