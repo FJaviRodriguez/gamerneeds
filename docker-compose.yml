@@ -29,10 +29,13 @@ services:
     container_name: gamerneeds-backend
     env_file: ./Backend/.env
     environment:
-      - DB_HOST=host.docker.internal
+      - DB_HOST=mysql
       - NODE_ENV=development
     ports:
       - "5000:5000"
+    volumes:
+      - ./Backend:/app  # Añadido para desarrollo
+      - /app/node_modules  # Añadido para preservar node_modules
     depends_on:
       mysql:
         condition: service_healthy
