@@ -18,12 +18,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 5000;
+const host = process.env.HOST || '0.0.0.0';
+
+
 const corsOptions = {
-    origin: [
-        'http://107.22.32.241:5173',
-        'http://107.22.32.241',
-        'http://localhost:5173',
-    ],
+    origin: '*',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
@@ -90,8 +89,9 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+// Modificar el listen para usar el host
+app.listen(port, host, () => {
+    console.log(`Servidor corriendo en http://${host}:${port}`);
 });
 
 export default app;
