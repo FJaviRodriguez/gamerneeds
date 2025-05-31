@@ -8,50 +8,25 @@ const crearInstanciaApi = () => {
         console.error('VITE_API_URL no está configurado');
         return null;
     }
+
     const api = axios.create({
         baseURL: apiUrl,
         headers: {
             'Content-Type': 'application/json'
         },
         withCredentials: true,
-        timeout: 15000,
-        validateStatus: status => {
-            return status >= 200 && status < 500;
-        }
+        timeout: 30000,
     });
-    api.interceptors.request.use(
-        config => {
-            console.log('Request:', {
-                method: config.method,
-                url: config.url,
-                data: config.data,
-                headers: config.headers
-            });
-            return config;
-        },
-        error => {
-            console.error('Request Error:', error);
-            return Promise.reject(error);
+    api.interceptors.response.use(null, async (error) => {
+        if (error.code === 'ECONNABORTED' || error.message === 'Network Error') {
+            const retries = error.config._retry || 0;
+            if (retries < 3) {
+                error.config._retry = retries + 1;
+                return await new Promise(resolve => setTimeout(resolve, 1000)).then(() => api(error.config));
+            }
         }
-    );
-    api.interceptors.response.use(
-        response => {
-            console.log('Response:', {
-                status: response.status,
-                data: response.data,
-                headers: response.headers
-            });
-            return response;
-        },
-        error => {
-            console.error('Response Error:', {
-                message: error.message,
-                response: error.response?.data,
-                status: error.response?.status
-            });
-            return Promise.reject(error);
-        }
-    );
+        return Promise.reject(error);
+    });
 
     return api;
 };

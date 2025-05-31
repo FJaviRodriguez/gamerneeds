@@ -29,47 +29,30 @@ services:
     container_name: gamerneeds-backend
     env_file: .env
     environment:
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - JWT_SECRET=${JWT_SECRET}
-      - BACKEND_URL=${BACKEND_URL}
-      - FRONTEND_URL=${FRONTEND_URL}
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
-      - STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
-      - STRIPE_CLI_KEY=${STRIPE_CLI_KEY}
-      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - DB_HOST=host.docker.internal
+      - NODE_ENV=production
     ports:
       - "5000:5000"
-    volumes:
-      - ./Backend/public:/app/public
-      - ./Backend/logs:/app/logs
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    depends_on:
+      mysql:
+        condition: service_healthy
     networks:
       - gamerneeds-network
-    restart: unless-stopped
 
   frontend:
-    build: 
+    build:
       context: ./Frontend
       dockerfile: Dockerfile
-      args:
-        - VITE_API_URL=${VITE_API_URL}
-        - VITE_STRIPE_PUBLIC_KEY=${VITE_STRIPE_PUBLIC_KEY}
     container_name: gamerneeds-frontend
+    env_file: .env
     environment:
-      - VITE_API_URL=${VITE_API_URL}
-      - VITE_STRIPE_PUBLIC_KEY=${VITE_STRIPE_PUBLIC_KEY}
+      - VITE_API_URL=http://107.22.32.241:5000/api
     ports:
       - "5173:5173"
     depends_on:
       - backend
     networks:
       - gamerneeds-network
-    restart: unless-stopped
 
 networks:
   gamerneeds-network:
