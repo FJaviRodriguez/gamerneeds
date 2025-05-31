@@ -98,14 +98,14 @@ const upload = multer({
   }
 });
 
-// API routes
-app.use('/api/juegos', juegosRoutes);
+// API routes - Reorganizar el orden
+app.use('/api', healthRoutes);
 app.use('/api/generos', generosRoutes);
 app.use('/api/pagos', stripeRoutes);
 app.use('/api/usuario', usuarioRoutes);
 app.use('/api/biblioteca', bibliotecaRouter);
-app.use('/api', routes);
-app.use('/api', healthRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/juegos', juegosRoutes);
 
 // Enhanced error handling
 app.use((err, req, res, next) => {
