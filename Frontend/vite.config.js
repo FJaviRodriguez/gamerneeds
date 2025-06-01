@@ -6,20 +6,15 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
     plugins: [react(), tailwindcss()],
-    define: {
-      'process.env.VITE_API_URL': JSON.stringify(env.VITE_API_URL),
-      'process.env.VITE_STRIPE_PUBLIC_KEY': JSON.stringify(env.VITE_STRIPE_PUBLIC_KEY)
-    },
     server: {
-      host: true,
+      host: '0.0.0.0',
       port: 5173,
       watch: {
         usePolling: true
       }
     },
-    build: {
-      outDir: 'dist',
-      sourcemap: true
+    define: {
+      'process.env.VITE_API_URL': JSON.stringify(env.VITE_API_URL)
     }
   }
 })
