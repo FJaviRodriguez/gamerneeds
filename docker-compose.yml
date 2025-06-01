@@ -44,6 +44,7 @@ services:
         condition: service_healthy
     networks:
       - gamerneeds-network
+    hostname: backend
 
   frontend:
     build:
@@ -62,6 +63,7 @@ services:
       - backend
     networks:
       - gamerneeds-network
+    hostname: frontend
 
 networks:
   gamerneeds-network:
