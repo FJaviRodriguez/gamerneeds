@@ -1,17 +1,16 @@
 import express from 'express';
 import cors from 'cors';
-import routes from './routes/index.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+import multer from 'multer';
 import juegosRoutes from './routes/juegos.js';
 import generosRoutes from './routes/genero.js';
 import stripeRoutes from './routes/stripe.js';
 import usuarioRoutes from './routes/usuario.js';
 import bibliotecaRouter from './routes/biblioteca.js';
-import multer from 'multer';
-import dotenv from 'dotenv';
+import authRoutes from './routes/auth.js';
 import healthRoutes from './routes/health.js';
-import { conexionbdd } from './config/db.js';
 
 dotenv.config();
 
@@ -21,16 +20,16 @@ const app = express();
 const port = process.env.PORT || 5000;
 const host = process.env.HOST || '0.0.0.0';
 
-// Enhanced CORS configuration
+// CORS configuration
 const corsOptions = {
     origin: [
-        'http://107.22.32.241:5173',
+        process.env.FRONTEND_URL,
         'http://localhost:5173',
         'http://127.0.0.1:5173'
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 };
 
 app.use(cors(corsOptions));
@@ -45,27 +44,7 @@ app.use('/api/stripe', stripeRoutes);
 
 app.use(express.json());
 
-// Health check endpoint
-app.get('/api/health', async (req, res) => {
-    try {
-        const dbConnected = await conexionbdd();
-        if (!dbConnected) {
-            throw new Error('Database connection failed');
-        }
-        res.status(200).json({
-            status: 'healthy',
-            database: 'connected'
-        });
-    } catch (error) {
-        console.error('Health check failed:', error);
-        res.status(503).json({
-            status: 'unhealthy',
-            error: error.message
-        });
-    }
-});
-
-// Static files configuration
+// Static files
 app.use('/public', express.static(path.join(__dirname, '../public')));
 app.use('/images', express.static('public/juegos'));
 app.use('/public/avatars', express.static('public/avatars'));
@@ -98,8 +77,8 @@ const upload = multer({
   }
 });
 
-// API routes - Reorganizar el orden
-app.use('/api', healthRoutes);
+// API routes
+app.use('/api/health', healthRoutes);
 app.use('/api/generos', generosRoutes);
 app.use('/api/pagos', stripeRoutes);
 app.use('/api/usuario', usuarioRoutes);
@@ -107,30 +86,16 @@ app.use('/api/biblioteca', bibliotecaRouter);
 app.use('/api/auth', authRoutes);
 app.use('/api/juegos', juegosRoutes);
 
-// Enhanced error handling
+// Error handler
 app.use((err, req, res, next) => {
-    console.error('Error occurred:', {
-        message: err.message,
-        stack: err.stack,
-        path: req.path,
-        method: req.method
-    });
-    
+    console.error('Error:', err);
     res.status(500).json({
-        error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error',
-        path: req.path
+        error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
     });
 });
 
-// Start server with enhanced logging
 const server = app.listen(port, host, () => {
     console.log(`Server running at http://${host}:${port}`);
-});
-
-// Handle server errors
-server.on('error', (error) => {
-    console.error('Server error:', error);
-    process.exit(1);
 });
 
 export default app;
