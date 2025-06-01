@@ -32,8 +32,8 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization']
 };
 
+app.use(express.json());
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
 
 if (!process.env.STRIPE_SECRET_KEY) {
     console.error('Missing STRIPE_SECRET_KEY');
@@ -42,9 +42,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 
 app.use('/api/stripe', stripeRoutes);
 
-app.use(express.json());
 
-// Static files
 app.use('/public', express.static(path.join(__dirname, '../public')));
 app.use('/images', express.static('public/juegos'));
 app.use('/public/avatars', express.static('public/avatars'));
@@ -77,16 +75,14 @@ const upload = multer({
   }
 });
 
-// API routes
 app.use('/api/health', healthRoutes);
-app.use('/api/generos', generosRoutes);
-app.use('/api/pagos', stripeRoutes);
-app.use('/api/usuario', usuarioRoutes);
-app.use('/api/biblioteca', bibliotecaRouter);
 app.use('/api/auth', authRoutes);
+app.use('/api/usuario', usuarioRoutes);
 app.use('/api/juegos', juegosRoutes);
+app.use('/api/generos', generosRoutes);
+app.use('/api/biblioteca', bibliotecaRouter);
+app.use('/api/pagos', stripeRoutes);
 
-// Error handler
 app.use((err, req, res, next) => {
     console.error('Error:', err);
     res.status(500).json({

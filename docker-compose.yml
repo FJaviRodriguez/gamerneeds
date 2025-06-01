@@ -2,7 +2,7 @@ services:
   mysql:
     image: mysql:8.0
     container_name: gamerneeds-mysql
-    env_file: ./Backend/.env
+    env_file: ./.env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -15,47 +15,36 @@ services:
       - ./Backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - gamerneeds-network
-    command: --default-authentication-plugin=mysql_native_password
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   backend:
     build: 
       context: ./Backend
       dockerfile: Dockerfile
     container_name: gamerneeds-backend
-    env_file: ./Backend/.env
+    env_file: ./.env  
     environment:
       - DB_HOST=mysql
-      - NODE_ENV=development
-      - DEBUG=express:*
-    command: ["npm", "run", "debug"]
+      - NODE_ENV=production
     ports:
       - "5000:5000"
+      - "9229:9229"
     volumes:
-      - ./Backend:/app  # Añadido para desarrollo
-      - /app/node_modules  # Añadido para preservar node_modules
+      - ./Backend:/app
+      - /app/node_modules
     depends_on:
       mysql:
         condition: service_healthy
     networks:
       - gamerneeds-network
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
 
   frontend:
     build:
       context: ./Frontend
       dockerfile: Dockerfile
     container_name: gamerneeds-frontend
-    env_file: ./Frontend/.env
+    env_file: ./.env
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
     ports:
       - "5173:5173"
     depends_on:
