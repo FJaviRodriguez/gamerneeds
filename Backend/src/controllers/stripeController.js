@@ -32,7 +32,7 @@ export const crearSesionPago = async (req, res) => {
                         name: item.nombre,
                         images: [item.url_portada],
                     },
-                    unit_amount: Math.round(item.precio * 100),
+                    unit_amount: Math.round(item.precio),
                 },
                 quantity: 1,
             })),
