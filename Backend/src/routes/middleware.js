@@ -1,25 +1,25 @@
 import jwt from 'jsonwebtoken';
 
-export const verificarToken = (req, res, next) => {
+export const verificarToken = async (req, res, next) => {
     try {
-        const authHeader = req.header('Authorization');
-        if (!authHeader?.startsWith('Bearer ')) {
+        const token = req.headers.authorization?.split(' ')[1];
+        
+        if (!token) {
             return res.status(401).json({ 
-                message: 'No autorizado',
-                redirectTo: '/login'
+                message: 'No se proporcionó token de autenticación' 
             });
         }
-        const token = authHeader.replace('Bearer ', '');
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = {
+        req.user = { 
             id: decoded.userId,
+            email: decoded.email
         };
         next();
     } catch (error) {
-        console.error('Error de autenticación:', error);
+        console.error('Error en verificarToken:', error);
         return res.status(401).json({ 
-            message: 'Token inválido o expirado',
-            redirectTo: '/login'
+            message: 'Token inválido o expirado' 
         });
     }
 };

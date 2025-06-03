@@ -1,25 +1,31 @@
 import pool from '../config/db.js';
 
 export const mostrarBiblioteca = async (usuarioId) => {
-  try {
-    const [juegos] = await pool.query(`
-      SELECT 
-        j.*,
-        b.fecha_adquisicion
-      FROM biblioteca b
-      JOIN juego j ON b.juego_idjuego = j.idjuego
-      WHERE b.usuario_idusuario = ?
-      ORDER BY b.fecha_adquisicion DESC`, [usuarioId]);
-    return juegos.map(juego => ({
-      ...juego,
-      url_portada: juego.url_portada 
-        ? `${process.env.BACKEND_URL}/public/juegos/${juego.url_portada}`
-        : '/icons/default-game.png'
-    }));
-  } catch (error) {
-    console.error('Error en mostrarBiblioteca:', error);
-    throw error;
-  }
+    if (!usuarioId) {
+        throw new Error('ID de usuario no proporcionado');
+    }
+
+    try {
+        const [juegos] = await pool.query(`
+            SELECT 
+                j.*,
+                b.fecha_adquisicion
+            FROM biblioteca b
+            INNER JOIN juego j ON b.juego_idjuego = j.idjuego
+            WHERE b.usuario_idusuario = ?
+            ORDER BY b.fecha_adquisicion DESC
+        `, [usuarioId]);
+
+        return juegos.map(juego => ({
+            ...juego,
+            url_portada: juego.url_portada 
+                ? `${process.env.BACKEND_URL}/public/juegos/${juego.url_portada}`
+                : '/icons/default-game.png'
+        }));
+    } catch (error) {
+        console.error('Error en mostrarBiblioteca:', error);
+        throw new Error('Error al obtener la biblioteca del usuario');
+    }
 };
 export const aniadirJuegosABiblioteca = async (usuarioId, juegosIds) => {
     const connection = await pool.getConnection();
