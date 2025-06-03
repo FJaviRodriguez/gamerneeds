@@ -167,7 +167,7 @@ export const createLineItem = async (req, res) => {
             });
             const priceObj = await stripe.prices.create({
                 product: product.id,
-                unit_amount: Math.round(price * 100),
+                unit_amount: Math.round(price),
                 currency: 'eur'
             });
             return { id: priceObj.id, product_id: product.id };
