@@ -33,7 +33,7 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-app.use('/api/stripe/webhook', express.raw({ type: 'application/json' }));
+app.post('/api/stripe/webhook', express.raw({type: 'application/json'}), stripeController.webhookHandler);
 
 app.use(express.json());
 app.use(cors(corsOptions));

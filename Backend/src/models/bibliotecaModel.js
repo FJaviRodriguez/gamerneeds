@@ -31,19 +31,23 @@ export const aniadirJuegosABiblioteca = async (usuarioId, juegosIds) => {
     const connection = await pool.getConnection();
     try {
         await connection.beginTransaction();
+        
         const fecha = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        for (const juegoId of juegosIds) {            
-            const [result] = await connection.query(
+        
+        for (const juegoId of juegosIds) {
+            await connection.query(
                 `INSERT INTO biblioteca (usuario_idusuario, juego_idjuego, fecha_adquisicion) 
                  VALUES (?, ?, ?) 
                  ON DUPLICATE KEY UPDATE fecha_adquisicion = ?`,
                 [usuarioId, juegoId, fecha, fecha]
             );
         }
+        
         await connection.commit();
         return true;
     } catch (error) {
         await connection.rollback();
+        console.error('Error en aniadirJuegosABiblioteca:', error);
         throw error;
     } finally {
         connection.release();

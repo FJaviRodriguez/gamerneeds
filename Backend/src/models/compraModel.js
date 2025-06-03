@@ -1,11 +1,24 @@
 import pool from '../config/db.js';
 
-export const crearCompra = async (connection, usuario_id, total) => {
-    const [result] = await connection.query(
-        'INSERT INTO compra (usuario_idusuario, total, estado_pago, fecha_compra) VALUES (?, ?, "pendiente", NOW())',
-        [usuario_id, total]
-    );
-    return result.insertId;
+export const crearCompra = async (usuarioId, total) => {
+    const connection = await pool.getConnection();
+    try {
+        await connection.beginTransaction();
+        
+        const [result] = await connection.query(
+            'INSERT INTO compra (usuario_idusuario, total, fecha_compra) VALUES (?, ?, NOW())',
+            [usuarioId, total]
+        );
+        
+        await connection.commit();
+        return result.insertId;
+    } catch (error) {
+        await connection.rollback();
+        console.error('Error en crearCompra:', error);
+        throw error;
+    } finally {
+        connection.release();
+    }
 };
 export const aniadirJuegosACompra = async (connection, idcompra, juegos) => {
     for (const juego of juegos) {

@@ -88,42 +88,17 @@ export const webhookHandler = async (req, res) => {
                     sessionId: session.id
                 });
 
-                // Get database connection
-                const connection = await pool.getConnection();
-                
                 try {
-                    await connection.beginTransaction();
-
-                    // Add each game to the user's library
-                    for (const juegoId of juegosIds) {
-                        await connection.query(
-                            'INSERT INTO biblioteca (usuario_idusuario, juego_idjuego, fecha_adquisicion) VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE fecha_adquisicion = NOW()',
-                            [usuarioId, juegoId]
-                        );
-                    }
-
-                    // Create purchase record
-                    await connection.query(
-                        'INSERT INTO compra (usuario_idusuario, total, fecha_compra) VALUES (?, ?, NOW())',
-                        [usuarioId, session.amount_total / 100]
-                    );
-
-                    await connection.commit();
+                    // Usar el modelo para añadir juegos a la biblioteca
+                    await bibliotecaModel.aniadirJuegosABiblioteca(usuarioId, juegosIds);
                     
-                    console.log('Successfully processed purchase');
-                    
-                    // Log success to file
-                    const fs = require('fs').promises;
-                    await fs.appendFile(
-                        'webhook_success.log',
-                        `${new Date().toISOString()} - User ${usuarioId} purchased games: ${juegosIds.join(',')}\n`
-                    );
+                    // Crear registro de compra usando el modelo
+                    await compraModel.crearCompra(usuarioId, session.amount_total / 100);
+
+                    console.log('Compra procesada exitosamente');
                 } catch (error) {
-                    await connection.rollback();
-                    console.error('Database error:', error);
+                    console.error('Error procesando la compra:', error);
                     throw error;
-                } finally {
-                    connection.release();
                 }
             }
         }
