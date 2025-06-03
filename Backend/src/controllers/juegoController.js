@@ -33,6 +33,7 @@ const upload = multer({
 });
 
 export const mostrarJuegos = async (req, res) => {
+  console.log('Recibida petición para mostrar juegos');
   try {
     const juegos = await juegoModel.mostrarJuegos();
     if (!juegos || juegos.length === 0) {
@@ -40,13 +41,11 @@ export const mostrarJuegos = async (req, res) => {
         message: 'No se encontraron juegos' 
       });
     }
+    console.log('Juegos encontrados:', juegos);
     res.json(juegos);
   } catch (error) {
-    console.error('Error en mostrarJuegos:', error);
-    res.status(500).json({ 
-      message: 'Error al obtener los juegos',
-      error: error.message 
-    });
+    console.error('Error al mostrar juegos:', error);
+    res.status(500).json({ message: error.message });
   }
 };
 export const mostrarJuegoPorId = async (req, res) => {
