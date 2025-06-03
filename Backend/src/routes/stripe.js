@@ -7,12 +7,9 @@ const router = express.Router();
 router.post(
     '/webhook',
     express.raw({ type: 'application/json' }),
-    (req, res, next) => {
-        console.log('🎮 Webhook route hit');
-        next();
-    },
     stripeController.webhookHandler
 );
+
 router.use(express.json());
 
 router.post('/crear-sesion-pago', stripeController.crearSesionPago);

@@ -74,54 +74,71 @@ export const verificarPago = async (req, res) => {
 export const webhookHandler = async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
+
     try {
         event = stripe.webhooks.constructEvent(
-            req.rawBody || req.body,
+            req.body,
             sig,
             process.env.STRIPE_WEBHOOK_SECRET
         );
+
+        console.log('Webhook event received:', event.type);
+
         if (event.type === 'checkout.session.completed') {
             const session = event.data.object;
+            
+            // Extract user and items from metadata
             const usuarioId = session.metadata.usuarioId;
             const juegosIds = JSON.parse(session.metadata.items);
-            if (!usuarioId || !juegosIds) {
-                throw new Error('Metadata incompleta en la sesión');
-            }
+
+            console.log('Processing purchase for user:', usuarioId);
+            console.log('Games to add:', juegosIds);
+
+            // Get database connection
+            const connection = await pool.getConnection();
+            
             try {
-                const connection = await pool.getConnection();
-                try {
-                    await connection.beginTransaction();
-                    for (const juegoId of juegosIds) {
-                        await connection.query(
-                            `INSERT IGNORE INTO biblioteca (usuario_idusuario, juego_idjuego, fecha_adquisicion) 
-                             VALUES (?, ?, NOW())`,
-                            [usuarioId, juegoId]
-                        );
-                    }
-                    await connection.commit();
-                    const fs = require('fs').promises;
-                    await fs.appendFile(
-                        'webhook_log.txt',`${new Date().toISOString()} - Juegos añadidos: ${juegosIds.join(',')} para usuario ${usuarioId}\n`
+                await connection.beginTransaction();
+
+                // Add each game to the user's library
+                for (const juegoId of juegosIds) {
+                    await connection.query(
+                        'INSERT INTO biblioteca (usuario_idusuario, juego_idjuego, fecha_adquisicion) VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE fecha_adquisicion = NOW()',
+                        [usuarioId, juegoId]
                     );
-                } catch (error) {
-                    await connection.rollback();
-                    throw error;
-                } finally {
-                    connection.release();
                 }
-            } catch (error) {
+
+                // Create purchase record
+                await connection.query(
+                    'INSERT INTO compra (usuario_idusuario, total, fecha_compra) VALUES (?, ?, NOW())',
+                    [usuarioId, session.amount_total / 100]
+                );
+
+                await connection.commit();
+                
+                console.log('Successfully processed purchase');
+                
+                // Log success to file
                 const fs = require('fs').promises;
                 await fs.appendFile(
-                    'webhook_error_log.txt',
-                    `${new Date().toISOString()} - Error: ${error.message}\n`
+                    'webhook_success.log',
+                    `${new Date().toISOString()} - User ${usuarioId} purchased games: ${juegosIds.join(',')}\n`
                 );
+            } catch (error) {
+                await connection.rollback();
+                console.error('Database error:', error);
                 throw error;
+            } finally {
+                connection.release();
             }
         }
+
         res.json({ received: true });
     } catch (error) {
-        console.error('Error en webhook:', error);
-        res.status(400).json({ error: error.message });
+        console.error('Webhook error:', error);
+        return res.status(400).json({
+            error: `Webhook Error: ${error.message}`
+        });
     }
 };
 export const addToCart = async (req, res) => {
