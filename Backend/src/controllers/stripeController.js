@@ -22,43 +22,33 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 export const crearSesionPago = async (req, res) => {
     try {
         const { items, usuarioId } = req.body;
-        if (!items || items.length === 0) {
-            return res.status(400).json({ message: 'No hay items en el carrito' });
-        }
-        if (!usuarioId) {
-            return res.status(400).json({ message: 'Usuario no identificado' });
-        }
+
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
-            mode: 'payment',
             line_items: items.map(item => ({
                 price_data: {
                     currency: 'eur',
                     product_data: {
                         name: item.nombre,
                         images: [item.url_portada],
-                        metadata: {
-                            idjuego: item.idjuego.toString()
-                        }
                     },
-                    unit_amount: Math.round(item.precio),
+                    unit_amount: Math.round(item.precio * 100),
                 },
                 quantity: 1,
             })),
-            success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+            mode: 'payment',
+            success_url: `${process.env.FRONTEND_URL}/success`,
             cancel_url: `${process.env.FRONTEND_URL}/carrito`,
             metadata: {
                 usuarioId: usuarioId.toString(),
-                items: JSON.stringify(items.map(item => item.idjuego))
+                juegosIds: JSON.stringify(items.map(item => item.idjuego))
             }
         });
+
         res.json({ sessionId: session.id });
     } catch (error) {
-        console.error('Error creating checkout session:', error);
-        res.status(500).json({ 
-            message: 'Error al crear la sesión de pago',
-            error: error.message 
-        });
+        console.error('Error al crear sesión de pago:', error);
+        res.status(500).json({ error: error.message });
     }
 };
 export const verificarPago = async (req, res) => {
@@ -86,50 +76,55 @@ export const webhookHandler = async (req, res) => {
 
         if (event.type === 'checkout.session.completed') {
             const session = event.data.object;
-            
-            // Extract user and items from metadata
-            const usuarioId = session.metadata.usuarioId;
-            const juegosIds = JSON.parse(session.metadata.items);
+            const { metadata } = session;
 
-            console.log('Processing purchase for user:', usuarioId);
-            console.log('Games to add:', juegosIds);
+            if (metadata && metadata.usuarioId && metadata.juegosIds) {
+                const usuarioId = metadata.usuarioId;
+                const juegosIds = JSON.parse(metadata.juegosIds);
 
-            // Get database connection
-            const connection = await pool.getConnection();
-            
-            try {
-                await connection.beginTransaction();
+                console.log('Procesando compra:', {
+                    usuarioId,
+                    juegosIds,
+                    sessionId: session.id
+                });
 
-                // Add each game to the user's library
-                for (const juegoId of juegosIds) {
+                // Get database connection
+                const connection = await pool.getConnection();
+                
+                try {
+                    await connection.beginTransaction();
+
+                    // Add each game to the user's library
+                    for (const juegoId of juegosIds) {
+                        await connection.query(
+                            'INSERT INTO biblioteca (usuario_idusuario, juego_idjuego, fecha_adquisicion) VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE fecha_adquisicion = NOW()',
+                            [usuarioId, juegoId]
+                        );
+                    }
+
+                    // Create purchase record
                     await connection.query(
-                        'INSERT INTO biblioteca (usuario_idusuario, juego_idjuego, fecha_adquisicion) VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE fecha_adquisicion = NOW()',
-                        [usuarioId, juegoId]
+                        'INSERT INTO compra (usuario_idusuario, total, fecha_compra) VALUES (?, ?, NOW())',
+                        [usuarioId, session.amount_total / 100]
                     );
+
+                    await connection.commit();
+                    
+                    console.log('Successfully processed purchase');
+                    
+                    // Log success to file
+                    const fs = require('fs').promises;
+                    await fs.appendFile(
+                        'webhook_success.log',
+                        `${new Date().toISOString()} - User ${usuarioId} purchased games: ${juegosIds.join(',')}\n`
+                    );
+                } catch (error) {
+                    await connection.rollback();
+                    console.error('Database error:', error);
+                    throw error;
+                } finally {
+                    connection.release();
                 }
-
-                // Create purchase record
-                await connection.query(
-                    'INSERT INTO compra (usuario_idusuario, total, fecha_compra) VALUES (?, ?, NOW())',
-                    [usuarioId, session.amount_total / 100]
-                );
-
-                await connection.commit();
-                
-                console.log('Successfully processed purchase');
-                
-                // Log success to file
-                const fs = require('fs').promises;
-                await fs.appendFile(
-                    'webhook_success.log',
-                    `${new Date().toISOString()} - User ${usuarioId} purchased games: ${juegosIds.join(',')}\n`
-                );
-            } catch (error) {
-                await connection.rollback();
-                console.error('Database error:', error);
-                throw error;
-            } finally {
-                connection.release();
             }
         }
 
