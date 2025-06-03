@@ -17,17 +17,15 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
-const port = process.env.PORT;
-const host = process.env.HOST;
+const port = process.env.PORT || 5000;
+const host = process.env.HOST || '127.0.0.1';
 
 // CORS configuration
 const corsOptions = {
     origin: [
-        process.env.FRONTEND_URL,
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
         'http://107.22.32.241',
-        'http://107.22.32.241:80'
+        'http://localhost:5173',
+        'http://127.0.0.1:5173'
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
