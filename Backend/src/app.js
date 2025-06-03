@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import multer from 'multer';
+import * as stripeController from './controllers/stripeController.js';
 import juegosRoutes from './routes/juegos.js';
 import generosRoutes from './routes/genero.js';
 import stripeRoutes from './routes/stripe.js';
