@@ -2,10 +2,8 @@ import axios from 'axios';
 
 const crearInstanciaApi = () => {
     const apiUrl = import.meta.env.VITE_API_URL;
-    console.log('API URL:', apiUrl);
     
     if (!apiUrl) {
-        console.error('VITE_API_URL no está configurado');
         return null;
     }
 

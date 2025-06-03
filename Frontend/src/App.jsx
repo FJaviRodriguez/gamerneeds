@@ -11,10 +11,11 @@ import CheckoutPage from './pages/checkoutPage';
 import SuccessPage from './pages/successPage';
 import RutasProtegidas from './components/common/rutasProtegidas';
 import { Toaster } from 'react-hot-toast';
+import { CarritoProvider } from './context/carritoContext';
 
 function App() {
   return (
-    <>
+    <CarritoProvider>
       <Toaster 
         position="top-right"
         toastOptions={{
@@ -45,7 +46,7 @@ function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/success" element={<SuccessPage />} />
       </Routes>
-    </>
+    </CarritoProvider>
   );
 }
 
