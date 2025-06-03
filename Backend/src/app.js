@@ -18,11 +18,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 5000;
-const host = process.env.HOST || '127.0.0.1';
+const host = '0.0.0.0';  // Cambiado para escuchar en todas las interfaces
 
 // CORS configuration
 const corsOptions = {
     origin: [
+        'http://107.22.32.241:5173',
         'http://107.22.32.241',
         'http://localhost:5173',
         'http://127.0.0.1:5173'
@@ -90,8 +91,8 @@ app.use((err, req, res, next) => {
     });
 });
 
-const server = app.listen(port, host, () => {
-    console.log(`Server running at http://${host}:${port}`);
+app.listen(port, host, () => {
+    console.log(`Server running on http://${host}:${port}`);
 });
 
 export default app;
