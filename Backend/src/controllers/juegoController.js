@@ -41,8 +41,17 @@ export const mostrarJuegos = async (req, res) => {
         message: 'No se encontraron juegos' 
       });
     }
-    console.log('Juegos encontrados:', juegos);
-    res.json(juegos);
+
+    // Procesar las URLs de las imágenes
+    const juegosConUrls = juegos.map(juego => ({
+      ...juego,
+      url_portada: juego.url_portada 
+        ? `${process.env.BACKEND_URL}/public/juegos/${juego.url_portada}`
+        : `${process.env.BACKEND_URL}/public/juegos/default-game.jpg`
+    }));
+
+    console.log('Juegos encontrados:', juegosConUrls);
+    res.json(juegosConUrls);
   } catch (error) {
     console.error('Error al mostrar juegos:', error);
     res.status(500).json({ message: error.message });
