@@ -34,7 +34,5 @@ Thumbs.db
 mysql_data/
 
 # Uploads
-Backend/public/avatars/*
-Backend/public/juegos/*
 !Backend/public/avatars/.gitkeep
 !Backend/public/juegos/.gitkeep
