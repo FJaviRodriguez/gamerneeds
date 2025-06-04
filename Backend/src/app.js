@@ -48,7 +48,6 @@ app.use('/api/stripe', stripeRoutes);
 
 
 app.use('/public', express.static(path.join(__dirname, '../public')));
-app.use('/images', express.static('public/juegos'));
 app.use('/public/avatars', express.static('public/avatars'));
 
 

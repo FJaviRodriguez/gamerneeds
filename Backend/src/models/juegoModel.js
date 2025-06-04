@@ -21,10 +21,7 @@ export const mostrarJuegos = async () => {
       ...juego,
       url_portada: juego.url_portada 
         ? `${process.env.BACKEND_URL}/public/juegos/${juego.url_portada}`
-        : '/icons/default-game.png',
-      desarrollador: juego.desarrollador?.split(',')[0] || 'No especificado',
-      editor: juego.editor?.split(',')[0] || 'No especificado',
-      generos: juego.generos ? juego.generos.split(',') : []
+        : `${process.env.BACKEND_URL}/public/prueba.jpg`,
     }));
   } catch (error) {
     console.error('Error en mostrarJuegos:', error);
