@@ -13,6 +13,10 @@ import RutasProtegidas from './components/common/rutasProtegidas';
 import { Toaster } from 'react-hot-toast';
 import { CarritoProvider } from './context/carritoContext';
 import AdminRegisterPage from './pages/adminRegister'; 
+import PanelAdmin from './pages/panelAdmin';
+import CrearJuegoPage from './pages/crearJuegoPage';
+import CrearDesarrolladorPage from './pages/crearDesarrolladorPage';
+import CrearEditorPage from './pages/crearEditorPage';
 
 function App() {
   return (
@@ -51,6 +55,38 @@ function App() {
           element={
             <RutasProtegidas adminOnly>
               <AdminRegisterPage />
+            </RutasProtegidas>
+          } 
+        />
+        <Route 
+          path="/panel-admin" 
+          element={
+            <RutasProtegidas adminOnly>
+              <PanelAdmin />
+            </RutasProtegidas>
+          } 
+        />
+        <Route 
+          path="/admin/juego/crear" 
+          element={
+            <RutasProtegidas adminOnly>
+              <CrearJuegoPage />
+            </RutasProtegidas>
+          } 
+        />
+        <Route 
+          path="/admin/desarrollador/crear" 
+          element={
+            <RutasProtegidas adminOnly>
+              <CrearDesarrolladorPage />
+            </RutasProtegidas>
+          } 
+        />
+        <Route 
+          path="/admin/editor/crear" 
+          element={
+            <RutasProtegidas adminOnly>
+              <CrearEditorPage />
             </RutasProtegidas>
           } 
         />

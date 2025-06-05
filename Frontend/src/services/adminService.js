@@ -20,3 +20,30 @@ export const registroAdminUsuario = async (userData) => {
     throw error.response?.data || { message: 'Error en el registro de usuario' };
   }
 };
+
+export const crearJuego = async (juegoData) => {
+  try {
+    const response = await api.post('/admin/juego', juegoData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Error al crear el juego' };
+  }
+};
+
+export const crearDesarrollador = async (desarrolladorData) => {
+  try {
+    const response = await api.post('/admin/desarrollador', desarrolladorData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Error al crear el desarrollador' };
+  }
+};
+
+export const crearEditor = async (editorData) => {
+  try {
+    const response = await api.post('/admin/editor', editorData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Error al crear el editor' };
+  }
+};
