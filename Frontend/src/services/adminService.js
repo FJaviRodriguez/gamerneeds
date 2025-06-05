@@ -117,14 +117,23 @@ export const eliminarJuego = async (idjuego) => {
       throw new Error('No hay token de autenticación');
     }
 
+    // Añadir log para depuración
+    console.log('Intentando eliminar juego:', idjuego);
+    console.log('URL completa:', `${api.defaults.baseURL}/admin/juego/${idjuego}`);
+    console.log('Token:', token);
+
     const response = await api.delete(`/admin/juego/${idjuego}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
+    
+    // Añadir log de respuesta
+    console.log('Respuesta del servidor:', response);
+    
     return response.data;
   } catch (error) {
-    console.error('Error al eliminar juego:', error);
+    console.error('Error detallado:', error.response || error);
     throw error.response?.data || { message: 'Error al eliminar el juego' };
   }
 };

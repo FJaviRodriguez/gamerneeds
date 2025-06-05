@@ -42,6 +42,13 @@ app.post('/api/stripe/webhook', express.raw({type: 'application/json'}), stripeC
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Middleware para registrar solicitudes
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  console.log('Headers:', req.headers);
+  next();
+});
+
 // Rutas públicas
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);

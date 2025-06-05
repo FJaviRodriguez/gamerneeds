@@ -136,6 +136,10 @@ export const eliminarJuego = async (req, res) => {
   try {
     const { idjuego } = req.params;
     
+    // Añadir logs para depuración
+    console.log('Request recibido para eliminar juego:', idjuego);
+    console.log('Headers:', req.headers);
+    
     if (!idjuego) {
       return res.status(400).json({ message: 'ID de juego no proporcionado' });
     }
@@ -152,7 +156,7 @@ export const eliminarJuego = async (req, res) => {
 
     res.json({ message: 'Juego eliminado correctamente' });
   } catch (error) {
-    console.error('Error al eliminar juego:', error);
+    console.error('Error en eliminarJuego:', error);
     res.status(500).json({ message: 'Error al eliminar el juego' });
   }
 };

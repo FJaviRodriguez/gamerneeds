@@ -1,5 +1,5 @@
 import express from 'express';
-import { verificarToken, verificarAdmin } from '../middlewares/auth.js';  // Corregir path
+import { verificarToken, verificarAdmin } from './middleware.js';  
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
