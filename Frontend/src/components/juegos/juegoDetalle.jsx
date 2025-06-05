@@ -67,15 +67,16 @@ const JuegoDetalle = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="bg-zinc-800/50 rounded-lg overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
+              <div className="relative h-48 w-full">
                 <img 
                   src={juego.url_portada} 
                   alt={juego.titulo} 
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = `${process.env.BACKEND_URL}/public/juegos/default-game.jpg`;
+                    e.target.src = '/icons/default-game.png';
                   }}
+                  loading="lazy"
                 />
               </div>
               
