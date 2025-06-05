@@ -12,27 +12,27 @@ export const loginUsuario = async (formData) => {
       body: JSON.stringify(formData),
       credentials: 'include'
     });
+
     const data = await response.json();
+
     if (!response.ok) {
-      return {
-        success: false,
-        message: data.message || 'Credenciales inválidas'
-      };
+      throw new Error(data.message || 'Error al iniciar sesión');
     }
+
     if (data.token) {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.usuario));
     }
+
     return {
       success: true,
       usuario: data.usuario,
       token: data.token
     };
   } catch (error) {
-    console.error('Error en loginUsuario:', error);
     return {
       success: false,
-      message: 'Error de conexión con el servidor'
+      message: error.message || 'Error de conexión con el servidor'
     };
   }
 };
