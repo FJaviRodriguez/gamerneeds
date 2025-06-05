@@ -15,23 +15,18 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
-    if (!formData.email || !formData.password) {
-      setError('Por favor, complete todos los campos');
-      return;
-    }
+
     setIsSubmitting(true);
+    setError('');
+
     try {
       const response = await loginUsuario(formData);
-      if (response.success) {
-        setError('');
-        setUsuario(response.usuario);
-        mostrarMensajeBienvenida();
+      if (response.token && response.usuario) {
+        await login(response.usuario, response.token);
         navigate('/', { replace: true });
-      } else {
-        setError('Email o contraseña incorrectos');
       }
     } catch (error) {
-      setError('Email o contraseña incorrectos');
+      setError(error.message || 'Error al iniciar sesión');
     } finally {
       setIsSubmitting(false);
     }

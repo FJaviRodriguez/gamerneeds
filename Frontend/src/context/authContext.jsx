@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import LoadingSpinner from '../components/common/loading';
+import toast from 'react-hot-toast';
 
 const AuthContext = createContext(undefined);
 
@@ -20,10 +21,14 @@ export const AuthProvider = ({ children }) => {
     setCargando(false);
   }, []);
 
-  const login = async (userData) => {
-    setUsuario(userData);
-    setIsAuthenticated(true);
-    localStorage.setItem('user', JSON.stringify(userData));
+  const login = async (userData, token) => {
+    if (token) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUsuario(userData);
+      setIsAuthenticated(true);
+      mostrarMensajeBienvenida();
+    }
   };
 
   const logout = () => {
@@ -31,6 +36,12 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
     setUsuario(null);
     setIsAuthenticated(false);
+  };
+
+  const mostrarMensajeBienvenida = () => {
+    toast.success(`¡Bienvenido/a!`, {
+      duration: 3000,
+    });
   };
 
   if (cargando) {
@@ -43,7 +54,8 @@ export const AuthProvider = ({ children }) => {
       setUsuario, 
       isAuthenticated,
       login,
-      logout
+      logout,
+      mostrarMensajeBienvenida
     }}>
       {children}
     </AuthContext.Provider>

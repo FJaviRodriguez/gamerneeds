@@ -21,6 +21,7 @@ export const loginUsuario = async (email, password) => {
       rol: usuario.rol
     };
   } catch (error) {
+    console.error('Error en loginUsuario:', error);
     throw error;
   }
 };
