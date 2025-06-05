@@ -85,48 +85,41 @@ export const mostrarJuegoPorId = async (req, res) => {
 };
 // aun no hay un admin que pueda crear juegos, pero lo habra
 export const crearJuego = async (req, res) => {
-  upload.single('portada')(req, res, async (err) => {
-    if (err instanceof multer.MulterError) {
-      return res.status(400).json({ 
-        message: 'Error al subir la imagen', 
-        error: err.message 
-      });
-    } else if (err) {
-      return res.status(400).json({ 
-        message: 'Error en la subir la imagen', 
-        error: err.message 
-      });
-    }
-    if (!req.file) {
-      return res.status(400).json({ 
-        message: 'No se ha subido ninguna imagen' 
-      });
-    }
-    try {
-      const juegoData = {
-        ...req.body,
-        url_portada: req.file.filename
-      };
-      const requiredFields = ['titulo', 'precio'];
-      const missingFields = requiredFields.filter(field => !juegoData[field]);
-      if (missingFields.length > 0) {
-        return res.status(400).json({
-          message: `Faltan campos requeridos: ${missingFields.join(', ')}`
-        });
-      }
-      const idjuego = await juegoModel.crearJuego(juegoData);
-      res.status(201).json({ 
-        message: 'Juego creado correctamente', 
-        idjuego,
-        url_portada: `${process.env.BACKEND_URL}/images/juegos/${req.file.filename}`
-      });
-    } catch (error) {
-      res.status(500).json({ 
-        message: 'Hubo un error al intentar insertar un juego', 
-        error: error.message 
+  try {
+    const juegoData = {
+      ...req.body,
+      url_portada: req.file ? req.file.filename : 'default-game.jpg',
+      url_trailer: req.body.url_trailer || '',
+      descripcion: req.body.descripcion || '',
+      clasificacion_edad: req.body.clasificacion_edad || 0,
+      fecha_lanzamiento: req.body.fecha_lanzamiento || null
+    };
+
+    // Solo validamos los campos realmente necesarios
+    const requiredFields = ['titulo', 'precio'];
+    const missingFields = requiredFields.filter(field => !juegoData[field]);
+    
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        message: `Faltan campos requeridos: ${missingFields.join(', ')}`
       });
     }
-  });
+
+    const idjuego = await juegoModel.crearJuego(juegoData);
+    
+    res.status(201).json({ 
+      message: 'Juego creado correctamente', 
+      idjuego,
+      url_portada: juegoData.url_portada ? 
+        `${process.env.BACKEND_URL}/public/juegos/${juegoData.url_portada}` : 
+        `${process.env.BACKEND_URL}/public/juegos/default-game.jpg`
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Hubo un error al intentar insertar un juego', 
+      error: error.message 
+    });
+  }
 };
 export const buscarJuegos = async (req, res) => {
     try {

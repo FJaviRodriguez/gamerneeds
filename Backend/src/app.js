@@ -14,6 +14,7 @@ import authRoutes from './routes/auth.js';
 import healthRoutes from './routes/health.js';
 import adminRoutes from './routes/admin.js';
 import { verificarToken } from './routes/middleware.js';
+import fs from 'fs';
 
 dotenv.config();
 
@@ -49,7 +50,6 @@ if (!process.env.STRIPE_SECRET_KEY) {
 app.use('/api/stripe', stripeRoutes);
 
 
-app.use('/public', express.static(path.join(__dirname, '../public')));
 app.use('/public/avatars', express.static('public/avatars'));
 
 
@@ -79,6 +79,16 @@ const upload = multer({
     cb(new Error('Solo se permiten imágenes (jpeg, jpg, png, webp)'));
   }
 });
+
+// Servir archivos estáticos
+app.use('/public/juegos', express.static(path.join(__dirname, '../public/juegos')));
+app.use('/public', express.static(path.join(__dirname, '../public')));
+
+// Asegúrate de que el directorio existe
+const juegosDir = path.join(__dirname, '../public/juegos');
+if (!fs.existsSync(juegosDir)){
+    fs.mkdirSync(juegosDir, { recursive: true });
+}
 
 // Rutas públicas
 app.use('/api/health', healthRoutes);

@@ -54,7 +54,16 @@ export const mostrarJuegoPorId = async (idjuego) => {
   }
 };
 export const crearJuego = async (juego) => {
-  const { titulo, descripcion, precio, fecha_lanzamiento, clasificacion_edad, url_trailer, url_portada } = juego;
+  const { 
+    titulo, 
+    descripcion = '', 
+    precio, 
+    fecha_lanzamiento = null, 
+    clasificacion_edad = 0, 
+    url_trailer = '', 
+    url_portada = 'default-game.jpg' 
+  } = juego;
+
   const [result] = await pool.query(
     `INSERT INTO juego (titulo, descripcion, precio, fecha_lanzamiento, clasificacion_edad, url_trailer, url_portada)
      VALUES (?, ?, ?, ?, ?, ?, ?)`,
