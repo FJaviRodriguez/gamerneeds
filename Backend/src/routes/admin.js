@@ -7,7 +7,10 @@ import {
   registroAdministrativo, 
   crearJuego,
   crearDesarrollador,
-  crearEditor 
+  crearEditor,
+  mostrarDesarrolladores,
+  mostrarEditores,
+  mostrarGeneros
 } from '../controllers/adminController.js';
 
 const router = express.Router();
@@ -59,19 +62,11 @@ const handleMulterError = (err, req, res, next) => {
 
 // Rutas administrativas
 router.post('/register', [verificarToken, verificarAdmin], registroAdministrativo);
-router.post('/juego', [
-  verificarToken, 
-  verificarAdmin,
-  (req, res, next) => {
-    upload(req, res, (err) => {
-      if (err) {
-        return handleMulterError(err, req, res, next);
-      }
-      next();
-    });
-  }
-], crearJuego);
+router.post('/juego', [verificarToken, verificarAdmin, upload], crearJuego);
 router.post('/desarrollador', [verificarToken, verificarAdmin], crearDesarrollador);
 router.post('/editor', [verificarToken, verificarAdmin], crearEditor);
+router.get('/desarrolladores', [verificarToken, verificarAdmin], mostrarDesarrolladores);
+router.get('/editores', [verificarToken, verificarAdmin], mostrarEditores);
+router.get('/generos', [verificarToken, verificarAdmin], mostrarGeneros);
 
 export default router;

@@ -2,6 +2,7 @@ import * as usuarioModel from '../models/usuarioModel.js';
 import * as juegoModel from '../models/juegoModel.js';
 import * as desarrolladorModel from '../models/desarrolladorModel.js';
 import * as editorModel from '../models/editorModel.js';
+import * as generoModel from '../models/generoModel.js';
 
 export const registroAdministrativo = async (req, res) => {
   try {
@@ -47,10 +48,11 @@ export const crearJuego = async (req, res) => {
       url_portada: req.file ? req.file.filename : 'default-game.jpg'
     };
 
-    // Log the processed data
-    console.log('Processed juego data:', juegoData);
+    const desarrolladores = JSON.parse(req.body.desarrolladores || '[]');
+    const editores = JSON.parse(req.body.editores || '[]');
+    const generos = JSON.parse(req.body.generos || '[]');
 
-    const idjuego = await juegoModel.crearJuego(juegoData);
+    const idjuego = await juegoModel.crearJuego(juegoData, desarrolladores, editores, generos);
     
     res.status(201).json({ 
       message: 'Juego creado correctamente', 
@@ -64,8 +66,7 @@ export const crearJuego = async (req, res) => {
     console.error('Error al crear juego:', error);
     res.status(500).json({ 
       message: 'Error al crear el juego',
-      error: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      error: error.message
     });
   }
 };
@@ -92,6 +93,36 @@ export const crearEditor = async (req, res) => {
     });
   } catch (error) {
     console.error('Error al crear editor:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const mostrarDesarrolladores = async (req, res) => {
+  try {
+    const desarrolladores = await desarrolladorModel.mostrarDesarrolladores();
+    res.json(desarrolladores);
+  } catch (error) {
+    console.error('Error al mostrar desarrolladores:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const mostrarEditores = async (req, res) => {
+  try {
+    const editores = await editorModel.mostrarEditores();
+    res.json(editores);
+  } catch (error) {
+    console.error('Error al mostrar editores:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const mostrarGeneros = async (req, res) => {
+  try {
+    const generos = await generoModel.mostrarGeneros();
+    res.json(generos);
+  } catch (error) {
+    console.error('Error al mostrar géneros:', error);
     res.status(500).json({ message: error.message });
   }
 };

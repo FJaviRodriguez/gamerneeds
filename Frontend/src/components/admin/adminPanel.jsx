@@ -12,6 +12,11 @@ const PanelAdmin = () => {
 
   const adminOptions = [
     {
+      title: 'Registrar Usuario',
+      path: '/admin',
+      description: 'Registra nuevos usuarios o administradores'
+    },
+    {
       title: 'Crear Juego',
       path: '/admin/juego/crear',
       description: 'Añade nuevos juegos al catálogo'

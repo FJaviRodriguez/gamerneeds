@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { crearJuego } from '../../services/adminService';
 import { toast } from 'react-hot-toast';
 
 const CrearJuego = () => {
   const navigate = useNavigate();
+  const [desarrolladores, setDesarrolladores] = useState([]);
+  const [editores, setEditores] = useState([]);
+  const [generos, setGeneros] = useState([]);
   const [formData, setFormData] = useState({
     titulo: '',
     descripcion: '',
@@ -12,58 +15,80 @@ const CrearJuego = () => {
     fecha_lanzamiento: '',
     clasificacion_edad: '',
     url_trailer: '',
-    url_portada: ''
+    url_portada: '',
+    desarrolladores: [],
+    editores: [],
+    generos: []
   });
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [desarrolladoresRes, editoresRes, generosRes] = await Promise.all([
+          fetch(`${import.meta.env.VITE_API_URL}/admin/desarrolladores`).then(res => res.json()),
+          fetch(`${import.meta.env.VITE_API_URL}/admin/editores`).then(res => res.json()),
+          fetch(`${import.meta.env.VITE_API_URL}/admin/generos`).then(res => res.json())
+        ]);
+
+        setDesarrolladores(desarrolladoresRes);
+        setEditores(editoresRes);
+        setGeneros(generosRes);
+      } catch (error) {
+        toast.error('Error al cargar los datos');
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const handleChange = (e) => {
-    const value = e.target.type === 'file' 
-      ? e.target.files[0]
-      : e.target.value;
+    const { name, value, type, files, options } = e.target;
+    
+    if (type === 'file') {
+      setFormData(prev => ({
+        ...prev,
+        [name]: files[0]
+      }));
+    } else if (type === 'select-multiple') {
+      const selectedOptions = Array.from(options)
+        .filter(option => option.selected)
+        .map(option => option.value);
       
-    setFormData({
-      ...formData,
-      [e.target.name]: value
-    });
+      setFormData(prev => ({
+        ...prev,
+        [name]: selectedOptions
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     try {
-      // Validate required fields
-      if (!formData.titulo?.trim()) {
-        toast.error('El título del juego es obligatorio');
-        return;
-      }
-
-      if (!formData.precio || formData.precio <= 0) {
-        toast.error('El precio debe ser mayor que 0');
-        return;
-      }
-
       const formDataToSend = new FormData();
       
-      // Add each field explicitly to ensure proper handling
-      formDataToSend.append('titulo', formData.titulo.trim());
-      formDataToSend.append('precio', formData.precio);
-      
-      if (formData.descripcion) {
-        formDataToSend.append('descripcion', formData.descripcion.trim());
-      }
-      if (formData.fecha_lanzamiento) {
-        formDataToSend.append('fecha_lanzamiento', formData.fecha_lanzamiento);
-      }
-      if (formData.clasificacion_edad) {
-        formDataToSend.append('clasificacion_edad', formData.clasificacion_edad);
-      }
-      if (formData.url_trailer) {
-        formDataToSend.append('url_trailer', formData.url_trailer.trim());
-      }
-      if (formData.url_portada instanceof File) {
-        formDataToSend.append('url_portada', formData.url_portada);
-      }
+      // Añadir campos básicos
+      Object.keys(formData).forEach(key => {
+        if (key !== 'desarrolladores' && key !== 'editores' && key !== 'generos') {
+          if (formData[key] instanceof File) {
+            formDataToSend.append(key, formData[key]);
+          } else if (formData[key]) {
+            formDataToSend.append(key, formData[key]);
+          }
+        }
+      });
 
-      const response = await crearJuego(formDataToSend);
+      // Añadir relaciones
+      formDataToSend.append('desarrolladores', JSON.stringify(formData.desarrolladores));
+      formDataToSend.append('editores', JSON.stringify(formData.editores));
+      formDataToSend.append('generos', JSON.stringify(formData.generos));
+
+      await crearJuego(formDataToSend);
       toast.success('Juego creado correctamente');
       navigate('/panel-admin');
     } catch (error) {
@@ -149,6 +174,61 @@ const CrearJuego = () => {
           onChange={handleChange}
           className="w-full px-4 py-3 text-white"
         />
+
+        {/* Nuevos campos de relaciones */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-400">
+            Desarrolladores
+          </label>
+          <select
+            multiple
+            name="desarrolladores"
+            onChange={handleChange}
+            className="w-full px-4 py-3 bg-zinc-800 border border-gray-600 text-white rounded-md"
+          >
+            {desarrolladores.map(dev => (
+              <option key={dev.iddesarrollador} value={dev.iddesarrollador}>
+                {dev.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-400">
+            Editores
+          </label>
+          <select
+            multiple
+            name="editores"
+            onChange={handleChange}
+            className="w-full px-4 py-3 bg-zinc-800 border border-gray-600 text-white rounded-md"
+          >
+            {editores.map(editor => (
+              <option key={editor.ideditor} value={editor.ideditor}>
+                {editor.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-400">
+            Géneros
+          </label>
+          <select
+            multiple
+            name="generos"
+            onChange={handleChange}
+            className="w-full px-4 py-3 bg-zinc-800 border border-gray-600 text-white rounded-md"
+          >
+            {generos.map(genero => (
+              <option key={genero.idgenero} value={genero.idgenero}>
+                {genero.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div className="flex gap-4 mt-6">
           <button
