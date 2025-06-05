@@ -104,11 +104,11 @@ const JuegoDetalle = () => {
                     </p>
                     <p className="text-gray-400">
                       Géneros: 
-                      {juego.generos && juego.generos.length > 0 && (
+                      {juego.nombre_genero && (
                         <div className="flex flex-wrap gap-2 mt-2">
-                          {juego.generos.map(genero => (
+                          {juego.nombre_genero.split(',').map(genero => (
                             <span key={genero} className="bg-zinc-700 text-white px-3 py-1 rounded-full text-sm">
-                              {genero}
+                              {genero.trim()}
                             </span>
                           ))}
                         </div>
@@ -128,42 +128,6 @@ const JuegoDetalle = () => {
                       {isAdding ? 'Añadiendo...' : 'Añadir al carrito'}
                     </button>
                   </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="p-6 border-t border-zinc-700">
-              <div className="mt-6">
-                <h3 className="text-white text-xl font-bold mb-3">Detalles</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                  <p className="text-gray-400">
-                    Fecha de lanzamiento:
-                    <span className="text-white ml-2">
-                      {new Date(juego.fecha_lanzamiento).toLocaleDateString('es-ES') || 'No especificada'}
-                    </span>
-                  </p>
-                  <p className="text-gray-400">
-                    Desarrollador:
-                    <span className="text-white ml-2">
-                      {Array.isArray(juego.nombre_desarrollador) 
-                        ? juego.nombre_desarrollador.join(', ') 
-                        : juego.nombre_desarrollador || 'No especificado'}
-                    </span>
-                  </p>
-                  <p className="text-gray-400">
-                    Editor:
-                    <span className="text-white ml-2">
-                      {Array.isArray(juego.nombre_editor)
-                        ? juego.nombre_editor.join(', ')
-                        : juego.nombre_editor || 'No especificado'}
-                    </span>
-                  </p>
-                  <p className="text-gray-400">
-                    Clasificación PEGI:
-                    <span className="text-white ml-2">
-                      {juego.clasificacion_edad ? `PEGI ${juego.clasificacion_edad}` : 'No especificada'}
-                    </span>
-                  </p>
                 </div>
               </div>
             </div>
