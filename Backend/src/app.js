@@ -12,6 +12,7 @@ import usuarioRoutes from './routes/usuario.js';
 import bibliotecaRouter from './routes/biblioteca.js';
 import authRoutes from './routes/auth.js';
 import healthRoutes from './routes/health.js';
+import { verificarToken } from './routes/middleware.js';
 
 dotenv.config();
 
@@ -19,9 +20,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 5000;
-const host = '0.0.0.0';  // Cambiado para escuchar en todas las interfaces
+const host = '0.0.0.0'; 
 
-// CORS configuration
+
 const corsOptions = {
     origin: [
         'http://107.22.32.241:5173',
@@ -78,13 +79,16 @@ const upload = multer({
   }
 });
 
+// Rutas públicas
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/usuario', usuarioRoutes);
 app.use('/api/juegos', juegosRoutes);
 app.use('/api/generos', generosRoutes);
-app.use('/api/biblioteca', bibliotecaRouter);
-app.use('/api/pagos', stripeRoutes);
+
+// Rutas protegidas
+app.use('/api/usuario', verificarToken, usuarioRoutes);
+app.use('/api/biblioteca', verificarToken, bibliotecaRouter);
+app.use('/api/pagos', verificarToken, stripeRoutes);
 
 app.use((err, req, res, next) => {
     console.error('Error:', err);

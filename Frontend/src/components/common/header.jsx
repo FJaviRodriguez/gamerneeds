@@ -6,12 +6,12 @@ import logo from '../../assets/logo.png';
 import FilterMenu from '../juegos/busquedaGenero';
 
 const Header = ({ onSearchResults }) => {
+  const { usuario, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(null);
   const searchTimeout = useRef(null);
-  const { usuario } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!usuario || !usuario.avatar) {
@@ -67,6 +67,12 @@ const Header = ({ onSearchResults }) => {
       navigate('/login', { state: { from: '/perfil' } });
     }
   };
+  const handleCartClick = (e) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      navigate('/login', { state: { from: '/carrito' } });
+    }
+  };
   return (
     <header className="bg-black p-3">
       <div className="w-full flex items-center">
@@ -96,16 +102,16 @@ const Header = ({ onSearchResults }) => {
           </div>
         </div>
         <div className="flex items-center space-x-24 ml-26">
-          <Link to="/carrito" className="text-white">
+          <Link to="/carrito" className="text-white" onClick={handleCartClick}>
             <img src="/icons/cart-icon.png" alt="Carrito" className="w-16 h-16 opacity-70 hover:opacity-100 transition-opacity"/>
           </Link>
           <Link to="/perfil" className="text-white relative group" onClick={handleProfileClick}>
-            <img src={getAvatarUrl()} alt="Perfil" className="w-16 h-16 rounded-full opacity-70 group-hover:opacity-100 transition-opacity object-cover border border-gray-600"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = '/icons/default-icon.png';
-              }}/>
-            {!usuario && (
+            <img 
+              src={getAvatarUrl()} 
+              alt="Perfil" 
+              className="w-16 h-16 rounded-full opacity-70 group-hover:opacity-100 transition-opacity object-cover border border-gray-600"
+            />
+            {!isAuthenticated && (
               <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 hidden group-hover:block whitespace-nowrap">
                 <span className="text-sm text-gray-400">Iniciar sesión</span>
               </div>
