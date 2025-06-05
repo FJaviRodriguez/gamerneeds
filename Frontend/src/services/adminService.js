@@ -1,6 +1,4 @@
-import crearInstanciaApi from './apiConfig';
-
-const api = crearInstanciaApi();
+import api from './api';
 
 export const registroAdminUsuario = async (userData) => {
   try {
@@ -25,7 +23,9 @@ export const crearJuego = async (juegoData) => {
   try {
     const formData = new FormData();
     for (const [key, value] of Object.entries(juegoData)) {
-      formData.append(key, value);
+      if (value !== null && value !== undefined) {
+        formData.append(key, value);
+      }
     }
 
     const response = await api.post('/admin/juego', formData, {
@@ -35,32 +35,27 @@ export const crearJuego = async (juegoData) => {
     });
     return response.data;
   } catch (error) {
+    console.error('Error creating game:', error.response || error);
     throw error.response?.data || { message: 'Error al crear el juego' };
   }
 };
 
 export const crearDesarrollador = async (desarrolladorData) => {
   try {
-    const response = await api.post('/admin/desarrollador', desarrolladorData, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await api.post('/admin/desarrollador', desarrolladorData);
     return response.data;
   } catch (error) {
+    console.error('Error creating developer:', error.response || error);
     throw error.response?.data || { message: 'Error al crear el desarrollador' };
   }
 };
 
 export const crearEditor = async (editorData) => {
   try {
-    const response = await api.post('/admin/editor', editorData, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await api.post('/admin/editor', editorData);
     return response.data;
   } catch (error) {
+    console.error('Error creating publisher:', error.response || error);
     throw error.response?.data || { message: 'Error al crear el editor' };
   }
 };
