@@ -173,3 +173,15 @@ export const registerUsuarioAdmin = async (usuario) => {
     throw error;
   }
 };
+export const verificarRolAdmin = async (userId) => {
+  try {
+    const [rows] = await pool.query(
+      'SELECT rol FROM usuario WHERE idusuario = ?', 
+      [userId]
+    );
+    return rows[0]?.rol === 'admin';
+  } catch (error) {
+    console.error('Error en verificarRolAdmin:', error);
+    throw new Error('Error al verificar rol de administrador');
+  }
+};

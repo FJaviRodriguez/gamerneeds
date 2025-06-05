@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import pool from '../config/db.js';
 
 export const verificarToken = async (req, res, next) => {
     try {
@@ -26,6 +27,10 @@ export const verificarToken = async (req, res, next) => {
 
 export const verificarAdmin = async (req, res, next) => {
   try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: 'Usuario no autenticado' });
+    }
+
     const [rows] = await pool.query(
       'SELECT rol FROM usuario WHERE idusuario = ?', 
       [req.user.id]
