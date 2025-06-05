@@ -23,7 +23,16 @@ export const registroAdminUsuario = async (userData) => {
 
 export const crearJuego = async (juegoData) => {
   try {
-    const response = await api.post('/admin/juego', juegoData);
+    const formData = new FormData();
+    for (const [key, value] of Object.entries(juegoData)) {
+      formData.append(key, value);
+    }
+
+    const response = await api.post('/admin/juego', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: 'Error al crear el juego' };
@@ -32,7 +41,11 @@ export const crearJuego = async (juegoData) => {
 
 export const crearDesarrollador = async (desarrolladorData) => {
   try {
-    const response = await api.post('/admin/desarrollador', desarrolladorData);
+    const response = await api.post('/admin/desarrollador', desarrolladorData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: 'Error al crear el desarrollador' };
@@ -41,7 +54,11 @@ export const crearDesarrollador = async (desarrolladorData) => {
 
 export const crearEditor = async (editorData) => {
   try {
-    const response = await api.post('/admin/editor', editorData);
+    const response = await api.post('/admin/editor', editorData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: 'Error al crear el editor' };

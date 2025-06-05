@@ -80,27 +80,27 @@ const upload = multer({
   }
 });
 
-// Servir archivos estáticos
+// Middleware para archivos
 app.use('/public/juegos', express.static(path.join(__dirname, '../public/juegos')));
 app.use('/public', express.static(path.join(__dirname, '../public')));
 
-// Asegúrate de que el directorio existe
+// Asegúrate de que los directorios existen
 const juegosDir = path.join(__dirname, '../public/juegos');
 if (!fs.existsSync(juegosDir)){
     fs.mkdirSync(juegosDir, { recursive: true });
 }
 
-// Rutas públicas
+// Rutas públicas (sin verificación de token)
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/juegos', juegosRoutes);
 app.use('/api/generos', generosRoutes);
 
-// Rutas protegidas
+// Rutas protegidas (con verificación de token)
+app.use('/api/admin', adminRoutes); // Ya incluye verificarToken y verificarAdmin en las rutas
 app.use('/api/usuario', verificarToken, usuarioRoutes);
 app.use('/api/biblioteca', verificarToken, bibliotecaRouter);
 app.use('/api/pagos', verificarToken, stripeRoutes);
-app.use('/api/admin', verificarToken, adminRoutes);
 
 app.use((err, req, res, next) => {
     console.error('Error:', err);
