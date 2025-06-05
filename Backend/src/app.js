@@ -12,6 +12,7 @@ import usuarioRoutes from './routes/usuario.js';
 import bibliotecaRouter from './routes/biblioteca.js';
 import authRoutes from './routes/auth.js';
 import healthRoutes from './routes/health.js';
+import adminRoutes from './routes/admin.js';
 import { verificarToken } from './routes/middleware.js';
 
 dotenv.config();
@@ -89,6 +90,7 @@ app.use('/api/generos', generosRoutes);
 app.use('/api/usuario', verificarToken, usuarioRoutes);
 app.use('/api/biblioteca', verificarToken, bibliotecaRouter);
 app.use('/api/pagos', verificarToken, stripeRoutes);
+app.use('/api/admin', verificarToken, adminRoutes);
 
 app.use((err, req, res, next) => {
     console.error('Error:', err);
