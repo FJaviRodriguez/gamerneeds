@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registroAdminUsuario } from '../../services/adminService';
 import toast from 'react-hot-toast';
-import logo from '../../assets/logo.png';
 
 const AdminRegister = () => {
   const navigate = useNavigate();
@@ -31,9 +30,6 @@ const AdminRegister = () => {
 
   return (
     <div className="min-h-screen bg-[#272727] flex flex-col overflow-hidden">
-      <div className="p-1 relative w-32 h-32">
-        <img src={logo} alt="Gamers Needs Logo" className="w-full h-full rounded-full"/>
-      </div>
       <div className="flex-1 flex justify-center items-center -mt-20">
         <div className="w-full max-w-2xl px-8">
           <div className="p-8">
