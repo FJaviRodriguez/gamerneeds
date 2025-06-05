@@ -29,16 +29,36 @@ const CrearJuego = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const formDataToSend = new FormData();
-    Object.keys(formData).forEach(key => {
-      formDataToSend.append(key, formData[key]);
-    });
-
     try {
+      // Validate required fields
+      if (!formData.titulo?.trim()) {
+        toast.error('El título del juego es obligatorio');
+        return;
+      }
+
+      if (!formData.precio || formData.precio <= 0) {
+        toast.error('El precio debe ser mayor que 0');
+        return;
+      }
+
+      const formDataToSend = new FormData();
+      
+      // Ensure all fields are properly added to FormData
+      Object.keys(formData).forEach(key => {
+        if (formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
+          if (key === 'url_portada' && formData[key] instanceof File) {
+            formDataToSend.append(key, formData[key]);
+          } else {
+            formDataToSend.append(key, String(formData[key]).trim());
+          }
+        }
+      });
+
       await crearJuego(formDataToSend);
       toast.success('Juego creado correctamente');
       navigate('/panel-admin');
     } catch (error) {
+      console.error('Error creating game:', error);
       toast.error(error.message || 'Error al crear el juego');
     }
   };

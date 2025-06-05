@@ -26,25 +26,28 @@ export const registroAdministrativo = async (req, res) => {
 
 export const crearJuego = async (req, res) => {
   try {
-    const juegoData = {
-      ...req.body,
-      url_portada: req.file ? req.file.filename : 'default-game.jpg',
-      url_trailer: req.body.url_trailer || '',
-      descripcion: req.body.descripcion || '',
-      clasificacion_edad: req.body.clasificacion_edad || 0,
-      fecha_lanzamiento: req.body.fecha_lanzamiento || null,
-      precio: parseFloat(req.body.precio) || 0
-    };
-
-    // Validación de campos requeridos
-    const requiredFields = ['titulo', 'precio'];
-    const missingFields = requiredFields.filter(field => !juegoData[field]);
-    
-    if (missingFields.length > 0) {
+    // Basic validation
+    if (!req.body.titulo?.trim()) {
       return res.status(400).json({
-        message: `Faltan campos requeridos: ${missingFields.join(', ')}`
+        message: 'El título del juego es obligatorio'
       });
     }
+
+    if (!req.body.precio || parseFloat(req.body.precio) <= 0) {
+      return res.status(400).json({
+        message: 'El precio debe ser mayor que 0'
+      });
+    }
+
+    const juegoData = {
+      titulo: req.body.titulo.trim(),
+      precio: parseFloat(req.body.precio),
+      descripcion: req.body.descripcion?.trim() || '',
+      fecha_lanzamiento: req.body.fecha_lanzamiento || null,
+      clasificacion_edad: parseInt(req.body.clasificacion_edad) || 0,
+      url_trailer: req.body.url_trailer?.trim() || '',
+      url_portada: req.file ? req.file.filename : 'default-game.jpg'
+    };
 
     const idjuego = await juegoModel.crearJuego(juegoData);
     
@@ -52,9 +55,10 @@ export const crearJuego = async (req, res) => {
       message: 'Juego creado correctamente', 
       idjuego,
       url_portada: juegoData.url_portada ? 
-        `/public/juegos/${juegoData.url_portada}` : 
-        '/public/juegos/default-game.jpg'
+        `${process.env.BACKEND_URL}/public/juegos/${juegoData.url_portada}` : 
+        `${process.env.BACKEND_URL}/public/juegos/default-game.jpg`
     });
+
   } catch (error) {
     console.error('Error al crear juego:', error);
     res.status(500).json({ 
