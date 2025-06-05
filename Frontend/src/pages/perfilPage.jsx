@@ -53,11 +53,11 @@ const PerfilPage = () => {
             </div>
             {usuario?.rol === 'admin' && (
               <Link 
-                to="/admin"
+                to="/panel-admin"
                 className="bg-[#FF4C1A] !text-white px-6 py-3 rounded-md hover:bg-[#FF6B3D] transition-colors font-medium no-underline"
                 style={{ color: 'white' }}
               >
-                Registrar usuario
+                Panel de Control
               </Link>
             )}
           </div>
