@@ -17,12 +17,7 @@ export const mostrarJuegos = async () => {
       LEFT JOIN genero ON juego_has_genero.genero_idgenero = genero.idgenero
       GROUP BY juego.idjuego`);
 
-    return rows.map(juego => ({
-      ...juego,
-      url_portada: juego.url_portada 
-        ? `${process.env.BACKEND_URL}/public/juegos/${juego.url_portada}`
-        : `${process.env.BACKEND_URL}/public/prueba.jpg`,
-    }));
+    return rows; 
   } catch (error) {
     console.error('Error en mostrarJuegos:', error);
     throw error;

@@ -35,7 +35,7 @@ const JuegoDetalle = () => {
             idjuego: juego.idjuego,
             nombre: juego.titulo,
             precio: Number(juego.precio),
-            imagen: juego.url_portada
+            url_portada: juego.url_portada,
         };
         agregarAlCarrito(itemCarrito);
     } catch (error) {

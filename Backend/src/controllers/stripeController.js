@@ -30,9 +30,11 @@ export const crearSesionPago = async (req, res) => {
                     currency: 'eur',
                     product_data: {
                         name: item.nombre,
-                        images: [item.url_portada],
+                        images: [item.url_portada.startsWith('http') 
+                            ? item.url_portada 
+                            : `${process.env.BACKEND_URL}/public/juegos/${item.url_portada}`],
                     },
-                    unit_amount: Math.round(item.precio),
+                    unit_amount: Math.round(item.precio * 100),
                 },
                 quantity: 1,
             })),

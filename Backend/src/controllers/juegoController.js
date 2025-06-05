@@ -47,16 +47,16 @@ export const mostrarJuegos = async (req, res) => {
       ...juego,
       url_portada: juego.url_portada 
         ? `${process.env.BACKEND_URL}/public/juegos/${juego.url_portada}`
-        : `${process.env.BACKEND_URL}/public/juegos/default-game.jpg`
+        : `${process.env.BACKEND_URL}/public/juegos/prueba.jpg`
     }));
 
-    console.log('Juegos encontrados:', juegosConUrls);
     res.json(juegosConUrls);
   } catch (error) {
     console.error('Error al mostrar juegos:', error);
     res.status(500).json({ message: error.message });
   }
 };
+
 export const mostrarJuegoPorId = async (req, res) => {
   try {
     const { idjuego } = req.params;
@@ -66,17 +66,19 @@ export const mostrarJuegoPorId = async (req, res) => {
         message: `No se encontró el juego con id ${idjuego}` 
       });
     }
-    const juegoProcessed = {
+
+    // Procesar la URL de la imagen
+    const juegoConUrl = {
       ...juego,
-      url_portada: `${process.env.BACKEND_URL}/public/juegos/${juego.url_portada}`,
-      desarrollador: juego.nombre_desarrollador?.split(',')[0] || 'No especificado',
-      editor: juego.nombre_editor?.split(',')[0] || 'No especificado',
-      generos: juego.nombre_genero ? juego.nombre_genero.split(',') : []
+      url_portada: juego.url_portada 
+        ? `${process.env.BACKEND_URL}/public/juegos/${juego.url_portada}`
+        : `${process.env.BACKEND_URL}/public/default-game.jpg`
     };
-    res.json(juegoProcessed);
+
+    res.json(juegoConUrl);
   } catch (error) {
     res.status(500).json({ 
-      message: 'Hubo un error al mostrar el juego', 
+      message: 'Error al mostrar el juego',
       error: error.message 
     });
   }

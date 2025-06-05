@@ -94,11 +94,14 @@ const Carrito = () => {
                                 <div className="space-y-4">
                                     {carrito.map((item) => (
                                         <div key={item.idjuego} className="bg-[#181818] rounded p-4 flex items-center">
-                                            <img  src={item.url_portada || '/icons/default-game.png'} alt={item.nombre} className="w-24 h-16 object-cover rounded"
-                                                onError={(e) => {
-                                                    e.target.onerror = null;
-                                                    e.target.src = '/icons/default-game.png';
-                                                }}/>
+                                            <img src={item.url_portada} 
+                                                 alt={item.nombre} 
+                                                 className="w-24 h-16 object-cover rounded"
+                                                 onError={(e) => {
+                                                     e.target.onerror = null;
+                                                     e.target.src = '/public/juegos/prueba.jpg';
+                                                 }}
+                                            />
                                             <div className="ml-4 flex-1">
                                                 <h3 className="text-white text-sm">{item.nombre}</h3>
                                                 <p className="text-zinc-400 text-sm">Steam</p>
