@@ -66,48 +66,57 @@ const JuegoDetalle = () => {
       <div className="flex-1 overflow-auto">
         <div className="container mx-auto px-4 py-8">
           <div className="bg-zinc-800/50 rounded-lg overflow-hidden">
-            <div className="max-w-3xl mx-auto">
-              <div className="relative h-[400px]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
                 <img 
                   src={juego.url_portada} 
                   alt={juego.titulo} 
-                  className="w-full h-full object-contain bg-black"
+                  className="w-full h-full object-cover"
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = `${process.env.BACKEND_URL}/public/juegos/default-game.jpg`;
                   }}
                 />
               </div>
-            </div>
-            <div className="p-8">
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
-                <div className="lg:col-span-3">
-                  <h1 className="text-white text-4xl font-bold mb-4">{juego.titulo}</h1>
-                  <div className="flex flex-col sm:flex-row gap-4 text-gray-400 mb-4">
-                    <p>Desarrollador: <span className="text-white">{juego.desarrollador}</span></p>
-                    <p>Editor: <span className="text-white">{juego.editor}</span></p>
+              
+              <div className="flex flex-col justify-between">
+                <div>
+                  <h1 className="text-white text-3xl font-bold mb-4">{juego.titulo}</h1>
+                  <div className="space-y-2 mb-6">
+                    <p className="text-gray-400">
+                      Desarrollador: <span className="text-white">{juego.desarrollador}</span>
+                    </p>
+                    <p className="text-gray-400">
+                      Editor: <span className="text-white">{juego.editor}</span>
+                    </p>
+                    {juego.generos && juego.generos.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-4">
+                        {juego.generos.map(genero => (
+                          <span key={genero} className="bg-zinc-700 text-white px-3 py-1 rounded-full text-sm">
+                            {genero}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  {juego.generos && juego.generos.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {juego.generos.map(genero => (
-                        <span key={genero} className="bg-zinc-700 text-white px-3 py-1 rounded-full text-sm">{genero}</span>
-                      ))}
-                    </div>
-                  )}
                 </div>
-                <div className="bg-zinc-900/80 p-6 rounded-lg lg:col-span-1 sticky top-4">
-                  <p className="text-3xl text-white font-bold mb-4">{juego.precio}€</p>
-                  <button onClick={handleAddToCart} disabled={isAdding} style={{ backgroundColor: '#FF4C1A' }} className="w-full text-white py-3 rounded-md hover:bg-[#FF6B3D] transition-colors font-medium !bg-[#FF4C1A] disabled:opacity-50 disabled:cursor-not-allowed">
-                    {isAdding ? 'Añadiendo...' : 'Añadir al carrito'}
-                  </button>
+                
+                <div className="bg-zinc-900/80 p-6 rounded-lg">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-3xl text-white font-bold">{juego.precio}€</p>
+                    <button 
+                      onClick={handleAddToCart} 
+                      disabled={isAdding}
+                      className="bg-[#FF4C1A] text-white px-6 py-3 rounded-md hover:bg-[#FF6B3D] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isAdding ? 'Añadiendo...' : 'Añadir al carrito'}
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="border-t border-zinc-700 pt-6">
-                <h2 className="text-white text-2xl font-bold mb-4">Acerca de este juego</h2>
-                <p className="text-gray-400 leading-relaxed whitespace-pre-line">
-                  {juego.descripcion || 'No hay descripción disponible'}
-                </p>
-              </div>
+            </div>
+            
+            <div className="p-6 border-t border-zinc-700">
               <div className="mt-6">
                 <h3 className="text-white text-xl font-bold mb-3">Detalles</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
