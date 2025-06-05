@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import * as usuarioModel from '../models/usuarioModel.js';
 
 export const registroAdministrativo = async (req, res) => {
@@ -24,7 +24,7 @@ export const registroAdministrativo = async (req, res) => {
       usuario: {
         id: nuevoUsuario.id,
         nombre: nuevoUsuario.nombre,
-        email: nuevoUsuario
+        email: nuevoUsuario.email
       }
     });
   } catch (error) {
