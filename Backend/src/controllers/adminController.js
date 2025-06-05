@@ -138,6 +138,8 @@ export const eliminarJuego = async (req, res) => {
     
     console.log('Request recibido para eliminar juego:', idjuego);
     console.log('Headers:', req.headers);
+    console.log('Usuario:', req.user);
+    console.log('Params:', req.params);
     
     if (!idjuego) {
       return res.status(400).json({ message: 'ID de juego no proporcionado' });
@@ -145,10 +147,13 @@ export const eliminarJuego = async (req, res) => {
 
     const url_portada = await juegoModel.eliminarJuego(idjuego);
     
+    // Si hay una portada y no es la default, eliminarla del sistema de archivos
     if (url_portada && url_portada !== 'default-game.jpg') {
       const filePath = path.join(process.cwd(), 'public', 'juegos', url_portada);
+      console.log('Intentando eliminar archivo:', filePath);
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
+        console.log('Archivo eliminado correctamente');
       }
     }
 

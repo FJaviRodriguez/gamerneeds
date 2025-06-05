@@ -39,14 +39,19 @@ const corsOptions = {
 
 app.post('/api/stripe/webhook', express.raw({type: 'application/json'}), stripeController.webhookHandler);
 
-app.use(cors(corsOptions));
-app.use(express.json());
-
-// Agregar logging para depurar
+// Middleware de logging mejorado
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
+  console.log('=================================');
+  console.log('Request Method:', req.method);
+  console.log('Request URL:', req.url);
+  console.log('Request Headers:', req.headers);
+  console.log('=================================');
   next();
 });
+
+// Configuración de CORS y JSON
+app.use(cors(corsOptions));
+app.use(express.json());
 
 // Rutas públicas
 app.use('/api/health', healthRoutes);
@@ -54,7 +59,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/juegos', juegosRoutes);
 app.use('/api/generos', generosRoutes);
 
-// Rutas protegidas 
+// Rutas protegidas - asegurarnos que adminRoutes está aquí
 app.use('/api/admin', adminRoutes);
 app.use('/api/usuario', verificarToken, usuarioRoutes);
 app.use('/api/biblioteca', verificarToken, bibliotecaRouter);
