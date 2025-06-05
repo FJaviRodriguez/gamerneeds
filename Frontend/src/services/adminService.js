@@ -56,3 +56,57 @@ export const crearEditor = async (editorData) => {
     throw error.response?.data || { message: 'Error al crear el editor' };
   }
 };
+
+export const mostrarDesarrolladores = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const response = await api.get('/admin/desarrolladores', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Error al mostrar desarrolladores' };
+  }
+};
+
+export const mostrarEditores = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const response = await api.get('/admin/editores', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Error al mostrar editores' };
+  }
+};
+
+export const mostrarGeneros = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const response = await api.get('/admin/generos', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Error al mostrar géneros' };
+  }
+};

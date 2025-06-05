@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { crearJuego } from '../../services/adminService';
+import { 
+  crearJuego, 
+  mostrarDesarrolladores, 
+  mostrarEditores, 
+  mostrarGeneros 
+} from '../../services/adminService';
 import { toast } from 'react-hot-toast';
 
 const CrearJuego = () => {
@@ -25,15 +30,16 @@ const CrearJuego = () => {
     const fetchData = async () => {
       try {
         const [desarrolladoresRes, editoresRes, generosRes] = await Promise.all([
-          fetch(`${import.meta.env.VITE_API_URL}/admin/desarrolladores`).then(res => res.json()),
-          fetch(`${import.meta.env.VITE_API_URL}/admin/editores`).then(res => res.json()),
-          fetch(`${import.meta.env.VITE_API_URL}/admin/generos`).then(res => res.json())
+          mostrarDesarrolladores(),
+          mostrarEditores(),
+          mostrarGeneros()
         ]);
 
         setDesarrolladores(desarrolladoresRes);
         setEditores(editoresRes);
         setGeneros(generosRes);
       } catch (error) {
+        console.error('Error fetching data:', error);
         toast.error('Error al cargar los datos');
       }
     };
