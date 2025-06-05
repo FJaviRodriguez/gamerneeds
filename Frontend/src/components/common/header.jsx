@@ -9,8 +9,9 @@ const Header = ({ onSearchResults }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState('/icons/default-icon.png'); // Valor por defecto
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false); // Añadir este estado
   const searchTimeout = useRef(null);
-  const { usuario, isAuthenticated } = useAuth(); // Añadimos isAuthenticated
+  const { usuario, isAuthenticated, logout } = useAuth(); // Añadimos isAuthenticated y logout
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -73,6 +74,10 @@ const Header = ({ onSearchResults }) => {
       navigate('/login', { state: { from: '/carrito' } });
     }
   };
+  const handleLogout = () => {
+    logout();
+    setIsUserMenuOpen(false);
+  };
   return (
     <header className="bg-black p-3">
       <div className="w-full flex items-center">
@@ -109,22 +114,51 @@ const Header = ({ onSearchResults }) => {
               className="w-16 h-16 opacity-70 hover:opacity-100 transition-opacity"
             />
           </Link>
-          <Link to="/perfil" className="text-white relative group" onClick={handleProfileClick}>
-            <img 
-              src={avatarUrl} 
-              alt="Perfil" 
-              className="w-16 h-16 rounded-full opacity-70 group-hover:opacity-100 transition-opacity object-cover border border-gray-600"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = '/icons/default-icon.png';
-              }}
-            />
-            {!isAuthenticated && (
-              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 hidden group-hover:block whitespace-nowrap">
-                <span className="text-sm text-gray-400">Iniciar sesión</span>
+          <div className="relative">
+            <div 
+              className="cursor-pointer relative group"
+              onClick={() => isAuthenticated && setIsUserMenuOpen(!isUserMenuOpen)}
+            >
+              <img 
+                src={avatarUrl} 
+                alt="Perfil" 
+                className="w-16 h-16 rounded-full opacity-70 group-hover:opacity-100 transition-opacity object-cover border border-gray-600"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = '/icons/default-icon.png';
+                }}
+              />
+              {!isAuthenticated && (
+                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 hidden group-hover:block whitespace-nowrap">
+                  <span className="text-sm text-gray-400">Iniciar sesión</span>
+                </div>
+              )}
+            </div>
+            
+            {/* Menú desplegable */}
+            {isUserMenuOpen && isAuthenticated && (
+              <div 
+                className="absolute top-full right-0 mt-2 w-48 rounded-md shadow-lg bg-zinc-800 ring-1 ring-black ring-opacity-5"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="py-1" role="menu">
+                  <Link
+                    to="/perfil"
+                    className="block px-4 py-2 text-sm text-gray-300 hover:bg-zinc-700 cursor-pointer"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    Mi Perfil
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-zinc-700 cursor-pointer"
+                  >
+                    Cerrar Sesión
+                  </button>
+                </div>
               </div>
             )}
-          </Link>
+          </div>
         </div>
       </div>
     </header>
