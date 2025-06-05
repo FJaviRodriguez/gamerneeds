@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Header from '../components/common/header';
 import Footer from '../components/common/footer';
 import JuegoGrid from '../components/juegos/juegoGrid';
 import { useAuth } from '../context/authContext';
-import { useLocation, useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
   const [searchResults, setSearchResults] = useState(null);
