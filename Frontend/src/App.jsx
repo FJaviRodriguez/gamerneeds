@@ -12,7 +12,7 @@ import SuccessPage from './pages/successPage';
 import RutasProtegidas from './components/common/rutasProtegidas';
 import { Toaster } from 'react-hot-toast';
 import { CarritoProvider } from './context/carritoContext';
-import AdminPage from './pages/adminPage';
+import AdminRegisterPage from './pages/adminRegister'; 
 
 function App() {
   return (
@@ -50,7 +50,7 @@ function App() {
           path="/admin" 
           element={
             <RutasProtegidas adminOnly>
-              <AdminPage />
+              <AdminRegisterPage />
             </RutasProtegidas>
           } 
         />
