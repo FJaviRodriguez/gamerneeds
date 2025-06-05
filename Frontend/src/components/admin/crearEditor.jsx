@@ -30,59 +30,53 @@ const CrearEditor = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto w-full bg-[#1a1a1a] p-8 rounded-xl">
+    <div className="p-8">
+      <h2 className="text-2xl font-bold text-white mb-6 text-center">Crear Nuevo Editor</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label htmlFor="nombre" className="block text-sm font-medium text-white">
-            Nombre del Editor
-          </label>
-          <input
-            type="text"
-            name="nombre"
-            id="nombre"
-            required
-            value={formData.nombre}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md bg-zinc-800 border-zinc-700 text-white shadow-sm"
-          />
-        </div>
+        <input
+          type="text"
+          name="nombre"
+          placeholder="Nombre del Editor"
+          value={formData.nombre}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
+        />
+        
+        <input
+          type="url"
+          name="sitio_web"
+          placeholder="Sitio Web"
+          value={formData.sitio_web}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
+        />
+        
+        <input
+          type="date"
+          name="fecha_fundacion"
+          value={formData.fecha_fundacion}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
+        />
 
-        <div>
-          <label htmlFor="sitio_web" className="block text-sm font-medium text-white">
-            Sitio Web
-          </label>
-          <input
-            type="url"
-            name="sitio_web"
-            id="sitio_web"
-            required
-            value={formData.sitio_web}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md bg-zinc-800 border-zinc-700 text-white shadow-sm"
-          />
+        <div className="flex gap-4 mt-6">
+          <button
+            type="submit"
+            className="flex-1 bg-[#FF4C1A] text-white py-3 rounded-md hover:opacity-90 transition-opacity duration-200 font-medium text-lg"
+          >
+            Crear Editor
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/panel-admin')}
+            className="px-6 py-3 border border-gray-600 text-white rounded-md hover:bg-zinc-800 transition-colors"
+          >
+            Volver
+          </button>
         </div>
-
-        <div>
-          <label htmlFor="fecha_fundacion" className="block text-sm font-medium text-white">
-            Fecha de Fundación
-          </label>
-          <input
-            type="date"
-            name="fecha_fundacion"
-            id="fecha_fundacion"
-            required
-            value={formData.fecha_fundacion}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md bg-zinc-800 border-zinc-700 text-white shadow-sm"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-[#FF4C1A] text-white px-6 py-3 rounded-md hover:bg-[#FF6B3D] transition-colors"
-        >
-          Crear Editor
-        </button>
       </form>
     </div>
   );
