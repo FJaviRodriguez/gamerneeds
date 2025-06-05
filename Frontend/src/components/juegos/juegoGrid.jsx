@@ -27,6 +27,10 @@ const JuegoGrid = ({ filteredGames }) => {
     cargarJuegos();
   }, [filteredGames]);
 
+  const handleDeleteJuego = (deletedId) => {
+    setJuegos(prev => prev.filter(juego => juego.idjuego !== deletedId));
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[200px]">
@@ -50,7 +54,11 @@ const JuegoGrid = ({ filteredGames }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
       {juegosAMostrar.map((juego) => (
-        <JuegoInfo key={juego.idjuego} juego={juego} />
+        <JuegoInfo 
+          key={juego.idjuego} 
+          juego={juego} 
+          onDelete={handleDeleteJuego}
+        />
       ))}
     </div>
   );

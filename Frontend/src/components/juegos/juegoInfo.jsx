@@ -1,8 +1,26 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { eliminarJuego } from '../../services/adminService';
+import { useAuth } from '../../context/AuthContext';
+import { toast } from 'react-hot-toast';
 
-const JuegoInfo = ({ juego }) => {
+const JuegoInfo = ({ juego, onDelete }) => {
   const [imageError, setImageError] = useState(false);
+  const { usuario } = useAuth();
+  const isAdmin = usuario?.rol === 'admin';
+
+  const handleDelete = async (e) => {
+    e.preventDefault(); // Evitar que el Link se active
+    try {
+      await eliminarJuego(juego.idjuego);
+      toast.success('Juego eliminado correctamente');
+      if (onDelete) {
+        onDelete(juego.idjuego);
+      }
+    } catch (error) {
+      toast.error(error.message || 'Error al eliminar el juego');
+    }
+  };
 
   const getImageUrl = (url) => {
     if (!url) return '/icons/default-game.png';
@@ -38,6 +56,14 @@ const JuegoInfo = ({ juego }) => {
             onError={handleImageError}
             loading="lazy"
           />
+          {isAdmin && (
+            <button
+              onClick={handleDelete}
+              className="absolute top-2 right-2 bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors"
+            >
+              Eliminar
+            </button>
+          )}
         </div>
         <div className="p-4">
           <h2 className="text-white font-semibold text-lg mb-2 truncate">{juego.titulo}</h2>

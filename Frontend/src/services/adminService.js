@@ -109,3 +109,13 @@ export const mostrarGeneros = async () => {
     throw error.response?.data || { message: 'Error al mostrar géneros' };
   }
 };
+
+export const eliminarJuego = async (idjuego) => {
+  try {
+    const response = await api.delete(`/admin/juego/${idjuego}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al eliminar juego:', error);
+    throw error.response?.data || { message: 'Error al eliminar el juego' };
+  }
+};

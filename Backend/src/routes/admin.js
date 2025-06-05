@@ -59,4 +59,7 @@ router.post('/juego', [verificarToken, verificarAdmin], upload, handleMulterErro
 router.post('/desarrollador', [verificarToken, verificarAdmin], adminController.crearDesarrollador);
 router.post('/editor', [verificarToken, verificarAdmin], adminController.crearEditor);
 
+// Ruta DELETE
+router.delete('/juego/:idjuego', [verificarToken, verificarAdmin], adminController.eliminarJuego);
+
 export default router;

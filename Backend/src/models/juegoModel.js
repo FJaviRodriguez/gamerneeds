@@ -161,3 +161,28 @@ export const filtrarGenero = async (generos = []) => {
     const [juegos] = await pool.query(query, params);
     return juegos;
 };
+export const eliminarJuego = async (idjuego) => {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    // Eliminar registros relacionados primero
+    await connection.query('DELETE FROM juego_has_desarrollador WHERE juego_idjuego = ?', [idjuego]);
+    await connection.query('DELETE FROM editor_has_juego WHERE juego_idjuego = ?', [idjuego]);
+    await connection.query('DELETE FROM juego_has_genero WHERE juego_idjuego = ?', [idjuego]);
+    
+    // Obtener la URL de la portada antes de eliminar el juego
+    const [juego] = await connection.query('SELECT url_portada FROM juego WHERE idjuego = ?', [idjuego]);
+    
+    // Eliminar el juego
+    await connection.query('DELETE FROM juego WHERE idjuego = ?', [idjuego]);
+    
+    await connection.commit();
+    return juego[0]?.url_portada;
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
+};

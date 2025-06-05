@@ -3,6 +3,8 @@ import * as juegoModel from '../models/juegoModel.js';
 import * as desarrolladorModel from '../models/desarrolladorModel.js';
 import * as editorModel from '../models/editorModel.js';
 import * as generoModel from '../models/generoModel.js';
+import fs from 'fs';
+import path from 'path';
 
 export const registroAdministrativo = async (req, res) => {
   try {
@@ -127,5 +129,26 @@ export const mostrarGeneros = async (req, res) => {
   } catch (error) {
     console.error('Error al mostrar géneros:', error);
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const eliminarJuego = async (req, res) => {
+  try {
+    const { idjuego } = req.params;
+    
+    const url_portada = await juegoModel.eliminarJuego(idjuego);
+    
+    // Si hay una portada y no es la default, eliminarla del sistema de archivos
+    if (url_portada && url_portada !== 'default-game.jpg') {
+      const filePath = path.join(process.cwd(), 'public', 'juegos', url_portada);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    res.json({ message: 'Juego eliminado correctamente' });
+  } catch (error) {
+    console.error('Error al eliminar juego:', error);
+    res.status(500).json({ message: 'Error al eliminar el juego' });
   }
 };
