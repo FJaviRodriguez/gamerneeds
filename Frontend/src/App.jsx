@@ -13,7 +13,7 @@ import RutasProtegidas from './components/common/rutasProtegidas';
 import { Toaster } from 'react-hot-toast';
 import { CarritoProvider } from './context/carritoContext';
 import AdminRegisterPage from './pages/adminRegister'; 
-import PanelAdmin from './pages/panelAdmin';
+import PanelAdminPage from './pages/adminPanelPage';
 import CrearJuegoPage from './pages/crearJuegoPage';
 import CrearDesarrolladorPage from './pages/crearDesarrolladorPage';
 import CrearEditorPage from './pages/crearEditorPage';
@@ -62,7 +62,7 @@ function App() {
           path="/panel-admin" 
           element={
             <RutasProtegidas adminOnly>
-              <PanelAdmin />
+              <PanelAdminPage />
             </RutasProtegidas>
           } 
         />
