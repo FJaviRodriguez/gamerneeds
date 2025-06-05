@@ -99,7 +99,9 @@ export const crearEditor = async (req, res) => {
 
 export const mostrarDesarrolladores = async (req, res) => {
   try {
+    console.log('Intentando obtener desarrolladores...');
     const desarrolladores = await desarrolladorModel.mostrarDesarrolladores();
+    console.log('Desarrolladores obtenidos:', desarrolladores);
     res.json(desarrolladores);
   } catch (error) {
     console.error('Error al mostrar desarrolladores:', error);

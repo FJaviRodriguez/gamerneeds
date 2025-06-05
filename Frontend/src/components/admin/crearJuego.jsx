@@ -29,6 +29,7 @@ const CrearJuego = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log('Token:', localStorage.getItem('token')); // Añade este log
         const [desarrolladoresRes, editoresRes, generosRes] = await Promise.all([
           mostrarDesarrolladores(),
           mostrarEditores(),
