@@ -66,9 +66,6 @@ const JuegoInfo = ({ juego, onDelete }) => {
         <div className="p-4">
           <h2 className="text-white font-semibold text-lg mb-2 truncate">{juego.titulo}</h2>
           <div className="flex justify-between items-center">
-            <div className="text-white font-bold">
-              {juego.precio ? `${juego.precio}€` : 'Gratis'}
-            </div>
             {isAdmin && (
               <button
                 onClick={handleDelete}
@@ -77,6 +74,9 @@ const JuegoInfo = ({ juego, onDelete }) => {
                 Eliminar
               </button>
             )}
+            <div className="text-white font-bold">
+              {juego.precio ? `${juego.precio}€` : 'Gratis'}
+            </div>
           </div>
         </div>
       </div>

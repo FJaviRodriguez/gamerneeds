@@ -49,7 +49,6 @@ const handleMulterError = (err, req, res, next) => {
 };
 
 // Mover la ruta DELETE arriba para asegurarnos que no hay conflictos con otras rutas
-router.delete('/juego/:idjuego', [verificarToken, verificarAdmin], adminController.eliminarJuego);
 
 // Rutas GET
 router.get('/desarrolladores', [verificarToken], adminController.mostrarDesarrolladores);
@@ -61,5 +60,7 @@ router.post('/register', [verificarToken, verificarAdmin], adminController.regis
 router.post('/juego', [verificarToken, verificarAdmin], upload, handleMulterError, adminController.crearJuego);
 router.post('/desarrollador', [verificarToken, verificarAdmin], adminController.crearDesarrollador);
 router.post('/editor', [verificarToken, verificarAdmin], adminController.crearEditor);
+
+router.delete('/juego/:idjuego', [verificarToken, verificarAdmin], adminController.eliminarJuego);
 
 export default router;
