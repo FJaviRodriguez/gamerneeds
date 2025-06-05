@@ -79,13 +79,7 @@ const Header = ({ onSearchResults }) => {
     logout();
     setIsUserMenuOpen(false);
     toast.success('Has cerrado sesión correctamente', {
-      duration: 3000,
-      position: 'bottom-center',
-      style: {
-        background: '#1F2937',
-        color: '#fff',
-        borderRadius: '10px',
-      },
+      duration: 3000
     });
   };
   return (
