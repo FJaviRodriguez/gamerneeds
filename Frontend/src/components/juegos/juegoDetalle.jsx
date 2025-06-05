@@ -90,15 +90,30 @@ const JuegoDetalle = () => {
                     <p className="text-gray-400">
                       Editor: <span className="text-white">{juego.nombre_editor}</span>
                     </p>
-                    {juego.generos && juego.generos.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-4">
-                        {juego.generos.map(genero => (
-                          <span key={genero} className="bg-zinc-700 text-white px-3 py-1 rounded-full text-sm">
-                            {genero}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    <p className="text-gray-400">
+                      Fecha de lanzamiento: 
+                      <span className="text-white ml-2">
+                        {new Date(juego.fecha_lanzamiento).toLocaleDateString('es-ES') || 'No especificada'}
+                      </span>
+                    </p>
+                    <p className="text-gray-400">
+                      Clasificación PEGI:
+                      <span className="text-white ml-2">
+                        {juego.clasificacion_edad ? `PEGI ${juego.clasificacion_edad}` : 'No especificada'}
+                      </span>
+                    </p>
+                    <p className="text-gray-400">
+                      Géneros: 
+                      {juego.generos && juego.generos.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {juego.generos.map(genero => (
+                            <span key={genero} className="bg-zinc-700 text-white px-3 py-1 rounded-full text-sm">
+                              {genero}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </p>
                   </div>
                 </div>
                 
