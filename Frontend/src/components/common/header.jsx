@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { buscarJuegos, filtrarGenero } from '../../services/busquedaService';
 import { useAuth } from '../../context/authContext';
+import { toast } from 'react-hot-toast'; // Añadir esta importación
 import logo from '../../assets/logo.png';
 import FilterMenu from '../juegos/busquedaGenero';
 
@@ -77,6 +78,15 @@ const Header = ({ onSearchResults }) => {
   const handleLogout = () => {
     logout();
     setIsUserMenuOpen(false);
+    toast.success('Has cerrado sesión correctamente', {
+      duration: 3000,
+      position: 'bottom-center',
+      style: {
+        background: '#1F2937',
+        color: '#fff',
+        borderRadius: '10px',
+      },
+    });
   };
   return (
     <header className="bg-black p-3">
