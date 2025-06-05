@@ -52,10 +52,23 @@ const CrearJuego = () => {
     const { name, value, type, files, options } = e.target;
     
     if (type === 'file') {
-      setFormData(prev => ({
-        ...prev,
-        [name]: files[0]
-      }));
+      const file = files[0];
+      if (file) {
+        // Validar tipo y tamaño del archivo
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+          toast.error('Solo se permiten imágenes JPG, PNG o WebP');
+          return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          toast.error('La imagen no puede ser mayor a 5MB');
+          return;
+        }
+        setFormData(prev => ({
+          ...prev,
+          [name]: file
+        }));
+      }
     } else if (type === 'select-multiple') {
       const selectedOptions = Array.from(options)
         .filter(option => option.selected)

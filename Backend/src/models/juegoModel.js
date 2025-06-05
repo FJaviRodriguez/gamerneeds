@@ -58,12 +58,19 @@ export const crearJuego = async (juego, desarrolladores, editores, generos) => {
   try {
     await connection.beginTransaction();
 
-    // Insertar el juego
+    // Insertar el juego con la url_portada
     const [result] = await connection.query(
       `INSERT INTO juego (titulo, descripcion, precio, fecha_lanzamiento, clasificacion_edad, url_trailer, url_portada)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [juego.titulo, juego.descripcion, juego.precio, juego.fecha_lanzamiento, 
-       juego.clasificacion_edad, juego.url_trailer, juego.url_portada]
+      [
+        juego.titulo,
+        juego.descripcion,
+        juego.precio,
+        juego.fecha_lanzamiento,
+        juego.clasificacion_edad,
+        juego.url_trailer,
+        juego.url_portada
+      ]
     );
 
     const juegoId = result.insertId;
