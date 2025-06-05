@@ -26,14 +26,41 @@ export const registroAdministrativo = async (req, res) => {
 
 export const crearJuego = async (req, res) => {
   try {
-    const nuevoJuego = await juegoModel.crearJuego(req.body);
-    res.status(201).json({
-      message: 'Juego creado correctamente',
-      juego: nuevoJuego
+    const juegoData = {
+      ...req.body,
+      url_portada: req.file ? req.file.filename : 'default-game.jpg',
+      url_trailer: req.body.url_trailer || '',
+      descripcion: req.body.descripcion || '',
+      clasificacion_edad: req.body.clasificacion_edad || 0,
+      fecha_lanzamiento: req.body.fecha_lanzamiento || null,
+      precio: parseFloat(req.body.precio) || 0
+    };
+
+    // Validación de campos requeridos
+    const requiredFields = ['titulo', 'precio'];
+    const missingFields = requiredFields.filter(field => !juegoData[field]);
+    
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        message: `Faltan campos requeridos: ${missingFields.join(', ')}`
+      });
+    }
+
+    const idjuego = await juegoModel.crearJuego(juegoData);
+    
+    res.status(201).json({ 
+      message: 'Juego creado correctamente', 
+      idjuego,
+      url_portada: juegoData.url_portada ? 
+        `/public/juegos/${juegoData.url_portada}` : 
+        '/public/juegos/default-game.jpg'
     });
   } catch (error) {
     console.error('Error al crear juego:', error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ 
+      message: 'Error al crear el juego',
+      error: error.message 
+    });
   }
 };
 
