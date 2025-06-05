@@ -67,11 +67,11 @@ const JuegoDetalle = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="bg-zinc-800/50 rounded-lg overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-              <div className="relative h-96 w-full">
+              <div className="relative h-96 w-[120%]">
                 <img 
                   src={juego.url_portada} 
                   alt={juego.titulo} 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-2xl"
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = '/icons/default-game.png';
@@ -85,10 +85,10 @@ const JuegoDetalle = () => {
                   <h1 className="text-white text-3xl font-bold mb-4">{juego.titulo}</h1>
                   <div className="space-y-2 mb-6">
                     <p className="text-gray-400">
-                      Desarrollador: <span className="text-white">{juego.desarrollador}</span>
+                      Desarrollador: <span className="text-white">{juego.nombre_desarrollador}</span>
                     </p>
                     <p className="text-gray-400">
-                      Editor: <span className="text-white">{juego.editor}</span>
+                      Editor: <span className="text-white">{juego.nombre_editor}</span>
                     </p>
                     {juego.generos && juego.generos.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-4">
@@ -130,17 +130,17 @@ const JuegoDetalle = () => {
                   <p className="text-gray-400">
                     Desarrollador:
                     <span className="text-white ml-2">
-                      {Array.isArray(juego.desarrollador) 
-                        ? juego.desarrollador.join(', ') 
-                        : juego.desarrollador || 'No especificado'}
+                      {Array.isArray(juego.nombre_desarrollador) 
+                        ? juego.nombre_desarrollador.join(', ') 
+                        : juego.nombre_desarrollador || 'No especificado'}
                     </span>
                   </p>
                   <p className="text-gray-400">
                     Editor:
                     <span className="text-white ml-2">
-                      {Array.isArray(juego.editor)
-                        ? juego.editor.join(', ')
-                        : juego.editor || 'No especificado'}
+                      {Array.isArray(juego.nombre_editor)
+                        ? juego.nombre_editor.join(', ')
+                        : juego.nombre_editor || 'No especificado'}
                     </span>
                   </p>
                   <p className="text-gray-400">
