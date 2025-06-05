@@ -29,7 +29,7 @@ export const crearJuego = async (formData) => {
     const response = await api.post('/admin/juego', formData, {
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'multipart/form-data'
       }
     });
     return response.data;

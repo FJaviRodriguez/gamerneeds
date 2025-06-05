@@ -70,25 +70,28 @@ const CrearJuego = () => {
     e.preventDefault();
     
     try {
+      if (!formData.titulo?.trim()) {
+        toast.error('El título es obligatorio');
+        return;
+      }
+
       const formDataToSend = new FormData();
       
       // Añadir campos básicos
       Object.keys(formData).forEach(key => {
-        if (key !== 'desarrolladores' && key !== 'editores' && key !== 'generos') {
-          if (formData[key] instanceof File) {
-            formDataToSend.append(key, formData[key]);
-          } else if (formData[key]) {
-            formDataToSend.append(key, formData[key]);
-          }
+        if (key === 'url_portada' && formData[key] instanceof File) {
+          formDataToSend.append('url_portada', formData[key]);
+        } else if (key !== 'desarrolladores' && key !== 'editores' && key !== 'generos') {
+          formDataToSend.append(key, formData[key]);
         }
       });
 
-      // Añadir relaciones
+      // Añadir relaciones como JSON strings
       formDataToSend.append('desarrolladores', JSON.stringify(formData.desarrolladores));
       formDataToSend.append('editores', JSON.stringify(formData.editores));
       formDataToSend.append('generos', JSON.stringify(formData.generos));
 
-      await crearJuego(formDataToSend);
+      const response = await crearJuego(formDataToSend);
       toast.success('Juego creado correctamente');
       navigate('/panel-admin');
     } catch (error) {

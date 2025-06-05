@@ -53,23 +53,68 @@ export const mostrarJuegoPorId = async (idjuego) => {
     throw error;
   }
 };
-export const crearJuego = async (juego) => {
-  const { 
-    titulo, 
-    descripcion = '', 
-    precio, 
-    fecha_lanzamiento = null, 
-    clasificacion_edad = 0, 
-    url_trailer = '', 
-    url_portada = 'default-game.jpg' 
-  } = juego;
+export const crearJuego = async (juego, desarrolladores, editores, generos) => {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
 
-  const [result] = await pool.query(
-    `INSERT INTO juego (titulo, descripcion, precio, fecha_lanzamiento, clasificacion_edad, url_trailer, url_portada)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [titulo, descripcion, precio, fecha_lanzamiento, clasificacion_edad, url_trailer, url_portada]
-  );
-  return result.insertId;
+    // Insertar el juego
+    const [result] = await connection.query(
+      `INSERT INTO juego (titulo, descripcion, precio, fecha_lanzamiento, clasificacion_edad, url_trailer, url_portada)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [juego.titulo, juego.descripcion, juego.precio, juego.fecha_lanzamiento, 
+       juego.clasificacion_edad, juego.url_trailer, juego.url_portada]
+    );
+
+    const juegoId = result.insertId;
+
+    // Insertar desarrolladores
+    if (desarrolladores && desarrolladores.length > 0) {
+      const desarrolladoresValues = desarrolladores
+        .map(idDev => [juegoId, idDev])
+        .map(row => '(?, ?)').join(',');
+      
+      await connection.query(
+        `INSERT INTO juego_has_desarrollador (juego_idjuego, desarrollador_iddesarrollador) 
+         VALUES ${desarrolladoresValues}`,
+        desarrolladores.flatMap(idDev => [juegoId, idDev])
+      );
+    }
+
+    // Insertar editores
+    if (editores && editores.length > 0) {
+      const editoresValues = editores
+        .map(idEditor => [juegoId, idEditor])
+        .map(row => '(?, ?)').join(',');
+      
+      await connection.query(
+        `INSERT INTO editor_has_juego (juego_idjuego, editor_ideditor) 
+         VALUES ${editoresValues}`,
+        editores.flatMap(idEditor => [juegoId, idEditor])
+      );
+    }
+
+    // Insertar géneros
+    if (generos && generos.length > 0) {
+      const generosValues = generos
+        .map(idGenero => [juegoId, idGenero])
+        .map(row => '(?, ?)').join(',');
+      
+      await connection.query(
+        `INSERT INTO juego_has_genero (juego_idjuego, genero_idgenero) 
+         VALUES ${generosValues}`,
+        generos.flatMap(idGenero => [juegoId, idGenero])
+      );
+    }
+
+    await connection.commit();
+    return juegoId;
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
 };
 export const buscarJuegos = async (searchTerm) => {
     let query = `
