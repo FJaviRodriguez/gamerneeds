@@ -34,7 +34,7 @@ export const crearSesionPago = async (req, res) => {
                             ? item.url_portada 
                             : `${process.env.BACKEND_URL}/public/juegos/${item.url_portada}`],
                     },
-                    unit_amount: Math.round(item.precio * 100),
+                    unit_amount: Math.round(item.precio),
                 },
                 quantity: 1,
             })),

@@ -67,7 +67,7 @@ const JuegoDetalle = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="bg-zinc-800/50 rounded-lg overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-              <div className="relative h-48 w-full">
+              <div className="relative h-96 w-full">
                 <img 
                   src={juego.url_portada} 
                   alt={juego.titulo} 
