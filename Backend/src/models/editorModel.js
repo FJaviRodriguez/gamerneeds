@@ -16,10 +16,10 @@ export const crearEditor = async (editor) => {
 
 export const mostrarEditores = async () => {
   try {
-    const [editores] = await pool.query('SELECT * FROM editor ORDER BY nombre');
-    return editores;
+    const [rows] = await pool.query('SELECT * FROM editor ORDER BY nombre');
+    return rows;
   } catch (error) {
-    console.error('Error en obtenerEditores:', error);
+    console.error('Error al mostrar editores:', error);
     throw error;
   }
 };

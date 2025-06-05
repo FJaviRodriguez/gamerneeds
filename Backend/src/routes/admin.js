@@ -57,12 +57,12 @@ const handleMulterError = (err, req, res, next) => {
 };
 
 // Rutas administrativas
-router.post('/register', [verificarToken, verificarAdmin], registroAdministrativo);
-router.post('/juego', [verificarToken, verificarAdmin], upload, crearJuego);
-router.post('/desarrollador', [verificarToken, verificarAdmin], crearDesarrollador);
-router.post('/editor', [verificarToken, verificarAdmin], crearEditor);
 router.get('/desarrolladores', verificarToken, mostrarDesarrolladores);
 router.get('/editores', verificarToken, mostrarEditores);
 router.get('/generos', verificarToken, mostrarGeneros);
+router.post('/register', [verificarToken, verificarAdmin], registroAdministrativo);
+router.post('/juego', [verificarToken, verificarAdmin], upload, handleMulterError, crearJuego);
+router.post('/desarrollador', [verificarToken, verificarAdmin], crearDesarrollador);
+router.post('/editor', [verificarToken, verificarAdmin], crearEditor);
 
 export default router;

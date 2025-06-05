@@ -16,10 +16,10 @@ export const crearDesarrollador = async (desarrollador) => {
 
 export const mostrarDesarrolladores = async () => {
   try {
-    const [desarrolladores] = await pool.query('SELECT * FROM desarrollador ORDER BY nombre');
-    return desarrolladores;
+    const [rows] = await pool.query('SELECT * FROM desarrollador ORDER BY nombre');
+    return rows;
   } catch (error) {
-    console.error('Error en obtenerDesarrolladores:', error);
+    console.error('Error al mostrar desarrolladores:', error);
     throw error;
   }
 };
