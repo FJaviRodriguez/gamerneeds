@@ -15,10 +15,27 @@ const CrearJuego = () => {
     url_portada: ''
   });
 
+  const handleChange = (e) => {
+    const value = e.target.type === 'file' 
+      ? e.target.files[0]
+      : e.target.value;
+      
+    setFormData({
+      ...formData,
+      [e.target.name]: value
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    const formDataToSend = new FormData();
+    Object.keys(formData).forEach(key => {
+      formDataToSend.append(key, formData[key]);
+    });
+
     try {
-      await crearJuego(formData);
+      await crearJuego(formDataToSend);
       toast.success('Juego creado correctamente');
       navigate('/panel-admin');
     } catch (error) {
@@ -27,28 +44,122 @@ const CrearJuego = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#272727] flex flex-col p-8">
-      <div className="max-w-2xl mx-auto w-full">
-        <h1 className="text-3xl font-bold text-white mb-8">Crear Juego</h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Campos del formulario similar al registro */}
-          <button type="submit" className="w-full bg-[#FF4C1A] text-white px-6 py-3 rounded-md">
-            Crear Juego
-          </button>
-        </form>
-      </div>
+    <div className="max-w-2xl mx-auto w-full bg-[#1a1a1a] p-8 rounded-xl">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label htmlFor="titulo" className="block text-sm font-medium text-white">
+            Título del Juego
+          </label>
+          <input
+            type="text"
+            name="titulo"
+            id="titulo"
+            required
+            value={formData.titulo}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded-md bg-zinc-800 border-zinc-700 text-white shadow-sm"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="descripcion" className="block text-sm font-medium text-white">
+            Descripción
+          </label>
+          <textarea
+            name="descripcion"
+            id="descripcion"
+            required
+            value={formData.descripcion}
+            onChange={handleChange}
+            rows="4"
+            className="mt-1 block w-full rounded-md bg-zinc-800 border-zinc-700 text-white shadow-sm"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="precio" className="block text-sm font-medium text-white">
+            Precio
+          </label>
+          <input
+            type="number"
+            step="0.01"
+            name="precio"
+            id="precio"
+            required
+            value={formData.precio}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded-md bg-zinc-800 border-zinc-700 text-white shadow-sm"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="fecha_lanzamiento" className="block text-sm font-medium text-white">
+            Fecha de Lanzamiento
+          </label>
+          <input
+            type="date"
+            name="fecha_lanzamiento"
+            id="fecha_lanzamiento"
+            required
+            value={formData.fecha_lanzamiento}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded-md bg-zinc-800 border-zinc-700 text-white shadow-sm"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="clasificacion_edad" className="block text-sm font-medium text-white">
+            Clasificación por Edad
+          </label>
+          <input
+            type="number"
+            name="clasificacion_edad"
+            id="clasificacion_edad"
+            required
+            value={formData.clasificacion_edad}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded-md bg-zinc-800 border-zinc-700 text-white shadow-sm"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="url_trailer" className="block text-sm font-medium text-white">
+            URL del Trailer
+          </label>
+          <input
+            type="url"
+            name="url_trailer"
+            id="url_trailer"
+            required
+            value={formData.url_trailer}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded-md bg-zinc-800 border-zinc-700 text-white shadow-sm"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="url_portada" className="block text-sm font-medium text-white">
+            Imagen de Portada
+          </label>
+          <input
+            type="file"
+            name="url_portada"
+            id="url_portada"
+            accept="image/*"
+            onChange={handleChange}
+            className="mt-1 block w-full text-white"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-[#FF4C1A] text-white px-6 py-3 rounded-md hover:bg-[#FF6B3D] transition-colors"
+        >
+          Crear Juego
+        </button>
+      </form>
     </div>
   );
-};
-
-// filepath: c:\Users\fjrod\OneDrive\Escritorio\DAW\VSCode\gamerneeds\Frontend\src\components\admin\crearDesarrollador.jsx
-const CrearDesarrollador = () => {
-  // ... Formulario para desarrollador
-};
-
-// filepath: c:\Users\fjrod\OneDrive\Escritorio\DAW\VSCode\gamerneeds\Frontend\src\components\admin\crearEditor.jsx
-const CrearEditor = () => {
-  // ... Formulario para editor
 };
 
 export default CrearJuego;

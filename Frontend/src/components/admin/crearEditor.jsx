@@ -11,6 +11,13 @@ const CrearEditor = () => {
     fecha_fundacion: ''
   });
 
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -23,16 +30,60 @@ const CrearEditor = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#272727] flex flex-col p-8">
-      <div className="max-w-2xl mx-auto w-full">
-        <h1 className="text-3xl font-bold text-white mb-8">Crear Editor</h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Campos del formulario */}
-          <button type="submit" className="w-full bg-[#FF4C1A] text-white px-6 py-3 rounded-md">
-            Crear Editor
-          </button>
-        </form>
-      </div>
+    <div className="max-w-2xl mx-auto w-full bg-[#1a1a1a] p-8 rounded-xl">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label htmlFor="nombre" className="block text-sm font-medium text-white">
+            Nombre del Editor
+          </label>
+          <input
+            type="text"
+            name="nombre"
+            id="nombre"
+            required
+            value={formData.nombre}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded-md bg-zinc-800 border-zinc-700 text-white shadow-sm"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="sitio_web" className="block text-sm font-medium text-white">
+            Sitio Web
+          </label>
+          <input
+            type="url"
+            name="sitio_web"
+            id="sitio_web"
+            required
+            value={formData.sitio_web}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded-md bg-zinc-800 border-zinc-700 text-white shadow-sm"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="fecha_fundacion" className="block text-sm font-medium text-white">
+            Fecha de Fundación
+          </label>
+          <input
+            type="date"
+            name="fecha_fundacion"
+            id="fecha_fundacion"
+            required
+            value={formData.fecha_fundacion}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded-md bg-zinc-800 border-zinc-700 text-white shadow-sm"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-[#FF4C1A] text-white px-6 py-3 rounded-md hover:bg-[#FF6B3D] transition-colors"
+        >
+          Crear Editor
+        </button>
+      </form>
     </div>
   );
 };
