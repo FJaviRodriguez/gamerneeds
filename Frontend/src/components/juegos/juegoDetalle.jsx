@@ -102,7 +102,7 @@ const JuegoDetalle = () => {
                         {juego.clasificacion_edad ? `PEGI ${juego.clasificacion_edad}` : 'No especificada'}
                       </span>
                     </p>
-                    <p className="text-gray-400">
+                    <div className="text-gray-400">
                       Géneros: 
                       {juego.nombre_genero && (
                         <div className="flex flex-wrap gap-2 mt-2">
@@ -113,7 +113,7 @@ const JuegoDetalle = () => {
                           ))}
                         </div>
                       )}
-                    </p>
+                    </div>
                   </div>
                 </div>
                 

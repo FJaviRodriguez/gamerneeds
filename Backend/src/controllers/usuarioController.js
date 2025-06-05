@@ -4,26 +4,37 @@ import jwt from 'jsonwebtoken';
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    
     if (!email || !password) {
-      return res.status(400).json({ message: 'Email y contraseña obligatorios' });
+      return res.status(400).json({ message: 'Email y contraseña son obligatorios' });
     }
+
     const usuario = await usuarioModel.loginUsuario(email, password);
+    
     const token = jwt.sign(
-      { userId: usuario.id },
+      { 
+        userId: usuario.id,
+        email: usuario.email
+      },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
+
     res.json({
       token,
       usuario: {
         id: usuario.id,
         nombre: usuario.nombre,
+        email: usuario.email,
         avatar: usuario.avatar,
         rol: usuario.rol
       }
     });
   } catch (error) {
-    res.status(401).json({ message: error.message });
+    console.error('Error en login:', error);
+    res.status(401).json({ 
+      message: error.message || 'Credenciales inválidas' 
+    });
   }
 };
 export const registro = async (req, res) => {
