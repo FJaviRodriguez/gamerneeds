@@ -28,7 +28,8 @@ const HomePage = () => {
           {usuario?.rol === 'admin' && (
             <Link 
               to="/panel-admin"
-              className="inline-block mt-8 bg-[#FF4C1A] text-white px-6 py-3 rounded-md hover:bg-[#FF6B3D] transition-colors font-medium"
+              className="inline-block mt-8 bg-[#FF4C1A] !text-white px-6 py-3 rounded-md hover:bg-[#FF6B3D] transition-colors font-medium no-underline"
+              style={{ color: 'white' }}
             >
               Panel de Control
             </Link>

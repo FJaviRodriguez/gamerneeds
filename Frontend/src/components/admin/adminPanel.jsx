@@ -37,7 +37,7 @@ const PanelAdmin = () => {
             <Link 
               key={option.path} 
               to={option.path}
-              className="bg-zinc-800/50 p-6 rounded-lg hover:bg-zinc-700/50 transition-colors"
+              className="bg-[#1a1a1a] p-6 rounded-xl border border-zinc-800 hover:bg-zinc-900 transition-colors shadow-lg"
             >
               <h2 className="text-xl font-bold text-white mb-2">{option.title}</h2>
               <p className="text-gray-400">{option.description}</p>
