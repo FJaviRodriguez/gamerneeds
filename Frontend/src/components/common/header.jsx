@@ -117,7 +117,13 @@ const Header = ({ onSearchResults }) => {
           <div className="relative">
             <div 
               className="cursor-pointer relative group"
-              onClick={() => isAuthenticated && setIsUserMenuOpen(!isUserMenuOpen)}
+              onClick={() => {
+                if (isAuthenticated) {
+                  setIsUserMenuOpen(!isUserMenuOpen);
+                } else {
+                  navigate('/login', { state: { from: '/perfil' } });
+                }
+              }}
             >
               <img 
                 src={avatarUrl} 
