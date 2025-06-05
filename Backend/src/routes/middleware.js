@@ -23,3 +23,23 @@ export const verificarToken = async (req, res, next) => {
         });
     }
 };
+
+export const verificarAdmin = async (req, res, next) => {
+  try {
+    const [rows] = await pool.query(
+      'SELECT rol FROM usuario WHERE idusuario = ?', 
+      [req.user.id]
+    );
+
+    if (!rows[0] || rows[0].rol !== 'admin') {
+      return res.status(403).json({ 
+        message: 'Acceso denegado - Se requieren permisos de administrador' 
+      });
+    }
+
+    next();
+  } catch (error) {
+    console.error('Error en verificarAdmin:', error);
+    res.status(500).json({ message: 'Error al verificar permisos de administrador' });
+  }
+};

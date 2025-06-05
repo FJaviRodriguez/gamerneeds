@@ -12,6 +12,7 @@ import SuccessPage from './pages/successPage';
 import RutasProtegidas from './components/common/rutasProtegidas';
 import { Toaster } from 'react-hot-toast';
 import { CarritoProvider } from './context/carritoContext';
+import AdminPage from './pages/adminPage';
 
 function App() {
   return (
@@ -45,6 +46,14 @@ function App() {
         } />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/success" element={<SuccessPage />} />
+        <Route 
+          path="/admin" 
+          element={
+            <RutasProtegidas adminOnly>
+              <AdminPage />
+            </RutasProtegidas>
+          } 
+        />
       </Routes>
     </CarritoProvider>
   );

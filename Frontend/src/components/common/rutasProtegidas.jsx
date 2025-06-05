@@ -1,12 +1,15 @@
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 
-const RutasProtegidas = ({ children }) => {
-  const { isAuthenticated } = useAuth();
-  const location = useLocation();
+const RutasProtegidas = ({ children, adminOnly = false }) => {
+  const { usuario, isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    return <Navigate to="/login" replace />;
+  }
+
+  if (adminOnly && usuario?.rol !== 'admin') {
+    return <Navigate to="/" replace />;
   }
 
   return children;
