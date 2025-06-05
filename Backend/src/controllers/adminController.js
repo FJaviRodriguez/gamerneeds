@@ -136,7 +136,6 @@ export const eliminarJuego = async (req, res) => {
   try {
     const { idjuego } = req.params;
     
-    // Añadir logs para depuración
     console.log('Request recibido para eliminar juego:', idjuego);
     console.log('Headers:', req.headers);
     
@@ -146,7 +145,6 @@ export const eliminarJuego = async (req, res) => {
 
     const url_portada = await juegoModel.eliminarJuego(idjuego);
     
-    // Si hay una portada y no es la default, eliminarla del sistema de archivos
     if (url_portada && url_portada !== 'default-game.jpg') {
       const filePath = path.join(process.cwd(), 'public', 'juegos', url_portada);
       if (fs.existsSync(filePath)) {

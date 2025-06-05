@@ -15,6 +15,7 @@ const crearInstanciaApi = () => {
         const token = localStorage.getItem('token');
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
+            console.log('URL:', config.url);
             console.log('Token configurado en headers:', config.headers['Authorization']);
         }
         return config;

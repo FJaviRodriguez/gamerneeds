@@ -49,17 +49,17 @@ const handleMulterError = (err, req, res, next) => {
 };
 
 // Rutas GET
-router.get('/desarrolladores', [verificarToken], adminController.mostrarDesarrolladores);
-router.get('/editores', [verificarToken], adminController.mostrarEditores);
-router.get('/generos', [verificarToken], adminController.mostrarGeneros);
+router.get('/desarrolladores', verificarToken, adminController.mostrarDesarrolladores);
+router.get('/editores', verificarToken, adminController.mostrarEditores);
+router.get('/generos', verificarToken, adminController.mostrarGeneros);
 
-// Rutas POST (mantienen ambos middlewares)
+// Rutas POST
 router.post('/register', [verificarToken, verificarAdmin], adminController.registroAdministrativo);
 router.post('/juego', [verificarToken, verificarAdmin], upload, handleMulterError, adminController.crearJuego);
 router.post('/desarrollador', [verificarToken, verificarAdmin], adminController.crearDesarrollador);
 router.post('/editor', [verificarToken, verificarAdmin], adminController.crearEditor);
 
-// Ruta DELETE
-router.delete('/juego/:idjuego', [verificarToken, verificarAdmin], adminController.eliminarJuego);
+// Ruta DELETE - Asegurarse que tenga los middlewares correctos
+router.delete('/juego/:idjuego', verificarToken, verificarAdmin, adminController.eliminarJuego);
 
 export default router;

@@ -42,10 +42,9 @@ app.post('/api/stripe/webhook', express.raw({type: 'application/json'}), stripeC
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Middleware para registrar solicitudes
+// Agregar logging para depurar
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path}`);
-  console.log('Headers:', req.headers);
+  console.log(`${req.method} ${req.url}`);
   next();
 });
 
@@ -55,7 +54,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/juegos', juegosRoutes);
 app.use('/api/generos', generosRoutes);
 
-// Rutas protegidas
+// Rutas protegidas 
 app.use('/api/admin', adminRoutes);
 app.use('/api/usuario', verificarToken, usuarioRoutes);
 app.use('/api/biblioteca', verificarToken, bibliotecaRouter);
