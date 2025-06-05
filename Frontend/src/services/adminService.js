@@ -112,7 +112,16 @@ export const mostrarGeneros = async () => {
 
 export const eliminarJuego = async (idjuego) => {
   try {
-    const response = await api.delete(`/admin/juego/${idjuego}`);
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const response = await api.delete(`/admin/juego/${idjuego}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
     return response.data;
   } catch (error) {
     console.error('Error al eliminar juego:', error);

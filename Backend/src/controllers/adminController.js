@@ -136,6 +136,10 @@ export const eliminarJuego = async (req, res) => {
   try {
     const { idjuego } = req.params;
     
+    if (!idjuego) {
+      return res.status(400).json({ message: 'ID de juego no proporcionado' });
+    }
+
     const url_portada = await juegoModel.eliminarJuego(idjuego);
     
     // Si hay una portada y no es la default, eliminarla del sistema de archivos

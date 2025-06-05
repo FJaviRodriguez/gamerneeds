@@ -12,12 +12,18 @@ const JuegoInfo = ({ juego, onDelete }) => {
   const handleDelete = async (e) => {
     e.preventDefault(); // Evitar que el Link se active
     try {
+      if (!juego.idjuego) {
+        toast.error('ID de juego no válido');
+        return;
+      }
+
       await eliminarJuego(juego.idjuego);
       toast.success('Juego eliminado correctamente');
       if (onDelete) {
         onDelete(juego.idjuego);
       }
     } catch (error) {
+      console.error('Error al eliminar:', error);
       toast.error(error.message || 'Error al eliminar el juego');
     }
   };
