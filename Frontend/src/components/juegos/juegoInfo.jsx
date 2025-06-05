@@ -56,21 +56,21 @@ const JuegoInfo = ({ juego, onDelete }) => {
             onError={handleImageError}
             loading="lazy"
           />
-          {isAdmin && (
-            <button
-              onClick={handleDelete}
-              className="absolute top-2 right-2 bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors"
-            >
-              Eliminar
-            </button>
-          )}
         </div>
         <div className="p-4">
           <h2 className="text-white font-semibold text-lg mb-2 truncate">{juego.titulo}</h2>
-          <div className="flex justify-end items-center">
+          <div className="flex justify-between items-center">
             <div className="text-white font-bold">
               {juego.precio ? `${juego.precio}€` : 'Gratis'}
             </div>
+            {isAdmin && (
+              <button
+                onClick={handleDelete}
+                className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors"
+              >
+                Eliminar
+              </button>
+            )}
           </div>
         </div>
       </div>
