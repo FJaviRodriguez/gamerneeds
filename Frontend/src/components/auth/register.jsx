@@ -37,7 +37,21 @@ const Registro = () => {
         </div>
         <input type="email" placeholder="Email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} required className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"/>
         <input type="password" placeholder="Contraseña" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} required className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"/>
-        <input type="date" value={formData.fecha_nacimiento} onChange={(e) => setFormData({...formData, fecha_nacimiento: e.target.value})} required className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"/>
+        
+        <div className="space-y-2">
+          <label htmlFor="fecha_nacimiento" className="block text-sm font-medium text-gray-400">
+            Fecha de Nacimiento
+          </label>
+          <input 
+            type="date" 
+            id="fecha_nacimiento"
+            value={formData.fecha_nacimiento} 
+            onChange={(e) => setFormData({...formData, fecha_nacimiento: e.target.value})} 
+            required 
+            className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
+          />
+        </div>
+
         <input type="text" placeholder="Dirección" value={formData.direccion} onChange={(e) => setFormData({...formData, direccion: e.target.value})} required className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"/>
         <button type="submit" style={{ backgroundColor: '#FF4C1A' }} className="w-full text-white py-3 rounded-md hover:opacity-90 transition-opacity duration-200 font-medium text-lg mt-6">Registrarse</button>
         <div className="text-center mt-4">

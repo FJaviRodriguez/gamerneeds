@@ -74,13 +74,22 @@ const AdminRegister = () => {
                 required 
                 className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
               />
-              <input 
-                type="date" 
-                value={formData.fecha_nacimiento} 
-                onChange={(e) => setFormData({...formData, fecha_nacimiento: e.target.value})} 
-                required 
-                className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
-              />
+              
+              <div className="space-y-2">
+                <label htmlFor="fecha_nacimiento" className="block text-sm font-medium text-gray-400">
+                  Fecha de Nacimiento
+                </label>
+                <input 
+                  type="date"
+                  id="fecha_nacimiento"
+                  name="fecha_nacimiento"
+                  value={formData.fecha_nacimiento} 
+                  onChange={(e) => setFormData({...formData, fecha_nacimiento: e.target.value})} 
+                  required 
+                  className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
+                />
+              </div>
+
               <input 
                 type="text" 
                 placeholder="Dirección" 

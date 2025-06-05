@@ -53,14 +53,20 @@ const CrearDesarrollador = () => {
           className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
         />
         
-        <input
-          type="date"
-          name="fecha_fundacion"
-          value={formData.fecha_fundacion}
-          onChange={handleChange}
-          required
-          className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
-        />
+        <div className="space-y-2">
+          <label htmlFor="fecha_fundacion" className="block text-sm font-medium text-gray-400">
+            Fecha de Fundación del Estudio
+          </label>
+          <input
+            type="date"
+            id="fecha_fundacion"
+            name="fecha_fundacion"
+            value={formData.fecha_fundacion}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
+          />
+        </div>
 
         <div className="flex gap-4 mt-6">
           <button
