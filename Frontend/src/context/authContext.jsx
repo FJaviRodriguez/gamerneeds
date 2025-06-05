@@ -4,62 +4,47 @@ import LoadingSpinner from '../components/common/loading';
 const AuthContext = createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
-  const [state, setState] = useState({
-    usuario: null,
-    isAuthenticated: false,
-    showWelcome: false,
-    cargando: true
-  });
+  const [usuario, setUsuario] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const userStored = localStorage.getItem('user');
-        const token = localStorage.getItem('token');
-        
-        setState(prev => ({
-          ...prev,
-          usuario: userStored ? JSON.parse(userStored) : null,
-          isAuthenticated: !!token,
-          cargando: false
-        }));
-      } catch (error) {
-        console.error('Error loading auth state:', error);
-        setState(prev => ({ ...prev, cargando: false }));
-      }
-    };
-
-    initializeAuth();
+    const token = localStorage.getItem('token');
+    const savedUser = localStorage.getItem('user');
+    
+    if (token && savedUser) {
+      const user = JSON.parse(savedUser);
+      setUsuario(user);
+      setIsAuthenticated(true);
+    }
+    setCargando(false);
   }, []);
 
-  const value = {
-    ...state,
-    setUsuario: (usuario) => {
-      setState(prev => ({ ...prev, usuario, isAuthenticated: true }));
-      localStorage.setItem('user', JSON.stringify(usuario));
-    },
-    mostrarMensajeBienvenida: () => {
-      setState(prev => ({ ...prev, showWelcome: true }));
-      setTimeout(() => setState(prev => ({ ...prev, showWelcome: false })), 3000);
-    },
-    cerrarSesion: () => {
-      setState({
-        usuario: null,
-        isAuthenticated: false,
-        showWelcome: false,
-        cargando: false
-      });
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    }
+  const login = async (userData) => {
+    setUsuario(userData);
+    setIsAuthenticated(true);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
-  if (state.cargando) {
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUsuario(null);
+    setIsAuthenticated(false);
+  };
+
+  if (cargando) {
     return <LoadingSpinner />;
   }
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ 
+      usuario, 
+      setUsuario, 
+      isAuthenticated,
+      login,
+      logout
+    }}>
       {children}
     </AuthContext.Provider>
   );
