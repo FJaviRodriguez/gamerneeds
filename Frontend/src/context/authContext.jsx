@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const mostrarMensajeBienvenida = () => {
-    toast.success(`¡Bienvenido/a!`, {
+    toast.success(`¡Bienvenido ${usuario?.nombre || ''}!👋🏻 `, {
       duration: 3000,
     });
   };
