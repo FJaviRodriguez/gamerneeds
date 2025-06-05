@@ -25,15 +25,6 @@ const HomePage = () => {
             Los mejores juegos, a los mejores precios. Construye una comunidad o unete a ella.
           </p>
           <div className="w-24 h-1 bg-[#FF4C1A] mx-auto mt-8"></div>
-          {usuario?.rol === 'admin' && (
-            <Link 
-              to="/panel-admin"
-              className="inline-block mt-8 bg-[#FF4C1A] !text-white px-6 py-3 rounded-md hover:bg-[#FF6B3D] transition-colors font-medium no-underline"
-              style={{ color: 'white' }}
-            >
-              Panel de Control
-            </Link>
-          )}
         </div>
         <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
           <JuegoGrid filteredGames={searchResults} />

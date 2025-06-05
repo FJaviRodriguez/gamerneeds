@@ -3,6 +3,7 @@ import { useAuth } from '../../context/authContext';
 import { mostrarBiblioteca } from '../../services/bibliotecaService';
 import Header from '../common/header';
 import Footer from '../common/footer';
+import { Link } from 'react-router-dom';
 
 const PerfilPage = () => {
   const { usuario } = useAuth();
@@ -53,9 +54,17 @@ const PerfilPage = () => {
                   e.target.src = '/icons/default-icon.png';
                 }}/>
             </div>
-            <div>
+            <div className="flex flex-col space-y-2">
               <h1 className="text-3xl font-bold text-white">{usuario?.nombre}</h1>
               <p className="text-gray-400">{usuario?.email}</p>
+              {usuario?.rol === 'admin' && (
+                <Link 
+                  to="/panel-admin"
+                  className="inline-block bg-[#FF4C1A] text-white px-6 py-2 rounded-md hover:bg-[#FF6B3D] transition-colors font-medium no-underline"
+                >
+                  Panel de Control
+                </Link>
+              )}
             </div>
           </div>
           <div className="mt-8">
