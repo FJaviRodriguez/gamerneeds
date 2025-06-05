@@ -151,7 +151,7 @@ const Header = ({ onSearchResults }) => {
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-zinc-700 cursor-pointer"
+                    className="block w-full text-left px-4 py-2 text-sm text-[#FF4C1A] hover:bg-[#FF4C1A] hover:text-white cursor-pointer transition-colors duration-200"
                   >
                     Cerrar Sesión
                   </button>
