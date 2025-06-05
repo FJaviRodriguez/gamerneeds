@@ -114,3 +114,62 @@ export const actualizarAvatar = async (userId, avatarPath) => {
     throw new Error('Error al actualizar el avatar en la base de datos');
   }
 };
+export const registerUsuarioAdmin = async (usuario) => {
+  try {
+    const { 
+      nombre, 
+      apellidos, 
+      email, 
+      password, 
+      fecha_nacimiento, 
+      direccion,
+      rol 
+    } = usuario;
+
+    const [usuarioExiste] = await pool.query('SELECT * FROM usuario WHERE email = ?', [email]);
+    if (usuarioExiste.length > 0) {
+      throw new Error('El email ya está registrado');
+    }
+
+    // Normalizar el rol
+    const rolNormalizado = rol.replace(/[^a-zA-Z]/g, '').toLowerCase();
+    if (!['admin', 'usuario'].includes(rolNormalizado)) {
+      throw new Error('Rol no válido');
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    const [result] = await pool.query(
+      `INSERT INTO usuario (
+        nombre, 
+        apellidos, 
+        email, 
+        password, 
+        fecha_nacimiento, 
+        direccion, 
+        rol, 
+        avatar,
+        fecha_registro
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+      [
+        nombre, 
+        apellidos, 
+        email, 
+        passwordHash, 
+        fecha_nacimiento, 
+        direccion,
+        rolNormalizado,
+        '/public/avatars/default-icon.png'
+      ]
+    );
+
+    return {
+      id: result.insertId,
+      rol: rolNormalizado,
+      nombre,
+      email
+    };
+  } catch (error) {
+    console.error('Error en registerUsuarioAdmin:', error);
+    throw error;
+  }
+};

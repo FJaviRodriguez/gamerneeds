@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { registroAdminUsuario } from '../../services/adminService';
+import toast from 'react-hot-toast';
 import logo from '../../assets/logo.png';
 
 const AdminRegister = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nombre: '',
     apellidos: '',
@@ -18,17 +21,11 @@ const AdminRegister = () => {
     e.preventDefault();
     try {
       await registroAdminUsuario(formData);
-      setFormData({
-        nombre: '',
-        apellidos: '',
-        email: '',
-        password: '',
-        fecha_nacimiento: '',
-        direccion: '',
-        rol: ''
-      });
+      toast.success('Usuario registrado correctamente');
+      navigate('/');
     } catch (error) {
       setError(error.message);
+      toast.error(error.message || 'Error al registrar usuario');
     }
   };
 

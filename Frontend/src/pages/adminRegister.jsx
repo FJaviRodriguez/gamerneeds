@@ -1,6 +1,7 @@
 import { useAuth } from '../context/authContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import AdminRegister from '../components/admin/adminRegister';
+import logo from '../assets/logo.png';
 
 const AdminPage = () => {
   const { usuario } = useAuth();
@@ -10,12 +11,16 @@ const AdminPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#272727] flex flex-col overflow-hidden">
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-[#272727] flex flex-col w-screen overflow-hidden">
+      <div className="p-1 relative w-32 h-32">
+        <img src={logo} alt="Gamers Needs Logo" className="w-full h-full rounded-full"/>
+        <Link to="/" className="absolute inset-0 rounded-full"/>
+      </div>
+      <div className="flex-1 flex justify-center items-center -mt-20">
+        <div className="w-full max-w-2xl px-8">
           <AdminRegister />
         </div>
-      </main>
+      </div>
     </div>
   );
 };
