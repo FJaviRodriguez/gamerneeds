@@ -118,12 +118,9 @@ export const eliminarJuego = async (idjuego) => {
     }
 
     console.log('Intentando eliminar juego:', idjuego);
-    const response = await api.delete(`/admin/juego/${idjuego}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    
+    console.log('URL completa:', `${import.meta.env.VITE_API_URL}/admin/juego/${idjuego}`);
+
+    const response = await api.delete(`/admin/juego/${idjuego}`);
     console.log('Respuesta del servidor:', response);
     return response.data;
   } catch (error) {
