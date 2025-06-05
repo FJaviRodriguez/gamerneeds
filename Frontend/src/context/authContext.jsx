@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(userData));
       setUsuario(userData);
       setIsAuthenticated(true);
-      mostrarMensajeBienvenida();
+      mostrarMensajeBienvenida(userData.nombre);
     }
   };
 
@@ -38,8 +38,8 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
   };
 
-  const mostrarMensajeBienvenida = () => {
-    toast.success(`¡Bienvenido ${usuario?.nombre || ''}!👋🏻 `, {
+  const mostrarMensajeBienvenida = (nombre) => {
+    toast.success(`¡Bienvenido/a ${nombre}👋🏻!`, {
       duration: 3000,
     });
   };
