@@ -99,6 +99,7 @@ export const crearEditor = async (req, res) => {
 
 export const mostrarDesarrolladores = async (req, res) => {
   try {
+    console.log('Token recibido:', req.headers.authorization);
     console.log('Intentando obtener desarrolladores...');
     const desarrolladores = await desarrolladorModel.mostrarDesarrolladores();
     console.log('Desarrolladores obtenidos:', desarrolladores);

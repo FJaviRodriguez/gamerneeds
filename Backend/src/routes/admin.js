@@ -1,17 +1,9 @@
 import express from 'express';
-import { verificarToken, verificarAdmin } from './middleware.js';
+import { verificarToken, verificarAdmin } from '../middlewares/auth.js';  // Corregir path
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { 
-  registroAdministrativo, 
-  crearJuego,
-  crearDesarrollador,
-  crearEditor,
-  mostrarDesarrolladores,
-  mostrarEditores,
-  mostrarGeneros
-} from '../controllers/adminController.js';
+import * as adminController from '../controllers/adminController.js';
 
 const router = express.Router();
 
@@ -56,13 +48,15 @@ const handleMulterError = (err, req, res, next) => {
   next();
 };
 
-// Rutas administrativas
-router.get('/desarrolladores', verificarToken, mostrarDesarrolladores);
-router.get('/editores', verificarToken, mostrarEditores);
-router.get('/generos', verificarToken, mostrarGeneros);
-router.post('/register', [verificarToken, verificarAdmin], registroAdministrativo);
-router.post('/juego', [verificarToken, verificarAdmin], upload, handleMulterError, crearJuego);
-router.post('/desarrollador', [verificarToken, verificarAdmin], crearDesarrollador);
-router.post('/editor', [verificarToken, verificarAdmin], crearEditor);
+// Rutas GET
+router.get('/desarrolladores', [verificarToken], adminController.mostrarDesarrolladores);
+router.get('/editores', [verificarToken], adminController.mostrarEditores);
+router.get('/generos', [verificarToken], adminController.mostrarGeneros);
+
+// Rutas POST (mantienen ambos middlewares)
+router.post('/register', [verificarToken, verificarAdmin], adminController.registroAdministrativo);
+router.post('/juego', [verificarToken, verificarAdmin], upload, handleMulterError, adminController.crearJuego);
+router.post('/desarrollador', [verificarToken, verificarAdmin], adminController.crearDesarrollador);
+router.post('/editor', [verificarToken, verificarAdmin], adminController.crearEditor);
 
 export default router;

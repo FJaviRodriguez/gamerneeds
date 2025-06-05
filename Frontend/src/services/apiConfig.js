@@ -6,7 +6,7 @@ const crearInstanciaApi = () => {
     const api = axios.create({
         baseURL: apiUrl,
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
         withCredentials: true
     });
@@ -14,9 +14,12 @@ const crearInstanciaApi = () => {
     api.interceptors.request.use((config) => {
         const token = localStorage.getItem('token');
         if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+            config.headers['Authorization'] = `Bearer ${token}`;
+            console.log('Token configurado en headers:', config.headers['Authorization']);
         }
         return config;
+    }, (error) => {
+        return Promise.reject(error);
     });
 
     return api;

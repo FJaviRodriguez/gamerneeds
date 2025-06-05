@@ -39,16 +39,20 @@ const corsOptions = {
 
 app.post('/api/stripe/webhook', express.raw({type: 'application/json'}), stripeController.webhookHandler);
 
-app.use(express.json());
 app.use(cors(corsOptions));
+app.use(express.json());
 
-if (!process.env.STRIPE_SECRET_KEY) {
-    console.error('Missing STRIPE_SECRET_KEY');
-    process.exit(1);
-}
+// Rutas públicas
+app.use('/api/health', healthRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/juegos', juegosRoutes);
+app.use('/api/generos', generosRoutes);
 
-app.use('/api/stripe', stripeRoutes);
-
+// Rutas protegidas
+app.use('/api/admin', adminRoutes);
+app.use('/api/usuario', verificarToken, usuarioRoutes);
+app.use('/api/biblioteca', verificarToken, bibliotecaRouter);
+app.use('/api/pagos', verificarToken, stripeRoutes);
 
 app.use('/public/avatars', express.static('public/avatars'));
 
@@ -89,18 +93,6 @@ const juegosDir = path.join(__dirname, '../public/juegos');
 if (!fs.existsSync(juegosDir)){
     fs.mkdirSync(juegosDir, { recursive: true });
 }
-
-// Rutas públicas (sin verificación de token)
-app.use('/api/health', healthRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/juegos', juegosRoutes);
-app.use('/api/generos', generosRoutes);
-
-// Rutas protegidas (con verificación de token)
-app.use('/api/admin', adminRoutes); // Ya incluye verificarToken y verificarAdmin en las rutas
-app.use('/api/usuario', verificarToken, usuarioRoutes);
-app.use('/api/biblioteca', verificarToken, bibliotecaRouter);
-app.use('/api/pagos', verificarToken, stripeRoutes);
 
 app.use((err, req, res, next) => {
     console.error('Error:', err);
