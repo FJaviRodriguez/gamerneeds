@@ -117,13 +117,13 @@ const JuegoDetalle = () => {
                   </div>
                 </div>
                 
-                <div className="bg-zinc-900/80 p-6 rounded-lg">
+                <div className="bg-gradient-to-r from-zinc-900/90 to-zinc-800/80 p-6 rounded-lg">
                   <div className="flex items-center justify-between mb-4">
                     <p className="text-3xl text-white font-bold">{juego.precio}€</p>
                     <button 
                       onClick={handleAddToCart} 
                       disabled={isAdding}
-                      className="bg-[#FF4C1A] text-white px-6 py-3 rounded-md hover:bg-[#FF6B3D] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-[#FF4C1A] text-white px-6 py-3 rounded-md hover:bg-[#FF6B3D] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed !bg-[#FF4C1A]"
                     >
                       {isAdding ? 'Añadiendo...' : 'Añadir al carrito'}
                     </button>
