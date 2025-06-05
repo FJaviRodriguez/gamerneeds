@@ -117,7 +117,7 @@ const JuegoDetalle = () => {
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-l from-zinc-900/30 to-black-800/30 p-6 rounded-lg">
+                <div className="bg-gradient-to-l from-zinc-800/20 via-zinc-800/40 to-zinc-900/50 p-6 rounded-lg">
                   <div className="flex items-center justify-between mb-4">
                     <p className="text-3xl text-white font-bold">{juego.precio}€</p>
                     <button 
