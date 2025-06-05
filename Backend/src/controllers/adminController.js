@@ -26,28 +26,29 @@ export const registroAdministrativo = async (req, res) => {
 
 export const crearJuego = async (req, res) => {
   try {
+    // Log the request body and file for debugging
+    console.log('Request body:', req.body);
+    console.log('Request file:', req.file);
+
     // Basic validation
-    if (!req.body.titulo?.trim()) {
+    if (!req.body.titulo) {
       return res.status(400).json({
         message: 'El título del juego es obligatorio'
       });
     }
 
-    if (!req.body.precio || parseFloat(req.body.precio) <= 0) {
-      return res.status(400).json({
-        message: 'El precio debe ser mayor que 0'
-      });
-    }
-
     const juegoData = {
       titulo: req.body.titulo.trim(),
-      precio: parseFloat(req.body.precio),
+      precio: parseFloat(req.body.precio) || 0,
       descripcion: req.body.descripcion?.trim() || '',
       fecha_lanzamiento: req.body.fecha_lanzamiento || null,
       clasificacion_edad: parseInt(req.body.clasificacion_edad) || 0,
       url_trailer: req.body.url_trailer?.trim() || '',
       url_portada: req.file ? req.file.filename : 'default-game.jpg'
     };
+
+    // Log the processed data
+    console.log('Processed juego data:', juegoData);
 
     const idjuego = await juegoModel.crearJuego(juegoData);
     
@@ -63,7 +64,8 @@ export const crearJuego = async (req, res) => {
     console.error('Error al crear juego:', error);
     res.status(500).json({ 
       message: 'Error al crear el juego',
-      error: error.message 
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 };

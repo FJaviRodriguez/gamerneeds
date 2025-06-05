@@ -19,19 +19,18 @@ export const registroAdminUsuario = async (userData) => {
   }
 };
 
-export const crearJuego = async (juegoData) => {
+export const crearJuego = async (formData) => {
   try {
-    const formData = new FormData();
-    for (const [key, value] of Object.entries(juegoData)) {
-      if (value !== null && value !== undefined) {
-        formData.append(key, value);
-      }
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No hay token de autenticación');
     }
 
     const response = await api.post('/admin/juego', formData, {
       headers: {
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
-      },
+      }
     });
     return response.data;
   } catch (error) {

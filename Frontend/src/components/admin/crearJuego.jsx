@@ -43,18 +43,27 @@ const CrearJuego = () => {
 
       const formDataToSend = new FormData();
       
-      // Ensure all fields are properly added to FormData
-      Object.keys(formData).forEach(key => {
-        if (formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
-          if (key === 'url_portada' && formData[key] instanceof File) {
-            formDataToSend.append(key, formData[key]);
-          } else {
-            formDataToSend.append(key, String(formData[key]).trim());
-          }
-        }
-      });
+      // Add each field explicitly to ensure proper handling
+      formDataToSend.append('titulo', formData.titulo.trim());
+      formDataToSend.append('precio', formData.precio);
+      
+      if (formData.descripcion) {
+        formDataToSend.append('descripcion', formData.descripcion.trim());
+      }
+      if (formData.fecha_lanzamiento) {
+        formDataToSend.append('fecha_lanzamiento', formData.fecha_lanzamiento);
+      }
+      if (formData.clasificacion_edad) {
+        formDataToSend.append('clasificacion_edad', formData.clasificacion_edad);
+      }
+      if (formData.url_trailer) {
+        formDataToSend.append('url_trailer', formData.url_trailer.trim());
+      }
+      if (formData.url_portada instanceof File) {
+        formDataToSend.append('url_portada', formData.url_portada);
+      }
 
-      await crearJuego(formDataToSend);
+      const response = await crearJuego(formDataToSend);
       toast.success('Juego creado correctamente');
       navigate('/panel-admin');
     } catch (error) {
