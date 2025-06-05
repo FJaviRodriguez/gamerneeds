@@ -5,7 +5,7 @@ import { useAuth } from '../../context/authContext';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setUsuario, mostrarMensajeBienvenida } = useAuth();
+  const { login } = useAuth(); // Añadimos login a las funciones que extraemos de useAuth
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -21,9 +21,11 @@ const Login = () => {
 
     try {
       const response = await loginUsuario(formData);
-      if (response.token && response.usuario) {
+      if (response.success) {
         await login(response.usuario, response.token);
         navigate('/', { replace: true });
+      } else {
+        setError(response.message);
       }
     } catch (error) {
       setError(error.message || 'Error al iniciar sesión');
