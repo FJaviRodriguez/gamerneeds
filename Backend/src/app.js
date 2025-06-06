@@ -68,8 +68,15 @@ app.use('/api/usuario', verificarToken, usuarioRoutes);
 app.use('/api/biblioteca', verificarToken, bibliotecaRouter);
 app.use('/api/pagos', verificarToken, stripeRoutes);
 
-app.use('/public/avatars', express.static('public/avatars'));
+// Antes de las rutas API
+app.use('/public', express.static(path.join(__dirname, '../public')));
+app.use('/public/avatars', express.static(path.join(__dirname, '../public/avatars')));
 
+// Crear directorio de avatares si no existe
+const avatarsDir = path.join(__dirname, '../public/avatars');
+if (!fs.existsSync(avatarsDir)) {
+  fs.mkdirSync(avatarsDir, { recursive: true });
+}
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

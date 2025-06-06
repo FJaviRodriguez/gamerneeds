@@ -103,8 +103,11 @@ export const mostrarPerfilUsuario = async (userId) => {
   }
 };
 export const actualizarAvatar = async (userId, avatarPath) => {
+  const connection = await pool.getConnection();
   try {
-    const [result] = await pool.query(
+    await connection.beginTransaction();
+
+    const [result] = await connection.query(
       'UPDATE usuario SET avatar = ? WHERE idusuario = ?',
       [avatarPath, userId]
     );
@@ -112,11 +115,15 @@ export const actualizarAvatar = async (userId, avatarPath) => {
     if (result.affectedRows === 0) {
       throw new Error('No se pudo actualizar el avatar');
     }
-    
+
+    await connection.commit();
     return true;
   } catch (error) {
+    await connection.rollback();
     console.error('Error en actualizarAvatar:', error);
-    throw new Error('Error al actualizar el avatar en la base de datos');
+    throw error;
+  } finally {
+    connection.release();
   }
 };
 export const registerUsuarioAdmin = async (usuario) => {
