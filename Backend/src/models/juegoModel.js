@@ -27,17 +27,13 @@ export const mostrarJuegoPorId = async (idjuego) => {
   try {
     const [rows] = await pool.query(`
       SELECT 
-        juego.idjuego,
-        juego.titulo,
-        juego.descripcion,
-        juego.precio,
-        juego.fecha_lanzamiento,
-        juego.clasificacion_edad,
-        juego.url_trailer,
-        juego.url_portada,
-        GROUP_CONCAT(DISTINCT desarrollador.nombre) nombre_desarrollador,
-        GROUP_CONCAT(DISTINCT editor.nombre) nombre_editor,
-        GROUP_CONCAT(DISTINCT genero.nombre) nombre_genero
+        juego.*,
+        GROUP_CONCAT(DISTINCT desarrollador.nombre) AS nombre_desarrollador,
+        GROUP_CONCAT(DISTINCT editor.nombre) AS nombre_editor,
+        GROUP_CONCAT(DISTINCT genero.nombre) AS nombre_genero,
+        GROUP_CONCAT(DISTINCT desarrollador.iddesarrollador) AS desarrolladores_ids,
+        GROUP_CONCAT(DISTINCT editor.ideditor) AS editores_ids,
+        GROUP_CONCAT(DISTINCT genero.idgenero) AS generos_ids
       FROM juego
       LEFT JOIN juego_has_desarrollador ON juego.idjuego = juego_has_desarrollador.juego_idjuego
       LEFT JOIN desarrollador ON juego_has_desarrollador.desarrollador_iddesarrollador = desarrollador.iddesarrollador
@@ -46,10 +42,12 @@ export const mostrarJuegoPorId = async (idjuego) => {
       LEFT JOIN juego_has_genero ON juego.idjuego = juego_has_genero.juego_idjuego
       LEFT JOIN genero ON juego_has_genero.genero_idgenero = genero.idgenero
       WHERE juego.idjuego = ?
-      GROUP BY juego.idjuego`, [idjuego]);
+      GROUP BY juego.idjuego`, 
+      [idjuego]
+    );
     return rows[0];
   } catch (error) {
-    console.error('Hubo un error al mostrar el juego:', error);
+    console.error('Error en mostrarJuegoPorId:', error);
     throw error;
   }
 };

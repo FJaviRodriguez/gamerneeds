@@ -51,9 +51,18 @@ const EditarJuego = () => {
           clasificacion_edad: juego.clasificacion_edad,
           url_trailer: juego.url_trailer,
           url_portada: '',
-          desarrolladores: juego.desarrolladores?.split(',').map(d => d.trim()) || [],
-          editores: juego.editores?.split(',').map(e => e.trim()) || [],
-          generos: juego.generos?.split(',').map(g => g.trim()) || []
+          // Mapear los IDs de desarrolladores
+          desarrolladores: desarrolladoresRes
+            .filter(dev => juego.nombre_desarrollador?.includes(dev.nombre))
+            .map(dev => dev.iddesarrollador.toString()),
+          // Mapear los IDs de editores
+          editores: editoresRes
+            .filter(ed => juego.nombre_editor?.includes(ed.nombre))
+            .map(ed => ed.ideditor.toString()),
+          // Mapear los IDs de géneros
+          generos: generosRes
+            .filter(gen => juego.nombre_genero?.includes(gen.nombre))
+            .map(gen => gen.idgenero.toString())
         });
       } catch (error) {
         console.error('Error loading data:', error);
