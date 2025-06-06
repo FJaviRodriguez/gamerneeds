@@ -163,23 +163,41 @@ export const eliminarJuego = async (req, res) => {
 
 export const editarJuego = async (req, res) => {
   try {
-    console.log('EditarJuego controller called:', {
-      params: req.params,
+    console.log('Datos recibidos:', {
       body: req.body,
-      file: req.file
+      file: req.file,
+      params: req.params
     });
 
     const { idjuego } = req.params;
-    
     if (!idjuego) {
       return res.status(400).json({ message: 'ID de juego no proporcionado' });
     }
 
-    // Si se subió una nueva imagen
+    // Preparar los datos del juego
+    const juegoData = {
+      ...req.body,
+      url_portada: req.file ? req.file.filename : undefined
+    };
+
+    // Asegurarse de que los arrays están en el formato correcto
+    try {
+      if (typeof req.body.desarrolladores === 'string') {
+        juegoData.desarrolladores = JSON.parse(req.body.desarrolladores);
+      }
+      if (typeof req.body.editores === 'string') {
+        juegoData.editores = JSON.parse(req.body.editores);
+      }
+      if (typeof req.body.generos === 'string') {
+        juegoData.generos = JSON.parse(req.body.generos);
+      }
+    } catch (parseError) {
+      console.error('Error al parsear JSON:', parseError);
+      return res.status(400).json({ message: 'Formato inválido en los datos relacionados' });
+    }
+
+    // Si hay una nueva imagen, eliminar la anterior
     if (req.file) {
-      juegoData.url_portada = req.file.filename;
-      
-      // Obtener la imagen anterior para eliminarla
       const imagenAnterior = await juegoModel.obtenerImagenJuego(idjuego);
       if (imagenAnterior && imagenAnterior !== 'default-game.jpg') {
         const rutaImagen = path.join(process.cwd(), 'public', 'juegos', imagenAnterior);
@@ -189,22 +207,7 @@ export const editarJuego = async (req, res) => {
       }
     }
 
-    // Convertir strings JSON a arrays
-    if (req.body.desarrolladores) {
-      req.body.desarrolladores = JSON.parse(req.body.desarrolladores);
-    }
-    if (req.body.editores) {
-      req.body.editores = JSON.parse(req.body.editores);
-    }
-    if (req.body.generos) {
-      req.body.generos = JSON.parse(req.body.generos);
-    }
-
-    await juegoModel.editarJuego(idjuego, {
-      ...req.body,
-      url_portada: req.file ? req.file.filename : undefined
-    });
-
+    await juegoModel.editarJuego(idjuego, juegoData);
     res.json({ message: 'Juego actualizado correctamente' });
   } catch (error) {
     console.error('Error en editarJuego:', error);

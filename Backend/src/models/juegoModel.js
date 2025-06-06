@@ -203,29 +203,56 @@ export const editarJuego = async (idjuego, juegoData) => {
   try {
     await connection.beginTransaction();
 
-    // Actualizar información básica del juego
     const {
-      titulo, descripcion, precio, fecha_lanzamiento,
-      clasificacion_edad, url_trailer, url_portada,
-      desarrolladores, editores, generos
+      titulo, 
+      descripcion, 
+      precio, 
+      fecha_lanzamiento,
+      clasificacion_edad, 
+      url_trailer, 
+      url_portada,
+      desarrolladores, 
+      editores, 
+      generos
     } = juegoData;
 
-    // Actualizar tabla juego
-    const updateQuery = `
-      UPDATE juego 
-      SET titulo = ?, descripcion = ?, precio = ?, 
-          fecha_lanzamiento = ?, clasificacion_edad = ?, 
-          url_trailer = ? ${url_portada ? ', url_portada = ?' : ''}
-      WHERE idjuego = ?
-    `;
+    // Validar que los datos necesarios existen
+    if (!titulo || !precio) {
+      throw new Error('Faltan campos requeridos');
+    }
 
-    const updateParams = url_portada 
-      ? [titulo, descripcion, precio, fecha_lanzamiento, clasificacion_edad, url_trailer, url_portada, idjuego]
-      : [titulo, descripcion, precio, fecha_lanzamiento, clasificacion_edad, url_trailer, idjuego];
+    // Construir la consulta de actualización de forma dinámica
+    let updateQuery = `
+      UPDATE juego 
+      SET titulo = ?,
+          descripcion = ?,
+          precio = ?,
+          fecha_lanzamiento = ?,
+          clasificacion_edad = ?,
+          url_trailer = ?
+    `;
+    
+    let updateParams = [
+      titulo,
+      descripcion || '',
+      precio,
+      fecha_lanzamiento || null,
+      clasificacion_edad || 0,
+      url_trailer || ''
+    ];
+
+    // Añadir url_portada solo si existe
+    if (url_portada) {
+      updateQuery += `, url_portada = ?`;
+      updateParams.push(url_portada);
+    }
+
+    updateQuery += ` WHERE idjuego = ?`;
+    updateParams.push(idjuego);
 
     await connection.query(updateQuery, updateParams);
 
-    // Actualizar desarrolladores - CORREGIR NOMBRE DE TABLA
+    // Actualizar relaciones
     await connection.query('DELETE FROM juego_has_desarrollador WHERE juego_idjuego = ?', [idjuego]);
     if (desarrolladores && desarrolladores.length > 0) {
       const desarrolladoresValues = desarrolladores.map(dev => [idjuego, dev]);
@@ -235,7 +262,6 @@ export const editarJuego = async (idjuego, juegoData) => {
       );
     }
 
-    // Actualizar editores - CORREGIR NOMBRE DE TABLA
     await connection.query('DELETE FROM editor_has_juego WHERE juego_idjuego = ?', [idjuego]);
     if (editores && editores.length > 0) {
       const editoresValues = editores.map(ed => [idjuego, ed]);
@@ -245,7 +271,6 @@ export const editarJuego = async (idjuego, juegoData) => {
       );
     }
 
-    // Actualizar géneros - CORREGIR NOMBRE DE TABLA
     await connection.query('DELETE FROM juego_has_genero WHERE juego_idjuego = ?', [idjuego]);
     if (generos && generos.length > 0) {
       const generosValues = generos.map(gen => [idjuego, gen]);
