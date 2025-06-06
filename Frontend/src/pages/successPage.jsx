@@ -37,18 +37,6 @@ const SuccessPage = () => {
                 duration: 4000,
                 id: 'success-purchase'
             });
-
-            // Descargar PDF automáticamente
-            const link = document.createElement('a');
-            link.href = `${import.meta.env.VITE_API_URL}/stripe/descargar-comprobante/${sessionId}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            const timer = setTimeout(() => {
-              navigate('/home');
-            }, 5000);
-            return () => clearTimeout(timer);
         } else {
             navigate('/carrito');
         }
@@ -116,13 +104,22 @@ const SuccessPage = () => {
             </svg>
           </div>
           <h2 className="text-4xl font-bold text-white mb-6">¡Pago completado con éxito!</h2>
-          <p className="text-gray-300 mb-8 text-lg">Gracias por tu compra. Serás redirigido a la página principal en unos segundos...</p>
-          <div className="flex justify-center">
+          <p className="text-gray-300 mb-8 text-lg">¡Gracias por tu compra!</p>
+          <div className="flex justify-center space-x-4">
             <button 
               onClick={() => navigate('/home')} 
               className="bg-[#FF4C1A] text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-[#FF6B3D] transition-colors"
             >
               Volver a la tienda
+            </button>
+            <button 
+              onClick={handleDescargarComprobante}
+              className="bg-zinc-700 text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-zinc-600 transition-colors flex items-center"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              Descargar Comprobante
             </button>
           </div>
         </div>
