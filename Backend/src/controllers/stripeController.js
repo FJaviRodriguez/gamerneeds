@@ -48,10 +48,10 @@ export const crearSesionPago = async (req, res) => {
                 juegosIds: JSON.stringify(items.map(item => item.idjuego))
             },
             billing_address_collection: 'required',
-            locale: 'es',
-            payment_intent_data: {
-                description: 'Compra en GAMERS NEEDS'
+            shipping_address_collection: {
+                allowed_countries: ['ES']
             },
+            locale: 'es',
             custom_fields: [
                 {
                     key: 'plataforma',
@@ -64,36 +64,9 @@ export const crearSesionPago = async (req, res) => {
                     ]
                 }
             ],
-            customer_creation: 'always',
-            billing_address_collection: 'required',
-            shipping_address_collection: {
-                allowed_countries: ['ES']
-            },
-            locale: 'es',
             custom_text: {
                 submit: { message: 'GAMERS NEEDS procesará tu pago de forma segura' },
                 shipping: { message: 'Los juegos se activarán instantáneamente en tu biblioteca' }
-            },
-            ui_mode: 'embedded',
-            theme: {
-                brand_color: '#FF4C1A',
-                button_text_color: '#ffffff',
-                button_border_radius: '4px',
-                primary_button_color: '#FF4C1A',
-                primary_button_text_color: '#ffffff',
-                secondary_button_color: '#272727',
-                secondary_button_text_color: '#ffffff',
-                error_color: '#FF0000',
-                font_size: '16px',
-                font_family: 'Inter, system-ui, sans-serif',
-                color_scheme: 'dark',
-                text_color: '#ffffff',
-                background_color: '#202020',
-                input_background_color: '#272727',
-                input_text_color: '#ffffff',
-                input_border_color: '#3F3F3F',
-                input_placeholder_color: '#6B7280',
-                icon_color: '#FF4C1A'
             }
         });
 

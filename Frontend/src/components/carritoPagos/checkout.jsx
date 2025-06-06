@@ -115,11 +115,15 @@ const CheckoutForm = () => {
                             color: '#ffffff',
                             '::placeholder': {
                               color: '#6B7280'
-                            }
+                            },
+                            backgroundColor: '#272727',
+                          },
+                          invalid: {
+                            color: '#FF0000',
                           }
                         }
                       }}
-                      className="stripe-element"
+                      className="StripeElement"
                     />
                   </div>
                 </form>
