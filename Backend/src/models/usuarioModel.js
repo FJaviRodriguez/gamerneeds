@@ -102,33 +102,6 @@ export const mostrarPerfilUsuario = async (userId) => {
     throw error;
   }
 };
-export const actualizarAvatar = async (userId, avatarPath) => {
-  const connection = await pool.getConnection();
-  try {
-    await connection.beginTransaction();
-
-    // Log para depuración
-    console.log('Actualizando avatar:', { userId, avatarPath });
-
-    const [result] = await connection.query(
-      'UPDATE usuario SET avatar = ? WHERE idusuario = ?',
-      [avatarPath, userId]
-    );
-    
-    if (result.affectedRows === 0) {
-      throw new Error('No se pudo actualizar el avatar');
-    }
-
-    await connection.commit();
-    return true;
-  } catch (error) {
-    await connection.rollback();
-    console.error('Error en actualizarAvatar:', error);
-    throw error;
-  } finally {
-    connection.release();
-  }
-};
 export const registerUsuarioAdmin = async (usuario) => {
   try {
     const { 
@@ -198,5 +171,42 @@ export const verificarRolAdmin = async (userId) => {
   } catch (error) {
     console.error('Error en verificarRolAdmin:', error);
     throw new Error('Error al verificar rol de administrador');
+  }
+};
+export const actualizarAvatar = async (userId, avatarPath) => {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    const [result] = await connection.query(
+      'UPDATE usuario SET avatar = ? WHERE idusuario = ?',
+      [avatarPath, userId]
+    );
+    
+    if (result.affectedRows === 0) {
+      throw new Error('No se pudo actualizar el avatar');
+    }
+
+    await connection.commit();
+    return true;
+  } catch (error) {
+    await connection.rollback();
+    console.error('Error en actualizarAvatar:', error);
+    throw error;
+  } finally {
+    connection.release();
+  }
+};
+
+export const mostrarAvatarUsuario = async (userId) => {
+  try {
+    const [result] = await pool.query(
+      'SELECT avatar FROM usuario WHERE idusuario = ?',
+      [userId]
+    );
+    return result[0]?.avatar;
+  } catch (error) {
+    console.error('Error en mostrarAvatarUsuario:', error);
+    throw error;
   }
 };

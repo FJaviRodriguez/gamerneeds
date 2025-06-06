@@ -67,11 +67,11 @@ app.use('/api/usuario', usuarioRoutes);
 app.use('/api/biblioteca', verificarToken, bibliotecaRouter);
 app.use('/api/pagos', verificarToken, stripeRoutes);
 
-// Antes de las rutas API
+// Configuración de rutas estáticas
 app.use('/public', express.static(path.join(__dirname, '../public')));
 app.use('/public/avatars', express.static(path.join(__dirname, '../public/avatars')));
 
-// Asegúrate de que los directorios existen
+// Asegurar que el directorio existe
 const avatarsDir = path.join(__dirname, '../public/avatars');
 if (!fs.existsSync(avatarsDir)) {
   fs.mkdirSync(avatarsDir, { recursive: true });

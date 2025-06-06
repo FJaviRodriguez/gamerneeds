@@ -6,24 +6,10 @@ const AvatarUpload = ({ onAvatarUpdate }) => {
   const [loading, setLoading] = useState(false);
 
   const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Validar tamaño
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('La imagen no puede ser mayor a 5MB');
-      return;
-    }
-
-    // Validar tipo
-    const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!validTypes.includes(file.type)) {
-      toast.error('Formato no válido. Use JPG, PNG o WEBP');
-      return;
-    }
-
     try {
-      setLoading(true);
+      const file = e.target.files[0];
+      if (!file) return;
+
       const formData = new FormData();
       formData.append('avatar', file);
 
@@ -32,9 +18,7 @@ const AvatarUpload = ({ onAvatarUpdate }) => {
       toast.success('Avatar actualizado correctamente');
     } catch (error) {
       console.error('Error al actualizar avatar:', error);
-      toast.error('Error al actualizar el avatar');
-    } finally {
-      setLoading(false);
+      toast.error(error.message || 'Error al actualizar el avatar');
     }
   };
 

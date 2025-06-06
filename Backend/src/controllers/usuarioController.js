@@ -1,5 +1,7 @@
 import * as usuarioModel from '../models/usuarioModel.js';
 import jwt from 'jsonwebtoken';
+import fs from 'fs';
+import path from 'path';
 
 export const login = async (req, res) => {
   try {
@@ -59,16 +61,6 @@ export const registro = async (req, res) => {
   }
 };
 
-export const actualizarAvatar = async (userId, avatarPath) => {
-  try {
-    await usuarioModel.actualizarAvatar(userId, avatarPath);
-    return true;
-  } catch (error) {
-    console.error('Error en actualizarAvatar:', error);
-    throw error;
-  }
-};
-
 export const mostrarPerfil = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -77,5 +69,38 @@ export const mostrarPerfil = async (req, res) => {
   } catch (error) {
     console.error('Error en mostrarPerfil:', error);
     res.status(500).json({ message: 'Error al obtener el perfil' });
+  }
+};
+
+export const actualizarAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No se ha subido ninguna imagen' });
+    }
+
+    const userId = req.user.userId;
+    const oldAvatar = await usuarioModel.mostrarAvatarUsuario(userId);
+
+    // Eliminar avatar anterior si existe y no es el default
+    if (oldAvatar && !oldAvatar.includes('default-icon')) {
+      const fullPath = path.join(process.cwd(), 'public', 'avatars', path.basename(oldAvatar));
+      if (fs.existsSync(fullPath)) {
+        fs.unlinkSync(fullPath);
+      }
+    }
+
+    const avatarPath = `/public/avatars/${req.file.filename}`;
+    await usuarioModel.actualizarAvatar(userId, avatarPath);
+
+    res.json({ 
+      message: 'Avatar actualizado correctamente',
+      avatarPath 
+    });
+  } catch (error) {
+    console.error('Error en actualizarAvatar:', error);
+    res.status(500).json({ 
+      message: 'Error al actualizar el avatar',
+      error: error.message 
+    });
   }
 };
