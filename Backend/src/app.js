@@ -83,11 +83,18 @@ app.use('/api/pagos', verificarToken, stripeRoutes);
 // Configuración de rutas estáticas
 app.use('/public', express.static(path.join(__dirname, '../public')));
 app.use('/public/avatars', express.static(path.join(__dirname, '../public/avatars')));
+app.use('/public/juegos', express.static(path.join(__dirname, '../public/juegos')));
 
-// Asegurar que el directorio existe
+// Asegurar que los directorios existen
 const avatarsDir = path.join(__dirname, '../public/avatars');
 if (!fs.existsSync(avatarsDir)) {
   fs.mkdirSync(avatarsDir, { recursive: true });
+}
+
+// Directorio privado para PDFs (fuera de public)
+const pdfsDir = path.join(__dirname, '../pdfs');
+if (!fs.existsSync(pdfsDir)) {
+    fs.mkdirSync(pdfsDir, { recursive: true });
 }
 
 app.use((err, req, res, next) => {

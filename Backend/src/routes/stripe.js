@@ -22,13 +22,23 @@ router.post('/create-line-item', stripeController.createLineItem);
 router.get('/verificar/:sessionId', stripeController.verificarPago);
 
 // Añade esta ruta para descargar el PDF
-router.get('/descargar-comprobante/:sessionId', async (req, res) => {
+router.get('/descargar-comprobante/:sessionId', verificarToken, async (req, res) => {
     try {
         const { sessionId } = req.params;
-        const pdfPath = path.join(__dirname, '../../public/pdfs', `comprobante-${sessionId}.pdf`);
+        const pdfPath = path.join(__dirname, '../../pdfs', `comprobante-${sessionId}.pdf`);
         
         if (fs.existsSync(pdfPath)) {
-            res.download(pdfPath);
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename=comprobante-${sessionId}.pdf`);
+            const fileStream = fs.createReadStream(pdfPath);
+            fileStream.pipe(res);
+            
+            // Opcional: Eliminar el PDF después de enviarlo
+            fileStream.on('end', () => {
+                fs.unlink(pdfPath, (err) => {
+                    if (err) console.error('Error eliminando PDF:', err);
+                });
+            });
         } else {
             res.status(404).json({ error: 'Comprobante no encontrado' });
         }

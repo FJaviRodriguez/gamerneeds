@@ -6,6 +6,7 @@ import * as compraModel from '../models/compraModel.js';
 import * as bibliotecaModel from '../models/bibliotecaModel.js';
 import pool from '../config/db.js';
 import { generarPDFComprobante } from '../services/pdfService.js';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -171,6 +172,11 @@ export const webhookHandler = async (req, res) => {
                 try {
                     const pdfPath = await generarPDFComprobante(datosCompra);
                     console.log('PDF generado en:', pdfPath);
+                    
+                    // Verificar que el archivo existe
+                    if (!fs.existsSync(pdfPath)) {
+                        throw new Error('El PDF no se generó correctamente');
+                    }
                 } catch (pdfError) {
                     console.error('Error generando PDF:', pdfError);
                     // No lanzamos el error para no afectar la respuesta del webhook

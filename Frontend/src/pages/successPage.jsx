@@ -37,6 +37,14 @@ const SuccessPage = () => {
                 duration: 4000,
                 id: 'success-purchase'
             });
+
+            // Descargar PDF automáticamente
+            const link = document.createElement('a');
+            link.href = `${import.meta.env.VITE_API_URL}/stripe/descargar-comprobante/${sessionId}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
             const timer = setTimeout(() => {
               navigate('/home');
             }, 5000);
@@ -115,12 +123,6 @@ const SuccessPage = () => {
               className="bg-[#FF4C1A] text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-[#FF6B3D] transition-colors"
             >
               Volver a la tienda
-            </button>
-            <button 
-              onClick={handleDescargarComprobante}
-              className="bg-[#FF4C1A] text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-[#FF6B3D] transition-colors ml-4"
-            >
-              Descargar Comprobante
             </button>
           </div>
         </div>

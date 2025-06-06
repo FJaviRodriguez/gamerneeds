@@ -9,12 +9,8 @@ const __dirname = path.dirname(__filename);
 export const generarPDFComprobante = async (datosCompra) => {
     const { sessionId, items, total, usuario, fecha } = datosCompra;
     
-    // Crear directorio para PDFs si no existe
-    const pdfDir = path.join(__dirname, '../../public/pdfs');
-    if (!fs.existsSync(pdfDir)) {
-        fs.mkdirSync(pdfDir, { recursive: true });
-    }
-
+    // Usar directorio privado para PDFs
+    const pdfDir = path.join(__dirname, '../../pdfs');
     const pdfPath = path.join(pdfDir, `comprobante-${sessionId}.pdf`);
     const doc = new PDFDocument();
     const stream = fs.createWriteStream(pdfPath);
