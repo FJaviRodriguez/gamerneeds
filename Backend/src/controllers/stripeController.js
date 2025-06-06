@@ -224,31 +224,42 @@ export const removeFromCart = async (req, res) => {
 };
 export const createLineItem = async (req, res) => {
     try {
-        const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Timeout')), 5000)
-        );
-        const createItemPromise = (async () => {
-            const { title, price, image } = req.body;
-            const product = await stripe.products.create({
-                name: title,
-                images: [image]
+        const { title, price, image, idjuego } = req.body;
+
+        // Validar inputs
+        if (!title || !price || !image) {
+            return res.status(400).json({ 
+                error: 'Faltan campos requeridos' 
             });
-            const priceObj = await stripe.prices.create({
-                product: product.id,
-                unit_amount: Math.round(price),
-                currency: 'eur'
-            });
-            return { id: priceObj.id, product_id: product.id };
-        })();
-        const result = await Promise.race([
-            createItemPromise,
-            timeoutPromise
-        ]);
-        res.json(result);
+        }
+
+        // Crear el producto en Stripe
+        const product = await stripe.products.create({
+            name: title,
+            images: [image],
+            metadata: {
+                idjuego: idjuego.toString()
+            }
+        });
+
+        // Crear el precio para el producto
+        const priceObj = await stripe.prices.create({
+            product: product.id,
+            unit_amount: Math.round(price * 100), // Convertir a centavos
+            currency: 'eur'
+        });
+
+        // Devolver los IDs necesarios
+        res.json({
+            id: priceObj.id,
+            product_id: product.id
+        });
     } catch (error) {
-        console.error('Error creating line item:', error);
-        res.status(error.message === 'Timeout' ? 504 : 500)
-           .json({ error: error.message });
+        console.error('Error al crear line item:', error);
+        res.status(500).json({ 
+            error: 'Error al crear el producto en Stripe',
+            details: error.message 
+        });
     }
 };
 export const removeLineItem = async (req, res) => {

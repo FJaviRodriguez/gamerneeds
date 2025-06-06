@@ -39,7 +39,13 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// Configurar rutas de Stripe antes de otras rutas que usan express.json()
 app.post('/api/stripe/webhook', express.raw({type: 'application/json'}), stripeController.webhookHandler);
+
+app.use(express.json());
+
+// Rutas de Stripe (después del express.json middleware)
+app.use('/api/stripe', stripeRoutes);
 
 // Middleware de logging mejorado
 app.use((req, res, next) => {
@@ -50,8 +56,6 @@ app.use((req, res, next) => {
   console.log('=================================');
   next();
 });
-
-app.use(express.json());
 
 // Rutas públicas
 app.use('/api/health', healthRoutes);
