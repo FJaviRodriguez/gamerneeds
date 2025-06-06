@@ -12,17 +12,15 @@ export const verificarToken = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
-        // Añadir logs para depuración
-        console.log('Token decodificado:', decoded);
-        
-        req.user = decoded; // Asignar todo el objeto decodificado
+        req.user = { 
+            id: decoded.userId,
+            email: decoded.email
+        };
         next();
     } catch (error) {
         console.error('Error en verificarToken:', error);
         return res.status(401).json({ 
-            message: 'Token inválido o expirado',
-            error: error.message
+            message: 'Token inválido o expirado' 
         });
     }
 };
