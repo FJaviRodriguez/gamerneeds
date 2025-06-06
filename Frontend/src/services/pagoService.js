@@ -11,10 +11,9 @@ export const crearSesionPago = async (items, usuarioId) => {
     }
 
     try {
-        // Asegurarse de que los precios estén en centavos
         const formattedItems = items.map(item => ({
             nombre: item.nombre,
-            precio: Math.round(parseFloat(item.precio)), // Convertir a centavos
+            precio: parseFloat(item.precio),
             url_portada: item.url_portada,
             idjuego: item.idjuego
         }));

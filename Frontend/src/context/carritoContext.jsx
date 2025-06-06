@@ -66,7 +66,7 @@ export const CarritoProvider = ({ children }) => {
             toast.success('Juego añadido al carrito');
         } catch (error) {
             toast.error('Error al añadir al carrito');
-            setCarrito(prev => prev.filter i => i.idjuego !== item.idjuego));
+            setCarrito(prev => prev.filter(i => i.idjuego !== item.idjuego)); // Corregido: faltaban paréntesis
         } finally {
             setLoading(false);
         }
