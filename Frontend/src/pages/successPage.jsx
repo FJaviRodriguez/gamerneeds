@@ -53,8 +53,43 @@ const SuccessPage = () => {
     }
   }, [sessionId, navigate, limpiarCarrito]);
 
-  const handleDescargarComprobante = () => {
-    window.open(`${import.meta.env.VITE_API_URL}/stripe/descargar-comprobante/${sessionId}`, '_blank');
+  const handleDescargarComprobante = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('No se encontró el token de autenticación');
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/stripe/descargar-comprobante/${sessionId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Error al descargar el comprobante');
+      }
+
+      // Obtener el blob del PDF
+      const blob = await response.blob();
+      
+      // Crear URL del blob y forzar la descarga
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `comprobante-${sessionId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Error al descargar el comprobante');
+    }
   };
 
   if (!verificado) {
