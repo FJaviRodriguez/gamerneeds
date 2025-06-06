@@ -59,15 +59,23 @@ export const registro = async (req, res) => {
   }
 };
 
+export const actualizarAvatar = async (userId, avatarPath) => {
+  try {
+    await usuarioModel.actualizarAvatar(userId, avatarPath);
+    return true;
+  } catch (error) {
+    console.error('Error en actualizarAvatar:', error);
+    throw error;
+  }
+};
+
 export const mostrarPerfil = async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const perfilUsuario = await usuarioModel.mostrarPerfilUsuario(userId);
-    res.json(perfilUsuario);
+    const userId = req.user.id;
+    const perfil = await usuarioModel.mostrarPerfilUsuario(userId);
+    res.json(perfil);
   } catch (error) {
-    if (error.message === 'Usuario no encontrado') {
-      return res.status(404).json({ message: error.message });
-    }
-    res.status(500).json({ message: 'Error al obtener datos del usuario' });
+    console.error('Error en mostrarPerfil:', error);
+    res.status(500).json({ message: 'Error al obtener el perfil' });
   }
 };

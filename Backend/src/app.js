@@ -3,7 +3,6 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import multer from 'multer';
 import * as stripeController from './controllers/stripeController.js';
 import juegosRoutes from './routes/juegos.js';
 import generosRoutes from './routes/genero.js';
@@ -64,7 +63,7 @@ app.use('/public/juegos', express.static(path.join(__dirname, '../public/juegos'
 
 // Añadir middleware específico para rutas admin
 app.use('/api/admin', adminRoutes);
-app.use('/api/usuario', verificarToken, usuarioRoutes);
+app.use('/api/usuario', usuarioRoutes);
 app.use('/api/biblioteca', verificarToken, bibliotecaRouter);
 app.use('/api/pagos', verificarToken, stripeRoutes);
 
@@ -72,46 +71,10 @@ app.use('/api/pagos', verificarToken, stripeRoutes);
 app.use('/public', express.static(path.join(__dirname, '../public')));
 app.use('/public/avatars', express.static(path.join(__dirname, '../public/avatars')));
 
-// Crear directorio de avatares si no existe
+// Asegúrate de que los directorios existen
 const avatarsDir = path.join(__dirname, '../public/avatars');
 if (!fs.existsSync(avatarsDir)) {
   fs.mkdirSync(avatarsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/avatars/');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'avatar-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({ 
-  storage: storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024 
-  },
-  fileFilter: (req, file, cb) => {
-    const filetypes = /jpeg|jpg|png|webp/;
-    const mimetype = filetypes.test(file.mimetype);
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-
-    if (mimetype && extname) {
-      return cb(null, true);
-    }
-    cb(new Error('Solo se permiten imágenes (jpeg, jpg, png, webp)'));
-  }
-});
-
-// Middleware para archivos
-app.use('/public', express.static(path.join(__dirname, '../public')));
-
-// Asegúrate de que los directorios existen
-const juegosDir = path.join(__dirname, '../public/juegos');
-if (!fs.existsSync(juegosDir)){
-    fs.mkdirSync(juegosDir, { recursive: true });
 }
 
 app.use((err, req, res, next) => {
