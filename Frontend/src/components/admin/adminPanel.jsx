@@ -30,6 +30,16 @@ const PanelAdmin = () => {
       title: 'Crear Editor',
       path: '/admin/editor/crear',
       description: 'Añade nuevas empresas editoras'
+    },
+    {
+    title: 'Crear Género',
+    path: '/admin/genero/crear',
+    description: 'Modifica los juegos existentes'
+    },
+    {
+    title: 'Editar Juego',
+    path: '/admin/juego/editar',
+    description: 'Modifica los juegos existentes'
     }
   ];
 

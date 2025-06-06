@@ -17,6 +17,8 @@ import PanelAdminPage from './pages/adminPanelPage';
 import CrearJuegoPage from './pages/crearJuegoPage';
 import CrearDesarrolladorPage from './pages/crearDesarrolladorPage';
 import CrearEditorPage from './pages/crearEditorPage';
+import EditarJuegoPage from './pages/editarJuegoPage';
+import EditarJuegoFormPage from './pages/editarJuegoFormPage';
 
 function App() {
   return (
@@ -87,6 +89,22 @@ function App() {
           element={
             <RutasProtegidas adminOnly>
               <CrearEditorPage />
+            </RutasProtegidas>
+          } 
+        />
+        <Route 
+          path="/admin/juego/editar" 
+          element={
+            <RutasProtegidas adminOnly>
+              <EditarJuegoPage />
+            </RutasProtegidas>
+          } 
+        />
+        <Route 
+          path="/admin/juego/editar/:id" 
+          element={
+            <RutasProtegidas adminOnly>
+              <EditarJuegoFormPage />
             </RutasProtegidas>
           } 
         />

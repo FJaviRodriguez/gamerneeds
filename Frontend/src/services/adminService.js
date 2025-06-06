@@ -128,3 +128,23 @@ export const eliminarJuego = async (idjuego) => {
     throw error.response?.data || { message: 'Error al eliminar el juego' };
   }
 };
+
+export const editarJuego = async (idjuego, formData) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const response = await api.put(`/admin/juego/${idjuego}`, formData, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating game:', error);
+    throw error.response?.data || { message: 'Error al actualizar el juego' };
+  }
+};

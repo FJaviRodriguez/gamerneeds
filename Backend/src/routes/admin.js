@@ -1,5 +1,6 @@
 import express from 'express';
-import { verificarToken, verificarAdmin } from './middleware.js';  
+import { verificarToken, verificarAdmin } from './middleware.js';
+import * as adminController from '../controllers/adminController.js';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -60,6 +61,8 @@ router.post('/register', [verificarToken, verificarAdmin], adminController.regis
 router.post('/juego', [verificarToken, verificarAdmin], upload, handleMulterError, adminController.crearJuego);
 router.post('/desarrollador', [verificarToken, verificarAdmin], adminController.crearDesarrollador);
 router.post('/editor', [verificarToken, verificarAdmin], adminController.crearEditor);
+
+router.put('/juego/:idjuego', [verificarToken, verificarAdmin], upload, adminController.editarJuego);
 
 router.delete('/juego/:idjuego', [verificarToken, verificarAdmin], adminController.eliminarJuego);
 

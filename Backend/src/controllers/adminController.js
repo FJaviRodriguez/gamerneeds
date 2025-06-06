@@ -160,3 +160,51 @@ export const eliminarJuego = async (req, res) => {
     res.status(500).json({ message: 'Error al eliminar el juego' });
   }
 };
+
+export const editarJuego = async (req, res) => {
+  try {
+    const { idjuego } = req.params;
+    const juegoData = req.body;
+    
+    // Si se subió una nueva imagen
+    if (req.file) {
+      juegoData.url_portada = req.file.filename;
+      
+      // Obtener la imagen anterior para eliminarla
+      const imagenAnterior = await juegoModel.obtenerImagenJuego(idjuego);
+      if (imagenAnterior && imagenAnterior !== 'default-game.jpg') {
+        const rutaImagen = path.join(process.cwd(), 'public', 'juegos', imagenAnterior);
+        if (fs.existsSync(rutaImagen)) {
+          fs.unlinkSync(rutaImagen);
+        }
+      }
+    }
+
+    // Convertir strings JSON a arrays
+    if (juegoData.desarrolladores) {
+      juegoData.desarrolladores = JSON.parse(juegoData.desarrolladores);
+    }
+    if (juegoData.editores) {
+      juegoData.editores = JSON.parse(juegoData.editores);
+    }
+    if (juegoData.generos) {
+      juegoData.generos = JSON.parse(juegoData.generos);
+    }
+
+    await juegoModel.editarJuego(idjuego, juegoData);
+    
+    res.json({ message: 'Juego actualizado correctamente' });
+  } catch (error) {
+    console.error('Error en editarJuego:', error);
+    
+    // Si hubo error y se subió una imagen, eliminarla
+    if (req.file) {
+      const rutaImagen = path.join(process.cwd(), 'public', 'juegos', req.file.filename);
+      if (fs.existsSync(rutaImagen)) {
+        fs.unlinkSync(rutaImagen);
+      }
+    }
+    
+    res.status(500).json({ message: 'Error al actualizar el juego' });
+  }
+};

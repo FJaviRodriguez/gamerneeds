@@ -186,3 +186,84 @@ export const eliminarJuego = async (idjuego) => {
     connection.release();
   }
 };
+export const obtenerImagenJuego = async (idjuego) => {
+  try {
+    const [rows] = await pool.query(
+      'SELECT url_portada FROM juego WHERE idjuego = ?',
+      [idjuego]
+    );
+    return rows[0]?.url_portada;
+  } catch (error) {
+    console.error('Error en obtenerImagenJuego:', error);
+    throw error;
+  }
+};
+
+export const editarJuego = async (idjuego, juegoData) => {
+  const connection = await pool.getConnection();
+  
+  try {
+    await connection.beginTransaction();
+
+    // Actualizar información básica del juego
+    const {
+      titulo, descripcion, precio, fecha_lanzamiento,
+      clasificacion_edad, url_trailer, url_portada,
+      desarrolladores, editores, generos
+    } = juegoData;
+
+    // Actualizar tabla juego
+    const updateQuery = `
+      UPDATE juego 
+      SET titulo = ?, descripcion = ?, precio = ?, 
+          fecha_lanzamiento = ?, clasificacion_edad = ?, 
+          url_trailer = ? ${url_portada ? ', url_portada = ?' : ''}
+      WHERE idjuego = ?
+    `;
+
+    const updateParams = url_portada 
+      ? [titulo, descripcion, precio, fecha_lanzamiento, clasificacion_edad, url_trailer, url_portada, idjuego]
+      : [titulo, descripcion, precio, fecha_lanzamiento, clasificacion_edad, url_trailer, idjuego];
+
+    await connection.query(updateQuery, updateParams);
+
+    // Actualizar desarrolladores
+    await connection.query('DELETE FROM juego_desarrollador WHERE idjuego = ?', [idjuego]);
+    if (desarrolladores && desarrolladores.length > 0) {
+      const desarrolladoresValues = desarrolladores.map(dev => [idjuego, dev]);
+      await connection.query(
+        'INSERT INTO juego_desarrollador (idjuego, iddesarrollador) VALUES ?',
+        [desarrolladoresValues]
+      );
+    }
+
+    // Actualizar editores
+    await connection.query('DELETE FROM juego_editor WHERE idjuego = ?', [idjuego]);
+    if (editores && editores.length > 0) {
+      const editoresValues = editores.map(ed => [idjuego, ed]);
+      await connection.query(
+        'INSERT INTO juego_editor (idjuego, ideditor) VALUES ?',
+        [editoresValues]
+      );
+    }
+
+    // Actualizar géneros
+    await connection.query('DELETE FROM juego_genero WHERE idjuego = ?', [idjuego]);
+    if (generos && generos.length > 0) {
+      const generosValues = generos.map(gen => [idjuego, gen]);
+      await connection.query(
+        'INSERT INTO juego_genero (idjuego, idgenero) VALUES ?',
+        [generosValues]
+      );
+    }
+
+    await connection.commit();
+    return true;
+  } catch (error) {
+    await connection.rollback();
+    console.error('Error en editarJuego:', error);
+    throw error;
+  } finally {
+    connection.release();
+  }
+};
