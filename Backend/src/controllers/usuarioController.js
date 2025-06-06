@@ -83,24 +83,28 @@ export const actualizarAvatar = async (req, res) => {
 
     // Eliminar avatar anterior si existe y no es el default
     if (oldAvatar && !oldAvatar.includes('default-icon')) {
-      const fullPath = path.join(process.cwd(), 'public', 'avatars', path.basename(oldAvatar));
+      const fullPath = path.join(process.cwd(), 'public/avatars', path.basename(oldAvatar));
       if (fs.existsSync(fullPath)) {
         fs.unlinkSync(fullPath);
       }
     }
 
-    const avatarPath = `/public/avatars/${req.file.filename}`;
-    await usuarioModel.actualizarAvatar(userId, avatarPath);
+    // Guardar solo el nombre del archivo en la base de datos
+    const avatarFileName = req.file.filename;
+    await usuarioModel.actualizarAvatar(userId, avatarFileName);
 
-    res.json({ 
+    // Devolver la URL completa para el frontend
+    const avatarUrl = `${process.env.BACKEND_URL}/public/avatars/${avatarFileName}`;
+
+    res.json({
       message: 'Avatar actualizado correctamente',
-      avatarPath 
+      avatarPath: avatarUrl
     });
   } catch (error) {
     console.error('Error en actualizarAvatar:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       message: 'Error al actualizar el avatar',
-      error: error.message 
+      error: error.message
     });
   }
 };

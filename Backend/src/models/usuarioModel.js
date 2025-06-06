@@ -2,6 +2,11 @@ import pool from '../config/db.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
+const DEFAULT_USER_VALUES = {
+  rol: 'user',
+  avatar: 'default-icon.png'
+};
+
 export const loginUsuario = async (email, password) => {
   try {
     const [rows] = await pool.query('SELECT * FROM usuario WHERE email = ?', [email]);
@@ -13,11 +18,17 @@ export const loginUsuario = async (email, password) => {
     if (!validarPassword) {
       throw new Error('Contraseña incorrecta');
     }
+
+    // Construir URL completa del avatar
+    const avatarUrl = usuario.avatar 
+      ? `${process.env.BACKEND_URL}/public/avatars/${usuario.avatar}`
+      : `${process.env.BACKEND_URL}/public/avatars/default-icon.png`;
+
     return {
       id: usuario.idusuario,
       nombre: usuario.nombre,
       email: usuario.email,
-      avatar: usuario.avatar,
+      avatar: avatarUrl,
       rol: usuario.rol
     };
   } catch (error) {
@@ -25,10 +36,7 @@ export const loginUsuario = async (email, password) => {
     throw error;
   }
 };
-const DEFAULT_USER_VALUES = {
-  rol: 'user',
-  avatar: '/public/default-icon'
-};
+
 export const registerUsuario = async (usuario) => {
   try {
     const { 
@@ -173,16 +181,16 @@ export const verificarRolAdmin = async (userId) => {
     throw new Error('Error al verificar rol de administrador');
   }
 };
-export const actualizarAvatar = async (userId, avatarPath) => {
+export const actualizarAvatar = async (userId, avatarFileName) => {
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
 
     const [result] = await connection.query(
       'UPDATE usuario SET avatar = ? WHERE idusuario = ?',
-      [avatarPath, userId]
+      [avatarFileName, userId]
     );
-    
+
     if (result.affectedRows === 0) {
       throw new Error('No se pudo actualizar el avatar');
     }
