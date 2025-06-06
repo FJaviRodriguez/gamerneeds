@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import pool from '../config/db.js';
+import stripe from '../config/stripe.js'; // Asegúrate de importar stripe
 
 export const verificarToken = async (req, res, next) => {
   try {
@@ -58,15 +59,12 @@ export const verificarSesionCheckout = async (req, res, next) => {
 
     try {
         const session = await stripe.checkout.sessions.retrieve(sessionId);
-        if (session.status !== 'complete') {
-            return res.status(403).json({ 
-                message: 'Acceso denegado - La sesión de pago no está completa' 
-            });
+        if (!session || session.status !== 'complete') {
+            return res.status(403).redirect('/carrito');
         }
+        req.session = session;
         next();
     } catch (error) {
-        return res.status(403).json({ 
-            message: 'Acceso denegado - Sesión de checkout inválida' 
-        });
+        return res.status(403).redirect('/carrito');
     }
 };
