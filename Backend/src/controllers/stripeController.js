@@ -44,6 +44,72 @@ export const crearSesionPago = async (req, res) => {
             metadata: {
                 usuarioId: usuarioId.toString(),
                 juegosIds: JSON.stringify(items.map(item => item.idjuego))
+            },
+            custom_text: {
+                submit: {
+                    message: 'GAMERS NEEDS procesará tu pago de forma segura'
+                }
+            },
+            billing_address_collection: 'required',
+            locale: 'es',
+            payment_intent_data: {
+                description: 'Compra en GAMERS NEEDS'
+            },
+            appearance: {
+                theme: 'night',
+                variables: {
+                    colorPrimary: '#FF4C1A',
+                    colorBackground: '#272727',
+                    colorText: '#FFFFFF',
+                    colorTextSecondary: '#9CA3AF',
+                    colorTextPlaceholder: '#6B7280',
+                    fontFamily: '"Inter", system-ui, sans-serif',
+                    borderRadius: '4px',
+                    colorIconTab: '#FF4C1A',
+                    spacingUnit: '4px',
+                    spacingGridRow: '16px',
+                },
+                rules: {
+                    '.Tab': {
+                        backgroundColor: '#181818',
+                        borderColor: '#3F3F3F',
+                        color: '#FFFFFF',
+                    },
+                    '.Tab:hover': {
+                        backgroundColor: '#272727',
+                        borderColor: '#FF4C1A',
+                    },
+                    '.Tab--selected': {
+                        backgroundColor: '#FF4C1A',
+                        borderColor: '#FF4C1A',
+                    },
+                    '.Label': {
+                        color: '#FFFFFF',
+                    },
+                    '.Input': {
+                        backgroundColor: '#181818',
+                        color: '#FFFFFF',
+                        borderColor: '#3F3F3F',
+                    },
+                    '.Input:focus': {
+                        borderColor: '#FF4C1A',
+                    },
+                    '.Button': {
+                        backgroundColor: '#FF4C1A',
+                        color: '#FFFFFF',
+                    },
+                    '.Button:hover': {
+                        backgroundColor: '#FF6B3D',
+                    },
+                    '.CheckboxInput': {
+                        backgroundColor: '#181818',
+                        borderColor: '#3F3F3F',
+                    },
+                    '.CheckboxInput--checked': {
+                        backgroundColor: '#FF4C1A',
+                        borderColor: '#FF4C1A',
+                    }
+                }
             }
         });
 
