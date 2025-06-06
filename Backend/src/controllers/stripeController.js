@@ -52,16 +52,20 @@ export const crearSesionPago = async (req, res) => {
                 allowed_countries: ['ES']
             },
             locale: 'es',
+            // Actualizar custom_fields según la nueva API
             custom_fields: [
                 {
                     key: 'plataforma',
-                    label: { type: 'custom', custom: 'Plataforma preferida' },
+                    label: 'Plataforma preferida',
                     type: 'dropdown',
-                    options: [
-                        { label: 'Steam', value: 'steam' },
-                        { label: 'Epic Games', value: 'epic' },
-                        { label: 'GOG', value: 'gog' }
-                    ]
+                    optional: false, // Especificar si es opcional
+                    dropdown: {  // Usar dropdown en lugar de options
+                        options: [
+                            { label: 'Steam', value: 'steam' },
+                            { label: 'Epic Games', value: 'epic' },
+                            { label: 'GOG', value: 'gog' }
+                        ]
+                    }
                 }
             ],
             custom_text: {
