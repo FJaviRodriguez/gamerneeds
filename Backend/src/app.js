@@ -61,8 +61,7 @@ app.use('/api/generos', generosRoutes);
 
 // Rutas protegidas - asegurarnos que adminRoutes está aquí
 app.use('/api/admin', (req, res, next) => {
-  console.log('Admin route accessed:', req.method, req.url);
-  console.log('Headers:', req.headers);
+  console.log('Admin route accessed:', req.method, req.url, req.params);
   next();
 }, adminRoutes);
 app.use('/api/usuario', verificarToken, usuarioRoutes);

@@ -164,8 +164,13 @@ export const eliminarJuego = async (req, res) => {
 export const editarJuego = async (req, res) => {
   try {
     const { idjuego } = req.params;
-    const juegoData = req.body;
+    console.log('Editando juego:', idjuego);
+    console.log('Datos recibidos:', req.body);
     
+    if (!idjuego) {
+      return res.status(400).json({ message: 'ID de juego no proporcionado' });
+    }
+
     // Si se subió una nueva imagen
     if (req.file) {
       juegoData.url_portada = req.file.filename;

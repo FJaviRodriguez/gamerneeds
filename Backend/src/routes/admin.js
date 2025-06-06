@@ -4,7 +4,6 @@ import * as adminController from '../controllers/adminController.js';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import * as adminController from '../controllers/adminController.js';
 
 const router = express.Router();
 
@@ -49,21 +48,20 @@ const handleMulterError = (err, req, res, next) => {
   next();
 };
 
-// Mover la ruta DELETE arriba para asegurarnos que no hay conflictos con otras rutas
+// Rutas ordenadas por método
+router.get('/desarrolladores', verificarToken, adminController.mostrarDesarrolladores);
+router.get('/editores', verificarToken, adminController.mostrarEditores);
+router.get('/generos', verificarToken, adminController.mostrarGeneros);
 
-// Rutas GET
-router.get('/desarrolladores', [verificarToken], adminController.mostrarDesarrolladores);
-router.get('/editores', [verificarToken], adminController.mostrarEditores);
-router.get('/generos', [verificarToken], adminController.mostrarGeneros);
-
-// Rutas POST
 router.post('/register', [verificarToken, verificarAdmin], adminController.registroAdministrativo);
 router.post('/juego', [verificarToken, verificarAdmin], upload, handleMulterError, adminController.crearJuego);
 router.post('/desarrollador', [verificarToken, verificarAdmin], adminController.crearDesarrollador);
 router.post('/editor', [verificarToken, verificarAdmin], adminController.crearEditor);
 
-router.put('/juego/:idjuego', [verificarToken, verificarAdmin], upload, adminController.editarJuego);
+// Corregir orden y middleware para PUT
+router.put('/juego/:idjuego', [verificarToken, verificarAdmin], upload, handleMulterError, adminController.editarJuego);
 
+// Corregir orden y middleware para DELETE
 router.delete('/juego/:idjuego', [verificarToken, verificarAdmin], adminController.eliminarJuego);
 
 export default router;

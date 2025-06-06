@@ -136,15 +136,17 @@ export const editarJuego = async (idjuego, formData) => {
       throw new Error('No hay token de autenticación');
     }
 
+    console.log('Intentando editar juego:', idjuego);
     const response = await api.put(`/admin/juego/${idjuego}`, formData, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'multipart/form-data'
       }
     });
+    
     return response.data;
   } catch (error) {
-    console.error('Error updating game:', error);
+    console.error('Error al editar juego:', error.response || error);
     throw error.response?.data || { message: 'Error al actualizar el juego' };
   }
 };
