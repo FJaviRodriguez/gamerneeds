@@ -2,7 +2,7 @@ import * as usuarioModel from '../models/usuarioModel.js';
 import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
-import { enviarEmailBienvenida } from '../services/mailjetService.js';
+import  enviarEmailBienvenida  from '../services/mailjetService.js';
 
 export const login = async (req, res) => {
   try {
