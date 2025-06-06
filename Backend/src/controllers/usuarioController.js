@@ -2,6 +2,7 @@ import * as usuarioModel from '../models/usuarioModel.js';
 import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
+import { enviarEmailBienvenida } from '../services/mailjetService.js';
 
 export const login = async (req, res) => {
   try {
@@ -49,6 +50,15 @@ export const registro = async (req, res) => {
       }
     }
     const resultado = await usuarioModel.registerUsuario(usuario);
+    
+    // Enviar email de bienvenida
+    try {
+      await enviarEmailBienvenida(usuario.nombre, usuario.email);
+    } catch (emailError) {
+      console.error('Error al enviar email de bienvenida:', emailError);
+      // No interrumpimos el registro si falla el envío del email
+    }
+
     res.status(201).json({
       message: 'Usuario registrado correctamente. Inicia sesion.',
       id: resultado.id
