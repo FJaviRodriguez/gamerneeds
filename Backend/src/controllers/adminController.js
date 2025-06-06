@@ -163,7 +163,7 @@ export const eliminarJuego = async (req, res) => {
 
 export const editarJuego = async (req, res) => {
   try {
-    console.log('Datos recibidos:', {
+    console.log('Datos recibidos en controlador:', {
       body: req.body,
       file: req.file,
       params: req.params
@@ -182,15 +182,16 @@ export const editarJuego = async (req, res) => {
 
     // Asegurarse de que los arrays están en el formato correcto
     try {
-      if (typeof req.body.desarrolladores === 'string') {
-        juegoData.desarrolladores = JSON.parse(req.body.desarrolladores);
-      }
-      if (typeof req.body.editores === 'string') {
-        juegoData.editores = JSON.parse(req.body.editores);
-      }
-      if (typeof req.body.generos === 'string') {
-        juegoData.generos = JSON.parse(req.body.generos);
-      }
+      ['desarrolladores', 'editores', 'generos'].forEach(field => {
+        if (typeof req.body[field] === 'string') {
+          try {
+            juegoData[field] = JSON.parse(req.body[field]);
+          } catch (e) {
+            console.error(`Error parseando ${field}:`, e);
+            juegoData[field] = [];
+          }
+        }
+      });
     } catch (parseError) {
       console.error('Error al parsear JSON:', parseError);
       return res.status(400).json({ message: 'Formato inválido en los datos relacionados' });
@@ -211,6 +212,9 @@ export const editarJuego = async (req, res) => {
     res.json({ message: 'Juego actualizado correctamente' });
   } catch (error) {
     console.error('Error en editarJuego:', error);
-    res.status(500).json({ message: 'Error al actualizar el juego' });
+    res.status(500).json({ 
+      message: 'Error al actualizar el juego',
+      error: error.message 
+    });
   }
 };

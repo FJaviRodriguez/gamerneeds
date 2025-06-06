@@ -216,12 +216,19 @@ export const editarJuego = async (idjuego, juegoData) => {
       generos
     } = juegoData;
 
-    // Validar que los datos necesarios existen
-    if (!titulo || !precio) {
-      throw new Error('Faltan campos requeridos');
-    }
+    // Log para debug
+    console.log('Datos recibidos en editarJuego:', {
+      titulo,
+      desarrolladores,
+      editores,
+      generos
+    });
 
-    // Construir la consulta de actualización de forma dinámica
+    // Asegurarse de que los arrays sean arrays
+    const desarrolladoresArray = Array.isArray(desarrolladores) ? desarrolladores : JSON.parse(desarrolladores || '[]');
+    const editoresArray = Array.isArray(editores) ? editores : JSON.parse(editores || '[]');
+    const generosArray = Array.isArray(generos) ? generos : JSON.parse(generos || '[]');
+
     let updateQuery = `
       UPDATE juego 
       SET titulo = ?,
@@ -241,7 +248,6 @@ export const editarJuego = async (idjuego, juegoData) => {
       url_trailer || ''
     ];
 
-    // Añadir url_portada solo si existe
     if (url_portada) {
       updateQuery += `, url_portada = ?`;
       updateParams.push(url_portada);
@@ -252,28 +258,30 @@ export const editarJuego = async (idjuego, juegoData) => {
 
     await connection.query(updateQuery, updateParams);
 
-    // Actualizar relaciones
+    // Actualizar desarrolladores
     await connection.query('DELETE FROM juego_has_desarrollador WHERE juego_idjuego = ?', [idjuego]);
-    if (desarrolladores && desarrolladores.length > 0) {
-      const desarrolladoresValues = desarrolladores.map(dev => [idjuego, dev]);
+    if (desarrolladoresArray.length > 0) {
+      const desarrolladoresValues = desarrolladoresArray.map(dev => [idjuego, dev]);
       await connection.query(
         'INSERT INTO juego_has_desarrollador (juego_idjuego, desarrollador_iddesarrollador) VALUES ?',
         [desarrolladoresValues]
       );
     }
 
+    // Actualizar editores
     await connection.query('DELETE FROM editor_has_juego WHERE juego_idjuego = ?', [idjuego]);
-    if (editores && editores.length > 0) {
-      const editoresValues = editores.map(ed => [idjuego, ed]);
+    if (editoresArray.length > 0) {
+      const editoresValues = editoresArray.map(ed => [idjuego, ed]);
       await connection.query(
         'INSERT INTO editor_has_juego (juego_idjuego, editor_ideditor) VALUES ?',
         [editoresValues]
       );
     }
 
+    // Actualizar géneros
     await connection.query('DELETE FROM juego_has_genero WHERE juego_idjuego = ?', [idjuego]);
-    if (generos && generos.length > 0) {
-      const generosValues = generos.map(gen => [idjuego, gen]);
+    if (generosArray.length > 0) {
+      const generosValues = generosArray.map(gen => [idjuego, gen]);
       await connection.query(
         'INSERT INTO juego_has_genero (juego_idjuego, genero_idgenero) VALUES ?',
         [generosValues]
