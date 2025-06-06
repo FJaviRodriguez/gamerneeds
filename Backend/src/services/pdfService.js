@@ -1,4 +1,10 @@
 import PDFDocument from 'pdfkit';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import fs from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export const generarPDFComprobante = (datosCompra) => {
     return new Promise((resolve, reject) => {
@@ -26,13 +32,25 @@ export const generarPDFComprobante = (datosCompra) => {
             doc.rect(0, 0, doc.page.width, 150)
                .fill(colors.primary);
 
-            // Logo texto
+            // Añadir logo
+            try {
+                const logoPath = join(__dirname, '../../../Frontend/src/assets/logo.png');
+                doc.image(logoPath, 50, 30, {
+                    width: 90,
+                    height: 90
+                });
+            } catch (error) {
+                console.error('Error al cargar el logo:', error);
+                // Continuar sin el logo si hay error
+            }
+
+            // Logo texto (ahora más a la derecha para dejar espacio al logo)
             doc.fontSize(35)
                .fill('#ffffff')
-               .text('GAMERS', doc.page.width / 2 - 100, 40)
+               .text('GAMERS', doc.page.width / 2, 40)
                .fontSize(35)
                .fill(colors.secondary)
-               .text('NEEDS', doc.page.width / 2 + 20, 40);
+               .text('NEEDS', doc.page.width / 2 + 120, 40);
 
             // Línea decorativa
             doc.moveTo(50, 100)
