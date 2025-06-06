@@ -66,7 +66,7 @@ export const CarritoProvider = ({ children }) => {
             toast.success('Juego añadido al carrito');
         } catch (error) {
             toast.error('Error al añadir al carrito');
-            setCarrito(prev => prev.filter(i => i.idjuego !== item.idjuego));
+            setCarrito(prev => prev.filter i => i.idjuego !== item.idjuego));
         } finally {
             setLoading(false);
         }
@@ -94,22 +94,31 @@ export const CarritoProvider = ({ children }) => {
                 navigate('/login');
                 return;
             }
+
             const items = carrito.map(item => ({
                 nombre: item.nombre,
-                precio: item.precio ,
+                precio: item.precio,
                 url_portada: item.url_portada,
                 idjuego: item.idjuego
             }));
+
             const { sessionId } = await crearSesionPago(items, usuario.id);
             const stripe = await stripePromise;
+            
+            if (!stripe) {
+                throw new Error('Error al cargar Stripe');
+            }
+
             const { error } = await stripe.redirectToCheckout({
-                sessionId: sessionId
+                sessionId
             });
+
             if (error) {
                 throw new Error(error.message);
             }
         } catch (error) {
-            toast.error('Error al procesar el pago');
+            console.error('Error al procesar pago:', error);
+            toast.error(error.message || 'Error al procesar el pago');
         } finally {
             setLoading(false);
         }

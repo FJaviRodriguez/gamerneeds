@@ -1,5 +1,6 @@
 import express from 'express';
 import * as stripeController from '../controllers/stripeController.js';
+import { verificarToken } from './middleware.js';
 
 const router = express.Router();
 
@@ -14,10 +15,8 @@ router.post(
 router.use(express.json());
 
 // Rutas existentes
-router.post('/crear-sesion-pago', stripeController.crearSesionPago);
-router.get('/verificar/:sessionId', stripeController.verificarPago);
-
-// Nueva ruta para crear line items
+router.post('/crear-sesion-pago', verificarToken, stripeController.crearSesionPago);
 router.post('/create-line-item', stripeController.createLineItem);
+router.get('/verificar/:sessionId', stripeController.verificarPago);
 
 export default router;

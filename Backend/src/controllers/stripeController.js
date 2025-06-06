@@ -23,6 +23,10 @@ export const crearSesionPago = async (req, res) => {
     try {
         const { items, usuarioId } = req.body;
 
+        if (!items || !Array.isArray(items)) {
+            return res.status(400).json({ error: 'Items inválidos' });
+        }
+
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: items.map(item => ({
@@ -34,7 +38,7 @@ export const crearSesionPago = async (req, res) => {
                             ? item.url_portada 
                             : `${process.env.BACKEND_URL}/public/juegos/${item.url_portada}`],
                     },
-                    unit_amount: Math.round(item.precio),
+                    unit_amount: item.precio, // Ya viene en centavos
                 },
                 quantity: 1,
             })),
@@ -245,7 +249,7 @@ export const createLineItem = async (req, res) => {
         // Crear el precio para el producto
         const priceObj = await stripe.prices.create({
             product: product.id,
-            unit_amount: Math.round(price * 100), // Convertir a centavos
+            unit_amount: Math.round(price), // Convertir a centavos
             currency: 'eur'
         });
 
