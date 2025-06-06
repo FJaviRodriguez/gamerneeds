@@ -10,6 +10,9 @@ const SuccessPage = () => {
   const navigate = useNavigate();
   const { limpiarCarrito } = useCarrito();
   const [verificado, setVerificado] = useState(false);
+  
+  // Añadir estado para controlar si ya se descargó el PDF
+  const [pdfDescargado, setPdfDescargado] = useState(false);
 
   useEffect(() => {
     const verificarSesion = async () => {
@@ -32,8 +35,8 @@ const SuccessPage = () => {
         if (data.status === 'complete' || data.status === 'paid') {
             setVerificado(true);
             limpiarCarrito();
-            // Descarga automática
-            handleDescargarComprobante();
+            // Ya no llamamos a handleDescargarComprobante aquí
+            // Solo mostramos el mensaje de éxito
             toast.success('¡Compra realizada con éxito! 🎮', {
                 duration: 4000,
                 id: 'success-purchase'
@@ -55,6 +58,10 @@ const SuccessPage = () => {
 }, [sessionId, navigate, limpiarCarrito]);
 
 const handleDescargarComprobante = async () => {
+    if (pdfDescargado) {
+        return; // Evitar descargas múltiples
+    }
+
     try {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -94,10 +101,10 @@ const handleDescargarComprobante = async () => {
             window.URL.revokeObjectURL(url);
         }, 100);
 
-        toast.success('Comprobante descargado correctamente');
+        setPdfDescargado(true); // Marcar como descargado
     } catch (error) {
         console.error('Error completo:', error);
-        toast.error(error.message || 'Error al descargar el comprobante');
+        // Eliminado el toast de error
     }
 };
 
