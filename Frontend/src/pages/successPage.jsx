@@ -19,21 +19,24 @@ const SuccessPage = () => {
           throw new Error('Sesión inválida');
         }
         const data = await response.json();
-        if (data.status === 'complete') {
-          setVerificado(true);
-          limpiarCarrito();
-          toast.success('¡Compra realizada con éxito! 🎮', {
-            duration: 4000,
-            id: 'success-purchase'
-          });
-          const timer = setTimeout(() => {
-            navigate('/home');
-          }, 5000);
-          return () => clearTimeout(timer);
+        
+        if (data.status === 'complete' || data.status === 'paid') {
+            setVerificado(true);
+            limpiarCarrito();
+            toast.success('¡Compra realizada con éxito! 🎮', {
+                duration: 4000,
+                id: 'success-purchase'
+            });
+            const timer = setTimeout(() => {
+              navigate('/home');
+            }, 5000);
+            return () => clearTimeout(timer);
         } else {
-          navigate('/carrito');
+            console.error('Estado de pago:', data.status);
+            navigate('/carrito');
         }
       } catch (error) {
+        console.error('Error verificando sesión:', error);
         navigate('/carrito');
       }
     };

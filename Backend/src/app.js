@@ -37,11 +37,15 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 };
 
+// Configurar el webhook antes de cualquier middleware
+app.post(
+  '/api/stripe/webhook',
+  express.raw({ type: 'application/json' }),
+  stripeController.webhookHandler
+);
+
+// El resto de middleware después
 app.use(cors(corsOptions));
-
-// Configurar rutas de Stripe antes de otras rutas que usan express.json()
-app.post('/api/stripe/webhook', express.raw({type: 'application/json'}), stripeController.webhookHandler);
-
 app.use(express.json());
 
 // Rutas de Stripe (después del express.json middleware)
