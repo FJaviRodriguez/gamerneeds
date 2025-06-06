@@ -20,12 +20,19 @@ const Header = ({ onSearchResults }) => {
       setAvatarUrl('/icons/default-icon.png');
       return;
     }
-    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '');
-    const fullAvatarUrl = `${baseUrl}${usuario.avatar}`;
-    if (fullAvatarUrl.trim()) {
-      setAvatarUrl(fullAvatarUrl);
+
+    // Modificar esta parte para manejar las diferentes rutas posibles
+    if (usuario.avatar.startsWith('http')) {
+      // Si es una URL completa, usarla directamente
+      setAvatarUrl(usuario.avatar);
+    } else if (usuario.avatar.startsWith('/public')) {
+      // Si comienza con /public, añadir la URL base
+      const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '');
+      setAvatarUrl(`${baseUrl}${usuario.avatar}`);
     } else {
-      setAvatarUrl('/icons/default-icon.png');
+      // Para cualquier otro caso (como 'default-icon.png')
+      const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '');
+      setAvatarUrl(`${baseUrl}/public/avatars/${usuario.avatar}`);
     }
   }, [usuario]);
   const handleSearch = async (value) => {
