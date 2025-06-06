@@ -42,7 +42,7 @@ export const crearSesionPago = async (req, res) => {
                 quantity: 1,
             })),
             mode: 'payment',
-            success_url: `${process.env.FRONTEND_URL}/success`,
+            success_url: `${process.env.FRONTEND_URL}/success/{CHECKOUT_SESSION_ID}`, 
             cancel_url: `${process.env.FRONTEND_URL}/carrito`,
             metadata: {
                 usuarioId: usuarioId.toString(),

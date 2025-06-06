@@ -56,6 +56,10 @@ function App() {
             <CheckoutPage />
           </RutasProtegidas>
         } />
+        <Route 
+          path="/success" 
+          element={<Navigate to="/home" replace />} 
+        />
         <Route path="/success/:sessionId" element={
           <RutasProtegidas>
             <SuccessPage />
