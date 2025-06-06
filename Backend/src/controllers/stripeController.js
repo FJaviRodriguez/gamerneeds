@@ -94,25 +94,9 @@ export const webhookHandler = async (req, res) => {
 
         if (event.type === 'checkout.session.completed') {
             const session = event.data.object;
-            console.log('Session details:', {
-                id: session.id,
-                metadata: session.metadata,
-                amount_total: session.amount_total,
-                customer_details: session.customer_details
-            });
 
-            if (!session.metadata?.usuarioId || !session.metadata?.juegosIds) {
-                console.error('Metadata incompleta:', {
-                    usuarioId: session.metadata?.usuarioId,
-                    juegosIds: session.metadata?.juegosIds
-                });
-                return res.status(400).json({ error: 'Metadata incompleta' });
-            }
-
-            const connection = await pool.getConnection();
+            // No usar connection aquí, usar transacciones separadas
             try {
-                await connection.beginTransaction();
-
                 // 1. Crear la compra
                 const idcompra = await compraModel.crearCompra(
                     session.metadata.usuarioId, 
@@ -135,13 +119,12 @@ export const webhookHandler = async (req, res) => {
                 await compraModel.actualizarEstadoCompraPorId(idcompra, 'completed');
                 console.log('Estado de compra actualizado');
 
-                // 5. Obtener detalles completos de la sesión
+                // 5. Generar PDF (de manera asíncrona sin bloquear la respuesta)
                 const sessionWithLineItems = await stripe.checkout.sessions.retrieve(
                     session.id,
                     { expand: ['line_items'] }
                 );
 
-                // 6. Preparar datos para el PDF
                 const datosCompra = {
                     sessionId: session.id,
                     items: sessionWithLineItems.line_items.data.map(item => ({
@@ -157,15 +140,13 @@ export const webhookHandler = async (req, res) => {
                     fecha: new Date()
                 };
 
-                // 7. Generar PDF
-                const pdfPath = await generarPDFComprobante(datosCompra);
-                console.log('PDF generado en:', pdfPath);
+                // Generar PDF sin esperar su finalización
+                generarPDFComprobante(datosCompra).catch(console.error);
 
-                await connection.commit();
+                // Responder inmediatamente
                 return res.json({ received: true });
 
             } catch (error) {
-                await connection.rollback();
                 console.error('Error procesando webhook:', {
                     error: error.message,
                     stack: error.stack,
@@ -176,19 +157,13 @@ export const webhookHandler = async (req, res) => {
                     error: 'Error procesando la compra',
                     details: error.message
                 });
-            } finally {
-                connection.release();
             }
         }
 
+        // Para otros tipos de eventos
         return res.json({ received: true });
     } catch (error) {
-        console.error('Error en webhook:', {
-            error: error.message,
-            stack: error.stack,
-            headers: req.headers,
-            body: typeof req.body === 'string' ? 'raw body' : 'parsed body'
-        });
+        console.error('Error en webhook:', error);
         return res.status(400).json({ error: `Webhook Error: ${error.message}` });
     }
 };
