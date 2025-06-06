@@ -46,3 +46,27 @@ export const verificarAdmin = async (req, res, next) => {
     res.status(500).json({ message: 'Error al verificar permisos de administrador' });
   }
 };
+
+export const verificarSesionCheckout = async (req, res, next) => {
+    const { sessionId } = req.params;
+    
+    if (!sessionId) {
+        return res.status(403).json({ 
+            message: 'Acceso denegado - Se requiere una sesión de checkout válida' 
+        });
+    }
+
+    try {
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+        if (session.status !== 'complete') {
+            return res.status(403).json({ 
+                message: 'Acceso denegado - La sesión de pago no está completa' 
+            });
+        }
+        next();
+    } catch (error) {
+        return res.status(403).json({ 
+            message: 'Acceso denegado - Sesión de checkout inválida' 
+        });
+    }
+};

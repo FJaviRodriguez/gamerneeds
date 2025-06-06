@@ -1,31 +1,53 @@
-import React, { useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useCarrito } from '../context/carritoContext';
 import toast from 'react-hot-toast';
 import Footer from '../components/common/footer';
 import logo from '../assets/logo.png';
 
 const SuccessPage = () => {
+  const { sessionId } = useParams();
   const navigate = useNavigate();
   const { limpiarCarrito } = useCarrito();
+  const [verificado, setVerificado] = useState(false);
 
   useEffect(() => {
-    try {
-      limpiarCarrito();
-      toast.success('¡Compra realizada con éxito! 🎮', {
-        duration: 4000,
-        id: 'success-purchase'
-      });
-      const timer = setTimeout(() => {
-        navigate('/home');
-      }, 5000);
-      return () => clearTimeout(timer);
-    } catch (error) {
-      console.error('Error in SuccessPage:', error);
-      toast.error('Error al procesar la compra');
-      navigate('/home');
+    const verificarSesion = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/stripe/verificar/${sessionId}`);
+        if (!response.ok) {
+          throw new Error('Sesión inválida');
+        }
+        const data = await response.json();
+        if (data.status === 'complete') {
+          setVerificado(true);
+          limpiarCarrito();
+          toast.success('¡Compra realizada con éxito! 🎮', {
+            duration: 4000,
+            id: 'success-purchase'
+          });
+          const timer = setTimeout(() => {
+            navigate('/home');
+          }, 5000);
+          return () => clearTimeout(timer);
+        } else {
+          navigate('/carrito');
+        }
+      } catch (error) {
+        navigate('/carrito');
+      }
+    };
+
+    if (sessionId) {
+      verificarSesion();
+    } else {
+      navigate('/carrito');
     }
-  }, [limpiarCarrito, navigate]);
+  }, [sessionId, navigate, limpiarCarrito]);
+
+  if (!verificado) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-[#202020] flex flex-col w-screen overflow-hidden">

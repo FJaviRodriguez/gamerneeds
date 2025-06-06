@@ -51,8 +51,16 @@ function App() {
             <PerfilPage />
           </RutasProtegidas>
         } />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/success" element={<SuccessPage />} />
+        <Route path="/checkout" element={
+          <RutasProtegidas>
+            <CheckoutPage />
+          </RutasProtegidas>
+        } />
+        <Route path="/success/:sessionId" element={
+          <RutasProtegidas>
+            <SuccessPage />
+          </RutasProtegidas>
+        } />
         <Route 
           path="/admin" 
           element={

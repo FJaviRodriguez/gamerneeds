@@ -5,6 +5,7 @@ import { dirname, join } from 'path';
 import * as compraModel from '../models/compraModel.js';
 import * as bibliotecaModel from '../models/bibliotecaModel.js';
 import pool from '../config/db.js';
+import { generarPDFComprobante } from '../services/pdfService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -81,8 +82,6 @@ export const webhookHandler = async (req, res) => {
             process.env.STRIPE_WEBHOOK_SECRET
         );
 
-        console.log('Webhook event received:', event.type);
-
         if (event.type === 'checkout.session.completed') {
             const session = event.data.object;
             const { metadata } = session;
@@ -91,20 +90,25 @@ export const webhookHandler = async (req, res) => {
                 const usuarioId = metadata.usuarioId;
                 const juegosIds = JSON.parse(metadata.juegosIds);
 
-                console.log('Procesando compra:', {
-                    usuarioId,
-                    juegosIds,
-                    sessionId: session.id
-                });
-
                 try {
-                    // Usar el modelo para añadir juegos a la biblioteca
+                    // Crear la compra y añadir juegos a la biblioteca
+                    const idcompra = await compraModel.crearCompra(usuarioId, session.amount_total / 100);
                     await bibliotecaModel.aniadirJuegosABiblioteca(usuarioId, juegosIds);
-                    
-                    // Crear registro de compra usando el modelo
-                    await compraModel.crearCompra(usuarioId, session.amount_total / 100);
 
-                    console.log('Compra procesada exitosamente');
+                    // Generar PDF
+                    const datosCompra = {
+                        sessionId: session.id,
+                        items: session.line_items.data,
+                        total: session.amount_total / 100,
+                        usuario: {
+                            id: usuarioId,
+                            nombre: session.customer_details.name,
+                            email: session.customer_details.email
+                        },
+                        fecha: new Date()
+                    };
+
+                    await generarPDFComprobante(datosCompra);
                 } catch (error) {
                     console.error('Error procesando la compra:', error);
                     throw error;
@@ -115,9 +119,7 @@ export const webhookHandler = async (req, res) => {
         res.json({ received: true });
     } catch (error) {
         console.error('Webhook error:', error);
-        return res.status(400).json({
-            error: `Webhook Error: ${error.message}`
-        });
+        return res.status(400).json({ error: `Webhook Error: ${error.message}` });
     }
 };
 export const addToCart = async (req, res) => {
