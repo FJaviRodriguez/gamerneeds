@@ -131,7 +131,154 @@ const EditarJuego = () => {
   return (
     <div className="p-8">
       <h2 className="text-2xl font-bold text-white mb-6 text-center">Editar Juego</h2>
-      {/* Mismo formulario que CrearJuego pero con los valores precargados */}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <input
+          type="text"
+          name="titulo"
+          placeholder="Título del Juego"
+          value={formData.titulo}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
+        />
+        
+        <textarea
+          name="descripcion"
+          placeholder="Descripción"
+          value={formData.descripcion}
+          onChange={handleChange}
+          required
+          rows="4"
+          className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
+        />
+        
+        <input
+          type="number"
+          step="0.01"
+          name="precio"
+          placeholder="Precio"
+          value={formData.precio}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
+        />
+        
+        <div className="space-y-2">
+          <label htmlFor="fecha_lanzamiento" className="block text-sm font-medium text-gray-400">
+            Fecha de Lanzamiento del Juego
+          </label>
+          <input
+            type="date"
+            id="fecha_lanzamiento"
+            name="fecha_lanzamiento"
+            value={formData.fecha_lanzamiento}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
+          />
+        </div>
+        
+        <input
+          type="number"
+          name="clasificacion_edad"
+          placeholder="Clasificación por Edad"
+          value={formData.clasificacion_edad}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
+        />
+        
+        <input
+          type="url"
+          name="url_trailer"
+          placeholder="URL del Trailer"
+          value={formData.url_trailer}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 bg-transparent border-b border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
+        />
+        
+        <input
+          type="file"
+          name="url_portada"
+          accept="image/*"
+          onChange={handleChange}
+          className="w-full px-4 py-3 text-white"
+        />
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-400">
+            Desarrolladores
+          </label>
+          <select
+            multiple
+            name="desarrolladores"
+            value={formData.desarrolladores}
+            onChange={handleChange}
+            className="w-full px-4 py-3 bg-zinc-800 border border-gray-600 text-white rounded-md"
+          >
+            {desarrolladores.map(dev => (
+              <option key={dev.iddesarrollador} value={dev.iddesarrollador}>
+                {dev.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-400">
+            Editores
+          </label>
+          <select
+            multiple
+            name="editores"
+            value={formData.editores}
+            onChange={handleChange}
+            className="w-full px-4 py-3 bg-zinc-800 border border-gray-600 text-white rounded-md"
+          >
+            {editores.map(editor => (
+              <option key={editor.ideditor} value={editor.ideditor}>
+                {editor.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-400">
+            Géneros
+          </label>
+          <select
+            multiple
+            name="generos"
+            value={formData.generos}
+            onChange={handleChange}
+            className="w-full px-4 py-3 bg-zinc-800 border border-gray-600 text-white rounded-md"
+          >
+            {generos.map(genero => (
+              <option key={genero.idgenero} value={genero.idgenero}>
+                {genero.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex gap-4 mt-6">
+          <button
+            type="submit"
+            className="flex-1 bg-[#FF4C1A] text-white py-3 rounded-md hover:opacity-90 transition-opacity duration-200 font-medium text-lg"
+          >
+            Guardar Cambios
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/panel-admin')}
+            className="px-6 py-3 border border-gray-600 text-white rounded-md hover:bg-zinc-800 transition-colors"
+          >
+            Volver
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
