@@ -13,7 +13,7 @@ import authRoutes from './routes/auth.js';
 import healthRoutes from './routes/health.js';
 import adminRoutes from './routes/admin.js';
 import { verificarToken } from './routes/middleware.js';
-import fs from 'fs';
+import fs, { mkdirSync } from 'fs';
 
 dotenv.config();
 
@@ -89,12 +89,6 @@ app.use('/public/juegos', express.static(path.join(__dirname, '../public/juegos'
 const avatarsDir = path.join(__dirname, '../public/avatars');
 if (!fs.existsSync(avatarsDir)) {
   fs.mkdirSync(avatarsDir, { recursive: true });
-}
-
-// Directorio privado para PDFs (fuera de public)
-const pdfsDir = path.join(__dirname, '../pdfs');
-if (!fs.existsSync(pdfsDir)) {
-    fs.mkdirSync(pdfsDir, { recursive: true });
 }
 
 app.use((err, req, res, next) => {

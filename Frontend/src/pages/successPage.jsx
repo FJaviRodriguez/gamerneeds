@@ -28,11 +28,12 @@ const SuccessPage = () => {
         }
         
         const data = await response.json();
-        console.log('Estado de pago:', data.status);
         
         if (data.status === 'complete' || data.status === 'paid') {
             setVerificado(true);
             limpiarCarrito();
+            // Descarga automática
+            handleDescargarComprobante();
             toast.success('¡Compra realizada con éxito! 🎮', {
                 duration: 4000,
                 id: 'success-purchase'
@@ -51,46 +52,62 @@ const SuccessPage = () => {
     } else {
       navigate('/carrito');
     }
-  }, [sessionId, navigate, limpiarCarrito]);
+}, [sessionId, navigate, limpiarCarrito]);
 
-  const handleDescargarComprobante = async () => {
+const handleDescargarComprobante = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        toast.error('No se encontró el token de autenticación');
-        return;
-      }
-
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/stripe/descargar-comprobante/${sessionId}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          }
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast.error('No se encontró el token de autenticación');
+            return;
         }
-      );
 
-      if (!response.ok) {
-        throw new Error('Error al descargar el comprobante');
-      }
+        const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/stripe/descargar-comprobante/${sessionId}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            }
+        );
 
-      // Obtener el blob del PDF
-      const blob = await response.blob();
-      
-      // Crear URL del blob y forzar la descarga
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `comprobante-${sessionId}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al descargar el comprobante');
+        }
+
+        // Verificar que el tipo de contenido es PDF
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/pdf')) {
+            throw new Error('El archivo descargado no es un PDF válido');
+        }
+
+        // Obtener el blob del PDF
+        const blob = await response.blob();
+        if (blob.size === 0) {
+            throw new Error('El archivo PDF está vacío');
+        }
+        
+        // Crear URL del blob y forzar la descarga
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `comprobante-${sessionId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        
+        // Limpieza
+        setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 100);
+
+        toast.success('Comprobante descargado correctamente');
     } catch (error) {
-      console.error('Error:', error);
-      toast.error('Error al descargar el comprobante');
+        console.error('Error:', error);
+        toast.error(error.message || 'Error al descargar el comprobante');
     }
-  };
+};
 
   if (!verificado) {
     return null;
