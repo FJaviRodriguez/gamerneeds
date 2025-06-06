@@ -138,14 +138,27 @@ export const webhookHandler = async (req, res) => {
                 }
                 console.log('Juegos añadidos a biblioteca');
 
-                // 4. Generar PDF de manera asíncrona
+                // 4. Commit de la transacción antes de generar el PDF
+                await connection.commit();
+
+                // 5. Obtener detalles completos de la sesión con line_items expandidos
+                const sessionWithLineItems = await stripe.checkout.sessions.retrieve(
+                    session.id,
+                    {
+                        expand: ['line_items']
+                    }
+                );
+
+                // 6. Preparar datos para el PDF con la información correcta
                 const datosCompra = {
                     sessionId: session.id,
-                    items: session.line_items?.data?.map(item => ({
-                        nombre: item.description || 'Producto',
-                        precio: item.amount_total / 100
-                    })) || [],
-                    total: session.amount_total / 100,
+                    items: sessionWithLineItems.line_items.data.map(item => ({
+                        nombre: item.description || 
+                                item.price?.product?.name || 
+                                'Producto',
+                        precio: (item.amount_total / 100).toFixed(2)
+                    })),
+                    total: (session.amount_total / 100).toFixed(2),
                     usuario: {
                         id: session.metadata.usuarioId,
                         nombre: session.customer_details?.name || 'Cliente',
@@ -154,13 +167,14 @@ export const webhookHandler = async (req, res) => {
                     fecha: new Date()
                 };
 
-                // Commit de la transacción antes de generar el PDF
-                await connection.commit();
-
-                // Generar PDF sin bloquear la respuesta
-                generarPDFComprobante(datosCompra).catch(err => {
-                    console.error('Error generando PDF:', err);
-                });
+                // Generar PDF de manera asíncrona pero esperando su finalización
+                try {
+                    const pdfPath = await generarPDFComprobante(datosCompra);
+                    console.log('PDF generado en:', pdfPath);
+                } catch (pdfError) {
+                    console.error('Error generando PDF:', pdfError);
+                    // No lanzamos el error para no afectar la respuesta del webhook
+                }
 
                 return res.json({ received: true });
 

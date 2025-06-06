@@ -57,6 +57,10 @@ const SuccessPage = () => {
     }
   }, [sessionId, navigate, limpiarCarrito]);
 
+  const handleDescargarComprobante = () => {
+    window.open(`${import.meta.env.VITE_API_URL}/stripe/descargar-comprobante/${sessionId}`, '_blank');
+  };
+
   if (!verificado) {
     return null;
   }
@@ -105,12 +109,20 @@ const SuccessPage = () => {
           </div>
           <h2 className="text-4xl font-bold text-white mb-6">¡Pago completado con éxito!</h2>
           <p className="text-gray-300 mb-8 text-lg">Gracias por tu compra. Serás redirigido a la página principal en unos segundos...</p>
-          <button 
-            onClick={() => navigate('/home')} 
-            className="bg-[#FF4C1A] text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-[#FF6B3D] transition-colors"
-          >
-            Volver a la tienda
-          </button>
+          <div className="flex justify-center">
+            <button 
+              onClick={() => navigate('/home')} 
+              className="bg-[#FF4C1A] text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-[#FF6B3D] transition-colors"
+            >
+              Volver a la tienda
+            </button>
+            <button 
+              onClick={handleDescargarComprobante}
+              className="bg-[#FF4C1A] text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-[#FF6B3D] transition-colors ml-4"
+            >
+              Descargar Comprobante
+            </button>
+          </div>
         </div>
       </div>
       <Footer />
