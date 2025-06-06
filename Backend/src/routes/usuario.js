@@ -40,17 +40,11 @@ const upload = multer({
 
 router.post('/perfil/avatar', verificarToken, upload.single('avatar'), async (req, res) => {
   try {
-    // Añadir logs para depuración
-    console.log('Request body:', req.body);
-    console.log('Request file:', req.file);
-    console.log('User info:', req.user);
-
     if (!req.file) {
       return res.status(400).json({ message: 'No se ha subido ninguna imagen' });
     }
 
-    // Extraer userId del token JWT decodificado
-    const userId = req.user.userId; // Cambiado de req.user.id a req.user.userId
+    const userId = req.user.userId;
 
     // Obtener el avatar anterior
     const [result] = await pool.query('SELECT avatar FROM usuario WHERE idusuario = ?', [userId]);
@@ -64,13 +58,11 @@ router.post('/perfil/avatar', verificarToken, upload.single('avatar'), async (re
       }
     }
 
+    // Modificar la ruta para que coincida con el formato en la base de datos
     const avatarPath = `/public/avatars/${req.file.filename}`;
     
-    // Actualizar en la base de datos
-    await pool.query(
-      'UPDATE usuario SET avatar = ? WHERE idusuario = ?',
-      [avatarPath, userId]
-    );
+    // Actualizar en la base de datos usando el modelo
+    await usuarioModel.actualizarAvatar(userId, avatarPath);
 
     res.json({ 
       message: 'Avatar actualizado correctamente',

@@ -107,6 +107,9 @@ export const actualizarAvatar = async (userId, avatarPath) => {
   try {
     await connection.beginTransaction();
 
+    // Log para depuración
+    console.log('Actualizando avatar:', { userId, avatarPath });
+
     const [result] = await connection.query(
       'UPDATE usuario SET avatar = ? WHERE idusuario = ?',
       [avatarPath, userId]

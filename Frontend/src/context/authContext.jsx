@@ -44,6 +44,19 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
+  const handleAvatarUpdate = (newAvatarPath) => {
+    setUsuario(prev => ({
+      ...prev,
+      avatar: newAvatarPath
+    }));
+    // Actualizar también en localStorage para persistencia
+    const userData = JSON.parse(localStorage.getItem('usuario'));
+    if (userData) {
+      userData.avatar = newAvatarPath;
+      localStorage.setItem('usuario', JSON.stringify(userData));
+    }
+  };
+
   if (cargando) {
     return <LoadingSpinner />;
   }
@@ -55,7 +68,8 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated,
       login,
       logout,
-      mostrarMensajeBienvenida
+      mostrarMensajeBienvenida,
+      handleAvatarUpdate
     }}>
       {children}
     </AuthContext.Provider>
