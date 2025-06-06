@@ -10,8 +10,6 @@ const SuccessPage = () => {
   const navigate = useNavigate();
   const { limpiarCarrito } = useCarrito();
   const [verificado, setVerificado] = useState(false);
-  
-  // Añadir estado para controlar si ya se descargó el PDF
   const [pdfDescargado, setPdfDescargado] = useState(false);
 
   useEffect(() => {
@@ -35,8 +33,6 @@ const SuccessPage = () => {
         if (data.status === 'complete' || data.status === 'paid') {
             setVerificado(true);
             limpiarCarrito();
-            // Ya no llamamos a handleDescargarComprobante aquí
-            // Solo mostramos el mensaje de éxito
             toast.success('¡Compra realizada con éxito! 🎮', {
                 duration: 4000,
                 id: 'success-purchase'
@@ -89,10 +85,13 @@ const handleDescargarComprobante = async () => {
             throw new Error('El archivo PDF está vacío');
         }
         
+        const fecha = new Date().toLocaleDateString('es-ES').replace(/\//g, '-');
+        const nombreArchivo = `comprobante_GN_${fecha}.pdf`;
+        
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `comprobante-${sessionId}.pdf`;
+        a.download = nombreArchivo;
         document.body.appendChild(a);
         a.click();
         
@@ -101,10 +100,9 @@ const handleDescargarComprobante = async () => {
             window.URL.revokeObjectURL(url);
         }, 100);
 
-        setPdfDescargado(true); // Marcar como descargado
+        setPdfDescargado(true);
     } catch (error) {
         console.error('Error completo:', error);
-        // Eliminado el toast de error
     }
 };
 
@@ -165,12 +163,14 @@ const handleDescargarComprobante = async () => {
             </button>
             <button 
               onClick={handleDescargarComprobante}
-              className="bg-zinc-700 text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-zinc-600 transition-colors flex items-center"
+              disabled={pdfDescargado}
+              className={`bg-zinc-700 text-white px-8 py-3 rounded-md text-lg font-medium transition-colors flex items-center
+                ${pdfDescargado ? 'opacity-50 cursor-not-allowed' : 'hover:bg-zinc-600'}`}
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
-              Descargar Comprobante
+              {pdfDescargado ? 'Comprobante Descargado' : 'Descargar Comprobante'}
             </button>
           </div>
         </div>
