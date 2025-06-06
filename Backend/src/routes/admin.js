@@ -48,6 +48,17 @@ const handleMulterError = (err, req, res, next) => {
   next();
 };
 
+// Añade este middleware antes de las rutas
+router.use((req, res, next) => {
+  console.log('Admin route accessed:', {
+    method: req.method,
+    path: req.path,
+    controller: req.path === '/genero' ? 'crearGenero' : 'other',
+    hasHandler: typeof adminController.crearGenero === 'function'
+  });
+  next();
+});
+
 // Rutas GET existentes
 router.get('/desarrolladores', verificarToken, adminController.mostrarDesarrolladores);
 router.get('/editores', verificarToken, adminController.mostrarEditores);
