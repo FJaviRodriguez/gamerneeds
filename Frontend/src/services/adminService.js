@@ -131,28 +131,31 @@ export const eliminarJuego = async (idjuego) => {
 
 export const editarJuego = async (idjuego, formData) => {
   try {
+    console.log('Editando juego:', {
+      idjuego,
+      formData: Object.fromEntries(formData)
+    });
+
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('No hay token de autenticación');
     }
 
-    console.log('Intentando editar juego:', {
-      idjuego,
-      url: `/admin/juego/${idjuego}`,
-      formData: Object.fromEntries(formData),
-      token
-    });
-
-    const response = await api.put(`/admin/juego/${idjuego}`, formData, {
+    const config = {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'multipart/form-data'
       }
-    });
-    
+    };
+
+    const response = await api.put(`/admin/juego/${idjuego}`, formData, config);
     return response.data;
   } catch (error) {
-    console.error('Error al editar juego:', error.response || error);
+    console.error('Error en editarJuego:', error);
+    if (error.response) {
+      console.error('Error response:', error.response.data);
+      console.error('Error status:', error.response.status);
+    }
     throw error.response?.data || { message: 'Error al actualizar el juego' };
   }
 };

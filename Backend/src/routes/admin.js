@@ -58,8 +58,23 @@ router.post('/juego', [verificarToken, verificarAdmin], upload, handleMulterErro
 router.post('/desarrollador', [verificarToken, verificarAdmin], adminController.crearDesarrollador);
 router.post('/editor', [verificarToken, verificarAdmin], adminController.crearEditor);
 
-// Corregir orden y middleware para PUT
-router.put('/juego/:idjuego', [verificarToken, verificarAdmin], upload, handleMulterError, adminController.editarJuego);
+// Cambiar el orden de los middlewares
+router.put(
+  '/juego/:idjuego', 
+  verificarToken,
+  verificarAdmin,
+  (req, res, next) => {
+    console.log('PUT request received:', {
+      params: req.params,
+      body: req.body,
+      headers: req.headers
+    });
+    next();
+  },
+  upload,
+  handleMulterError,
+  adminController.editarJuego
+);
 
 // Corregir orden y middleware para DELETE
 router.delete('/juego/:idjuego', [verificarToken, verificarAdmin], adminController.eliminarJuego);

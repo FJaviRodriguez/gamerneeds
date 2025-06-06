@@ -163,9 +163,13 @@ export const eliminarJuego = async (req, res) => {
 
 export const editarJuego = async (req, res) => {
   try {
+    console.log('EditarJuego controller called:', {
+      params: req.params,
+      body: req.body,
+      file: req.file
+    });
+
     const { idjuego } = req.params;
-    console.log('Editando juego:', idjuego);
-    console.log('Datos recibidos:', req.body);
     
     if (!idjuego) {
       return res.status(400).json({ message: 'ID de juego no proporcionado' });
@@ -186,30 +190,24 @@ export const editarJuego = async (req, res) => {
     }
 
     // Convertir strings JSON a arrays
-    if (juegoData.desarrolladores) {
-      juegoData.desarrolladores = JSON.parse(juegoData.desarrolladores);
+    if (req.body.desarrolladores) {
+      req.body.desarrolladores = JSON.parse(req.body.desarrolladores);
     }
-    if (juegoData.editores) {
-      juegoData.editores = JSON.parse(juegoData.editores);
+    if (req.body.editores) {
+      req.body.editores = JSON.parse(req.body.editores);
     }
-    if (juegoData.generos) {
-      juegoData.generos = JSON.parse(juegoData.generos);
+    if (req.body.generos) {
+      req.body.generos = JSON.parse(req.body.generos);
     }
 
-    await juegoModel.editarJuego(idjuego, juegoData);
-    
+    await juegoModel.editarJuego(idjuego, {
+      ...req.body,
+      url_portada: req.file ? req.file.filename : undefined
+    });
+
     res.json({ message: 'Juego actualizado correctamente' });
   } catch (error) {
     console.error('Error en editarJuego:', error);
-    
-    // Si hubo error y se subió una imagen, eliminarla
-    if (req.file) {
-      const rutaImagen = path.join(process.cwd(), 'public', 'juegos', req.file.filename);
-      if (fs.existsSync(rutaImagen)) {
-        fs.unlinkSync(rutaImagen);
-      }
-    }
-    
     res.status(500).json({ message: 'Error al actualizar el juego' });
   }
 };

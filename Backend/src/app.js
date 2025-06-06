@@ -25,6 +25,7 @@ const port = process.env.PORT || 5000;
 const host = '0.0.0.0'; 
 
 
+// Configurar CORS para permitir PUT
 const corsOptions = {
     origin: [
         'http://107.22.32.241:5173',
@@ -34,8 +35,10 @@ const corsOptions = {
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 };
+
+app.use(cors(corsOptions));
 
 app.post('/api/stripe/webhook', express.raw({type: 'application/json'}), stripeController.webhookHandler);
 
@@ -49,8 +52,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Configuración de CORS y JSON
-app.use(cors(corsOptions));
 app.use(express.json());
 
 // Rutas públicas
@@ -59,13 +60,14 @@ app.use('/api/auth', authRoutes);
 app.use('/api/juegos', juegosRoutes);
 app.use('/api/generos', generosRoutes);
 
-// Rutas protegidas - asegurarnos que adminRoutes está aquí
+// Añadir middleware específico para rutas admin
 app.use('/api/admin', (req, res, next) => {
   console.log('Admin route accessed:', {
     method: req.method,
     url: req.url,
     params: req.params,
-    body: req.body
+    body: req.body,
+    headers: req.headers
   });
   next();
 }, adminRoutes);
