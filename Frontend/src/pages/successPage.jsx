@@ -14,11 +14,21 @@ const SuccessPage = () => {
   useEffect(() => {
     const verificarSesion = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/stripe/verificar/${sessionId}`);
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/stripe/verificar/${sessionId}`,
+          {
+            headers: {
+              'Accept': 'application/json'
+            }
+          }
+        );
+        
         if (!response.ok) {
-          throw new Error('Sesión inválida');
+          throw new Error('Error verificando sesión');
         }
+        
         const data = await response.json();
+        console.log('Estado de pago:', data.status);
         
         if (data.status === 'complete' || data.status === 'paid') {
             setVerificado(true);
@@ -32,11 +42,10 @@ const SuccessPage = () => {
             }, 5000);
             return () => clearTimeout(timer);
         } else {
-            console.error('Estado de pago:', data.status);
             navigate('/carrito');
         }
       } catch (error) {
-        console.error('Error verificando sesión:', error);
+        console.error('Error:', error);
         navigate('/carrito');
       }
     };
