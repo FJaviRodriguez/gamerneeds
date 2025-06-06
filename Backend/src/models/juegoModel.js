@@ -227,32 +227,32 @@ export const editarJuego = async (idjuego, juegoData) => {
 
     await connection.query(updateQuery, updateParams);
 
-    // Actualizar desarrolladores
-    await connection.query('DELETE FROM juego_desarrollador WHERE idjuego = ?', [idjuego]);
+    // Actualizar desarrolladores - CORREGIR NOMBRE DE TABLA
+    await connection.query('DELETE FROM juego_has_desarrollador WHERE juego_idjuego = ?', [idjuego]);
     if (desarrolladores && desarrolladores.length > 0) {
       const desarrolladoresValues = desarrolladores.map(dev => [idjuego, dev]);
       await connection.query(
-        'INSERT INTO juego_desarrollador (idjuego, iddesarrollador) VALUES ?',
+        'INSERT INTO juego_has_desarrollador (juego_idjuego, desarrollador_iddesarrollador) VALUES ?',
         [desarrolladoresValues]
       );
     }
 
-    // Actualizar editores
-    await connection.query('DELETE FROM juego_editor WHERE idjuego = ?', [idjuego]);
+    // Actualizar editores - CORREGIR NOMBRE DE TABLA
+    await connection.query('DELETE FROM editor_has_juego WHERE juego_idjuego = ?', [idjuego]);
     if (editores && editores.length > 0) {
       const editoresValues = editores.map(ed => [idjuego, ed]);
       await connection.query(
-        'INSERT INTO juego_editor (idjuego, ideditor) VALUES ?',
+        'INSERT INTO editor_has_juego (juego_idjuego, editor_ideditor) VALUES ?',
         [editoresValues]
       );
     }
 
-    // Actualizar géneros
-    await connection.query('DELETE FROM juego_genero WHERE idjuego = ?', [idjuego]);
+    // Actualizar géneros - CORREGIR NOMBRE DE TABLA
+    await connection.query('DELETE FROM juego_has_genero WHERE juego_idjuego = ?', [idjuego]);
     if (generos && generos.length > 0) {
       const generosValues = generos.map(gen => [idjuego, gen]);
       await connection.query(
-        'INSERT INTO juego_genero (idjuego, idgenero) VALUES ?',
+        'INSERT INTO juego_has_genero (juego_idjuego, genero_idgenero) VALUES ?',
         [generosValues]
       );
     }

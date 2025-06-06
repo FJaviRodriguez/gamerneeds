@@ -136,7 +136,13 @@ export const editarJuego = async (idjuego, formData) => {
       throw new Error('No hay token de autenticación');
     }
 
-    console.log('Intentando editar juego:', idjuego);
+    console.log('Intentando editar juego:', {
+      idjuego,
+      url: `/admin/juego/${idjuego}`,
+      formData: Object.fromEntries(formData),
+      token
+    });
+
     const response = await api.put(`/admin/juego/${idjuego}`, formData, {
       headers: {
         'Authorization': `Bearer ${token}`,
