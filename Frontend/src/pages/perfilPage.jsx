@@ -24,10 +24,10 @@ const PerfilPage = () => {
   };
 
   const handleAvatarUpdate = (newAvatarPath) => {
-    setUsuario({
-      ...usuario,
+    setUsuario(prev => ({
+      ...prev,
       avatar: newAvatarPath
-    });
+    }));
   };
 
   return (

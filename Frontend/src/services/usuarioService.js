@@ -2,17 +2,16 @@ import crearInstanciaApi from './apiConfig';
 
 const api = crearInstanciaApi();
 
-export const actualizarAvatar = async (file) => {
-  const formData = new FormData();
-  formData.append('avatar', file);
+export const actualizarAvatar = async (formData) => {
   try {
-    const respuesta = await api.post('/usuario/perfil/avatar', formData, {
+    const response = await api.post('/usuario/perfil/avatar', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     });
-    return respuesta.data;
+    return response.data;
   } catch (error) {
+    console.error('Error al actualizar avatar:', error);
     throw error.response?.data || { message: 'Error al actualizar el avatar' };
   }
 };

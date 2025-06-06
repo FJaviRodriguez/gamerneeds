@@ -108,7 +108,12 @@ export const actualizarAvatar = async (userId, avatarPath) => {
       'UPDATE usuario SET avatar = ? WHERE idusuario = ?',
       [avatarPath, userId]
     );
-    return result.affectedRows > 0;
+    
+    if (result.affectedRows === 0) {
+      throw new Error('No se pudo actualizar el avatar');
+    }
+    
+    return true;
   } catch (error) {
     console.error('Error en actualizarAvatar:', error);
     throw new Error('Error al actualizar el avatar en la base de datos');
