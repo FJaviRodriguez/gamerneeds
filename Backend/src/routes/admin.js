@@ -59,22 +59,7 @@ router.post('/desarrollador', [verificarToken, verificarAdmin], adminController.
 router.post('/editor', [verificarToken, verificarAdmin], adminController.crearEditor);
 
 // Cambiar el orden de los middlewares
-router.put(
-  '/juego/:idjuego', 
-  verificarToken,
-  verificarAdmin,
-  (req, res, next) => {
-    console.log('PUT request received:', {
-      params: req.params,
-      body: req.body,
-      headers: req.headers
-    });
-    next();
-  },
-  upload,
-  handleMulterError,
-  adminController.editarJuego
-);
+router.put('/juego/:idjuego', [verificarToken, verificarAdmin], upload, handleMulterError, adminController.editarJuego);
 
 // Corregir orden y middleware para DELETE
 router.delete('/juego/:idjuego', [verificarToken, verificarAdmin], adminController.eliminarJuego);

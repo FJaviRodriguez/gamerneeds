@@ -60,17 +60,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/juegos', juegosRoutes);
 app.use('/api/generos', generosRoutes);
 
+app.use('/public/juegos', express.static(path.join(__dirname, '../public/juegos')));
+
 // Añadir middleware específico para rutas admin
-app.use('/api/admin', (req, res, next) => {
-  console.log('Admin route accessed:', {
-    method: req.method,
-    url: req.url,
-    params: req.params,
-    body: req.body,
-    headers: req.headers
-  });
-  next();
-}, adminRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/usuario', verificarToken, usuarioRoutes);
 app.use('/api/biblioteca', verificarToken, bibliotecaRouter);
 app.use('/api/pagos', verificarToken, stripeRoutes);
@@ -106,7 +99,6 @@ const upload = multer({
 });
 
 // Middleware para archivos
-app.use('/public/juegos', express.static(path.join(__dirname, '../public/juegos')));
 app.use('/public', express.static(path.join(__dirname, '../public')));
 
 // Asegúrate de que los directorios existen
