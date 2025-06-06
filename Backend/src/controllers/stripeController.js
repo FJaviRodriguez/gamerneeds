@@ -36,7 +36,7 @@ export const crearSesionPago = async (req, res) => {
                             ? item.url_portada 
                             : `${process.env.BACKEND_URL}/public/juegos/${item.url_portada}`],
                     },
-                    unit_amount: (item.precio * 100),
+                    unit_amount: Math.round(parseFloat(item.precio) * 100),
                 },
                 quantity: 1,
             })),
@@ -51,27 +51,7 @@ export const crearSesionPago = async (req, res) => {
             shipping_address_collection: {
                 allowed_countries: ['ES']
             },
-            locale: 'es',
-            // Actualizar custom_fields según la nueva API
-            custom_fields: [
-                {
-                    key: 'plataforma',
-                    label: 'Plataforma preferida',
-                    type: 'dropdown',
-                    optional: false, // Especificar si es opcional
-                    dropdown: {  // Usar dropdown en lugar de options
-                        options: [
-                            { label: 'Steam', value: 'steam' },
-                            { label: 'Epic Games', value: 'epic' },
-                            { label: 'GOG', value: 'gog' }
-                        ]
-                    }
-                }
-            ],
-            custom_text: {
-                submit: { message: 'GAMERS NEEDS procesará tu pago de forma segura' },
-                shipping: { message: 'Los juegos se activarán instantáneamente en tu biblioteca' }
-            }
+            locale: 'es'
         });
 
         res.json({ sessionId: session.id });
