@@ -35,10 +35,17 @@ export const generarPDFComprobante = (datosCompra) => {
             // Añadir logo
             try {
                 const logoPath = join(__dirname, '../../../Frontend/src/assets/logo.png');
-                doc.image(logoPath, 50, 30, {
-                    width: 90,
-                    height: 90
-                });
+                console.log('Intentando cargar logo desde:', logoPath); // Debug
+                
+                if (fs.existsSync(logoPath)) {
+                    doc.image(logoPath, 50, 30, {
+                        width: 90,
+                        height: 90,
+                        align: 'left'
+                    });
+                } else {
+                    console.error('El archivo del logo no existe en la ruta:', logoPath);
+                }
             } catch (error) {
                 console.error('Error al cargar el logo:', error);
                 // Continuar sin el logo si hay error
