@@ -41,6 +41,11 @@ const corsOptions = {
 app.post(
     '/api/stripe/webhook',
     express.raw({ type: 'application/json' }),
+    (req, res, next) => {
+        console.log('Webhook headers:', req.headers);
+        console.log('Webhook body type:', typeof req.body);
+        next();
+    },
     stripeController.webhookHandler
 );
 
