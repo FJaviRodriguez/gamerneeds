@@ -1,6 +1,5 @@
 import express from 'express';
 import { verificarToken } from './middleware.js';
-import { mostrarPerfil } from '../controllers/usuarioController.js';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -39,54 +38,51 @@ const upload = multer({
   }
 });
 
-// Middleware para manejar errores de multer
-const handleMulterError = (err, req, res, next) => {
-  if (err instanceof multer.MulterError) {
-    return res.status(400).json({ message: 'Error al subir el archivo: ' + err.message });
-  } else if (err) {
-    return res.status(500).json({ message: 'Error al procesar la imagen: ' + err.message });
-  }
-  next();
-};
+router.post('/perfil/avatar', verificarToken, upload.single('avatar'), async (req, res) => {
+  try {
+    // Añadir logs para depuración
+    console.log('Request body:', req.body);
+    console.log('Request file:', req.file);
+    console.log('User info:', req.user);
 
-router.get('/perfil', verificarToken, mostrarPerfil);
-
-router.post('/perfil/avatar', 
-  verificarToken, 
-  upload.single('avatar'), 
-  handleMulterError,
-  async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: 'No se ha subido ninguna imagen' });
-      }
-
-      const userId = req.user.id;
-
-      // Obtener el avatar anterior
-      const [result] = await pool.query('SELECT avatar FROM usuario WHERE idusuario = ?', [userId]);
-      const oldAvatar = result[0]?.avatar;
-
-      // Si existe un avatar anterior y no es el default, eliminarlo
-      if (oldAvatar && !oldAvatar.includes('default-icon')) {
-        const fullPath = path.join(process.cwd(), 'public', 'avatars', path.basename(oldAvatar));
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        }
-      }
-
-      const avatarPath = `/public/avatars/${req.file.filename}`;
-      await usuarioController.actualizarAvatar(userId, avatarPath);
-
-      res.json({ 
-        message: 'Avatar actualizado correctamente',
-        avatarPath 
-      });
-    } catch (error) {
-      console.error('Error al actualizar avatar:', error);
-      res.status(500).json({ message: 'Error al actualizar el avatar' });
+    if (!req.file) {
+      return res.status(400).json({ message: 'No se ha subido ninguna imagen' });
     }
+
+    // Extraer userId del token JWT decodificado
+    const userId = req.user.userId; // Cambiado de req.user.id a req.user.userId
+
+    // Obtener el avatar anterior
+    const [result] = await pool.query('SELECT avatar FROM usuario WHERE idusuario = ?', [userId]);
+    const oldAvatar = result[0]?.avatar;
+
+    // Si existe un avatar anterior y no es el default, eliminarlo
+    if (oldAvatar && !oldAvatar.includes('default-icon')) {
+      const fullPath = path.join(process.cwd(), 'public', 'avatars', path.basename(oldAvatar));
+      if (fs.existsSync(fullPath)) {
+        fs.unlinkSync(fullPath);
+      }
+    }
+
+    const avatarPath = `/public/avatars/${req.file.filename}`;
+    
+    // Actualizar en la base de datos
+    await pool.query(
+      'UPDATE usuario SET avatar = ? WHERE idusuario = ?',
+      [avatarPath, userId]
+    );
+
+    res.json({ 
+      message: 'Avatar actualizado correctamente',
+      avatarPath 
+    });
+  } catch (error) {
+    console.error('Error al actualizar avatar:', error);
+    res.status(500).json({ 
+      message: 'Error al actualizar el avatar',
+      error: error.message 
+    });
   }
-);
+});
 
 export default router;
