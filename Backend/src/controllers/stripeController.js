@@ -90,86 +90,105 @@ export const webhookHandler = async (req, res) => {
             process.env.STRIPE_WEBHOOK_SECRET
         );
 
-        // Logging mejorado
-        console.log('Webhook recibido:', {
-            type: event.type,
-            metadata: event.data.object.metadata,
-            status: event.data.object.payment_status
-        });
+        console.log('Webhook Event Type:', event.type);
 
         if (event.type === 'checkout.session.completed') {
             const session = event.data.object;
-            const { metadata } = session;
+            console.log('Session details:', {
+                id: session.id,
+                metadata: session.metadata,
+                amount_total: session.amount_total,
+                customer_details: session.customer_details
+            });
 
-            if (!metadata || !metadata.usuarioId || !metadata.juegosIds) {
-                console.error('Metadata faltante:', metadata);
+            if (!session.metadata?.usuarioId || !session.metadata?.juegosIds) {
+                console.error('Metadata incompleta:', {
+                    usuarioId: session.metadata?.usuarioId,
+                    juegosIds: session.metadata?.juegosIds
+                });
                 return res.status(400).json({ error: 'Metadata incompleta' });
             }
 
+            const connection = await pool.getConnection();
             try {
-                const usuarioId = metadata.usuarioId;
-                let juegosIds;
-                
-                try {
-                    juegosIds = JSON.parse(metadata.juegosIds);
-                    if (!Array.isArray(juegosIds)) {
-                        throw new Error('juegosIds no es un array');
-                    }
-                } catch (parseError) {
-                    console.error('Error parseando juegosIds:', metadata.juegosIds);
-                    throw new Error('Formato inválido de juegosIds');
-                }
+                await connection.beginTransaction();
 
-                // Crear la compra
-                const idcompra = await compraModel.crearCompra(usuarioId, session.amount_total / 100);
+                // 1. Crear la compra
+                const idcompra = await compraModel.crearCompra(
+                    session.metadata.usuarioId, 
+                    session.amount_total / 100
+                );
                 console.log('Compra creada:', idcompra);
 
-                // Añadir juegos a la biblioteca
-                await bibliotecaModel.aniadirJuegosABiblioteca(usuarioId, juegosIds);
+                // 2. Parsear juegosIds
+                const juegosIds = JSON.parse(session.metadata.juegosIds);
+                console.log('Juegos a añadir:', juegosIds);
+
+                // 3. Añadir juegos a la biblioteca
+                await bibliotecaModel.aniadirJuegosABiblioteca(
+                    session.metadata.usuarioId,
+                    juegosIds
+                );
                 console.log('Juegos añadidos a biblioteca');
 
-                // Actualizar estado de la compra
+                // 4. Actualizar estado de la compra
                 await compraModel.actualizarEstadoCompraPorId(idcompra, 'completed');
                 console.log('Estado de compra actualizado');
 
-                // Recuperar detalles de línea completos
-                const sessionWithLineItems = await stripe.checkout.sessions.retrieve(session.id, {
-                    expand: ['line_items']
-                });
+                // 5. Obtener detalles completos de la sesión
+                const sessionWithLineItems = await stripe.checkout.sessions.retrieve(
+                    session.id,
+                    { expand: ['line_items'] }
+                );
 
-                // Generar PDF
+                // 6. Preparar datos para el PDF
                 const datosCompra = {
                     sessionId: session.id,
-                    items: sessionWithLineItems.line_items.data,
+                    items: sessionWithLineItems.line_items.data.map(item => ({
+                        nombre: item.description || 'Producto',
+                        precio: item.amount_total / 100
+                    })),
                     total: session.amount_total / 100,
                     usuario: {
-                        id: usuarioId,
+                        id: session.metadata.usuarioId,
                         nombre: session.customer_details?.name || 'Cliente',
                         email: session.customer_details?.email || 'No disponible'
                     },
                     fecha: new Date()
                 };
 
-                await generarPDFComprobante(datosCompra);
-                console.log('PDF generado correctamente');
+                // 7. Generar PDF
+                const pdfPath = await generarPDFComprobante(datosCompra);
+                console.log('PDF generado en:', pdfPath);
 
+                await connection.commit();
                 return res.json({ received: true });
+
             } catch (error) {
-                console.error('Error detallado:', {
-                    message: error.message,
+                await connection.rollback();
+                console.error('Error procesando webhook:', {
+                    error: error.message,
                     stack: error.stack,
+                    sessionId: session.id,
                     metadata: session.metadata
                 });
-                return res.status(500).json({ 
+                return res.status(500).json({
                     error: 'Error procesando la compra',
                     details: error.message
                 });
+            } finally {
+                connection.release();
             }
         }
 
         return res.json({ received: true });
     } catch (error) {
-        console.error('Error en webhook:', error);
+        console.error('Error en webhook:', {
+            error: error.message,
+            stack: error.stack,
+            headers: req.headers,
+            body: typeof req.body === 'string' ? 'raw body' : 'parsed body'
+        });
         return res.status(400).json({ error: `Webhook Error: ${error.message}` });
     }
 };
