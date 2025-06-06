@@ -19,6 +19,7 @@ import CrearDesarrolladorPage from './pages/crearDesarrolladorPage';
 import CrearEditorPage from './pages/crearEditorPage';
 import EditarJuegoPage from './pages/editarJuegoPage';
 import EditarJuegoFormPage from './pages/editarJuegoFormPage';
+import CrearGeneroPage from './pages/crearGeneroPage';
 
 function App() {
   return (
@@ -105,6 +106,14 @@ function App() {
           element={
             <RutasProtegidas adminOnly>
               <EditarJuegoFormPage />
+            </RutasProtegidas>
+          } 
+        />
+        <Route 
+          path="/admin/genero/crear" 
+          element={
+            <RutasProtegidas adminOnly>
+              <CrearGeneroPage />
             </RutasProtegidas>
           } 
         />

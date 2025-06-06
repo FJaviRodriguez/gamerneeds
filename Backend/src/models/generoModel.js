@@ -9,3 +9,17 @@ export const mostrarGeneros = async () => {
     throw error;
   }
 };
+
+export const crearGenero = async (genero) => {
+  try {
+    const { nombre, descripcion } = genero;
+    const [result] = await pool.query(
+      'INSERT INTO genero (nombre, descripcion) VALUES (?, ?)',
+      [nombre, descripcion]
+    );
+    return result.insertId;
+  } catch (error) {
+    console.error('Error en crearGenero:', error);
+    throw error;
+  }
+};

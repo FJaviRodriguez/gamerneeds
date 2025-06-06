@@ -57,6 +57,7 @@ router.post('/register', [verificarToken, verificarAdmin], adminController.regis
 router.post('/juego', [verificarToken, verificarAdmin], upload, handleMulterError, adminController.crearJuego);
 router.post('/desarrollador', [verificarToken, verificarAdmin], adminController.crearDesarrollador);
 router.post('/editor', [verificarToken, verificarAdmin], adminController.crearEditor);
+router.post('/genero', [verificarToken, verificarAdmin], adminController.crearGenero);
 
 // Cambiar el orden de los middlewares
 router.put('/juego/:idjuego', [verificarToken, verificarAdmin], upload, handleMulterError, adminController.editarJuego);

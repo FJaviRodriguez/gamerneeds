@@ -155,3 +155,12 @@ export const editarJuego = async (idjuego, formData) => {
     throw error.response?.data || { message: 'Error al actualizar el juego' };
   }
 };
+
+export const crearGenero = async (generoData) => {
+  try {
+    const response = await api.post('/admin/genero', generoData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Error al crear el género' };
+  }
+};

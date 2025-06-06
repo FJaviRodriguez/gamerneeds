@@ -17,3 +17,25 @@ export const mostrarGeneros = async (req, res) => {
         });
     }
 };
+
+export const crearGenero = async (req, res) => {
+  try {
+    const { nombre, descripcion } = req.body;
+    
+    if (!nombre) {
+      return res.status(400).json({ message: 'El nombre es requerido' });
+    }
+
+    const generoId = await generoModel.crearGenero({ nombre, descripcion });
+    res.status(201).json({ 
+      message: 'Género creado correctamente',
+      id: generoId
+    });
+  } catch (error) {
+    console.error('Error en crearGenero:', error);
+    res.status(500).json({ 
+      message: 'Error al crear el género',
+      error: error.message 
+    });
+  }
+};
