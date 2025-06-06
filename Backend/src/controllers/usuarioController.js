@@ -78,24 +78,23 @@ export const actualizarAvatar = async (req, res) => {
       return res.status(400).json({ message: 'No se ha subido ninguna imagen' });
     }
 
-    const userId = req.user.userId;
+    const userId = req.user.id; // Cambiado de req.user.userId a req.user.id
     const oldAvatar = await usuarioModel.mostrarAvatarUsuario(userId);
 
     // Eliminar avatar anterior si existe y no es el default
     if (oldAvatar && !oldAvatar.includes('default-icon')) {
-      const fullPath = path.join(process.cwd(), 'public/avatars', path.basename(oldAvatar));
+      const fullPath = path.join(process.cwd(), 'public/avatars', oldAvatar);
       if (fs.existsSync(fullPath)) {
         fs.unlinkSync(fullPath);
       }
     }
 
-    // Guardar solo el nombre del archivo en la base de datos
-    const avatarFileName = req.file.filename;
-    await usuarioModel.actualizarAvatar(userId, avatarFileName);
+    // Guardar solo el nombre del archivo
+    await usuarioModel.actualizarAvatar(userId, req.file.filename);
 
-    // Devolver la URL completa para el frontend
-    const avatarUrl = `${process.env.BACKEND_URL}/public/avatars/${avatarFileName}`;
-
+    // Devolver la URL completa
+    const avatarUrl = `${process.env.BACKEND_URL}/public/avatars/${req.file.filename}`;
+    
     res.json({
       message: 'Avatar actualizado correctamente',
       avatarPath: avatarUrl
