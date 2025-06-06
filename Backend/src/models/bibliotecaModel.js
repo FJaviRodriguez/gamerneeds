@@ -28,6 +28,10 @@ export const mostrarBiblioteca = async (usuarioId) => {
     }
 };
 export const aniadirJuegosABiblioteca = async (usuarioId, juegosIds) => {
+    if (!Array.isArray(juegosIds)) {
+        throw new Error('juegosIds debe ser un array');
+    }
+
     const connection = await pool.getConnection();
     try {
         await connection.beginTransaction();
@@ -35,6 +39,7 @@ export const aniadirJuegosABiblioteca = async (usuarioId, juegosIds) => {
         const fecha = new Date().toISOString().slice(0, 19).replace('T', ' ');
         
         for (const juegoId of juegosIds) {
+            console.log(`Añadiendo juego ${juegoId} a biblioteca de usuario ${usuarioId}`);
             await connection.query(
                 `INSERT INTO biblioteca (usuario_idusuario, juego_idjuego, fecha_adquisicion) 
                  VALUES (?, ?, ?) 
@@ -47,7 +52,11 @@ export const aniadirJuegosABiblioteca = async (usuarioId, juegosIds) => {
         return true;
     } catch (error) {
         await connection.rollback();
-        console.error('Error en aniadirJuegosABiblioteca:', error);
+        console.error('Error en aniadirJuegosABiblioteca:', {
+            error: error.message,
+            usuarioId,
+            juegosIds
+        });
         throw error;
     } finally {
         connection.release();

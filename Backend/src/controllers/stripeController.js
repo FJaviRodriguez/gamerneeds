@@ -36,13 +36,16 @@ export const crearSesionPago = async (req, res) => {
                         images: [item.url_portada.startsWith('http') 
                             ? item.url_portada 
                             : `${process.env.BACKEND_URL}/public/juegos/${item.url_portada}`],
+                        metadata: {
+                            idjuego: item.idjuego.toString()
+                        }
                     },
                     unit_amount: Math.round(parseFloat(item.precio) * 100),
                 },
                 quantity: 1,
             })),
             mode: 'payment',
-            success_url: `${process.env.FRONTEND_URL}/success/{CHECKOUT_SESSION_ID}`, 
+            success_url: `${process.env.FRONTEND_URL}/success/{CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.FRONTEND_URL}/carrito`,
             metadata: {
                 usuarioId: usuarioId.toString(),
@@ -53,6 +56,11 @@ export const crearSesionPago = async (req, res) => {
                 allowed_countries: ['ES']
             },
             locale: 'es'
+        });
+
+        console.log('Sesión creada:', {
+            sessionId: session.id,
+            metadata: session.metadata
         });
 
         res.json({ sessionId: session.id });
@@ -82,30 +90,54 @@ export const webhookHandler = async (req, res) => {
             process.env.STRIPE_WEBHOOK_SECRET
         );
 
-        // Verificar el tipo de evento
+        // Logging mejorado
+        console.log('Webhook recibido:', {
+            type: event.type,
+            metadata: event.data.object.metadata,
+            status: event.data.object.payment_status
+        });
+
         if (event.type === 'checkout.session.completed') {
             const session = event.data.object;
             const { metadata } = session;
 
             if (!metadata || !metadata.usuarioId || !metadata.juegosIds) {
-                console.error('Metadata faltante en la sesión:', session);
+                console.error('Metadata faltante:', metadata);
                 return res.status(400).json({ error: 'Metadata incompleta' });
             }
 
             try {
                 const usuarioId = metadata.usuarioId;
-                const juegosIds = JSON.parse(metadata.juegosIds);
+                let juegosIds;
+                
+                try {
+                    juegosIds = JSON.parse(metadata.juegosIds);
+                    if (!Array.isArray(juegosIds)) {
+                        throw new Error('juegosIds no es un array');
+                    }
+                } catch (parseError) {
+                    console.error('Error parseando juegosIds:', metadata.juegosIds);
+                    throw new Error('Formato inválido de juegosIds');
+                }
 
-                // Crear la compra y añadir juegos a la biblioteca
+                // Crear la compra
                 const idcompra = await compraModel.crearCompra(usuarioId, session.amount_total / 100);
-                await bibliotecaModel.aniadirJuegosABiblioteca(usuarioId, juegosIds);
+                console.log('Compra creada:', idcompra);
 
-                // Recuperar los detalles de línea completos
+                // Añadir juegos a la biblioteca
+                await bibliotecaModel.aniadirJuegosABiblioteca(usuarioId, juegosIds);
+                console.log('Juegos añadidos a biblioteca');
+
+                // Actualizar estado de la compra
+                await compraModel.actualizarEstadoCompraPorId(idcompra, 'completed');
+                console.log('Estado de compra actualizado');
+
+                // Recuperar detalles de línea completos
                 const sessionWithLineItems = await stripe.checkout.sessions.retrieve(session.id, {
                     expand: ['line_items']
                 });
 
-                // Generar PDF con los datos completos
+                // Generar PDF
                 const datosCompra = {
                     sessionId: session.id,
                     items: sessionWithLineItems.line_items.data,
@@ -119,21 +151,25 @@ export const webhookHandler = async (req, res) => {
                 };
 
                 await generarPDFComprobante(datosCompra);
-                
-                // Actualizar el estado de la compra
-                await compraModel.actualizarEstadoCompraPorId(idcompra, 'completed');
+                console.log('PDF generado correctamente');
 
                 return res.json({ received: true });
             } catch (error) {
-                console.error('Error procesando la compra:', error);
-                return res.status(500).json({ error: 'Error procesando la compra' });
+                console.error('Error detallado:', {
+                    message: error.message,
+                    stack: error.stack,
+                    metadata: session.metadata
+                });
+                return res.status(500).json({ 
+                    error: 'Error procesando la compra',
+                    details: error.message
+                });
             }
         }
 
-        // Para otros tipos de eventos
         return res.json({ received: true });
     } catch (error) {
-        console.error('Webhook error:', error);
+        console.error('Error en webhook:', error);
         return res.status(400).json({ error: `Webhook Error: ${error.message}` });
     }
 };
