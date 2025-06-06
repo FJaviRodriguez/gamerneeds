@@ -216,18 +216,12 @@ export const editarJuego = async (idjuego, juegoData) => {
       generos
     } = juegoData;
 
-    // Log para debug
-    console.log('Datos recibidos en editarJuego:', {
-      titulo,
-      desarrolladores,
-      editores,
-      generos
-    });
-
-    // Asegurarse de que los arrays sean arrays
-    const desarrolladoresArray = Array.isArray(desarrolladores) ? desarrolladores : JSON.parse(desarrolladores || '[]');
-    const editoresArray = Array.isArray(editores) ? editores : JSON.parse(editores || '[]');
-    const generosArray = Array.isArray(generos) ? generos : JSON.parse(generos || '[]');
+    // Validar y preparar datos
+    const tituloValidado = titulo?.substring(0, 255) || ''; // VARCHAR(255)
+    const descripcionValidada = descripcion || ''; // TEXT no necesita truncado
+    const precioValidado = parseFloat(precio) || 0;
+    const clasificacionValidada = parseInt(clasificacion_edad) || 0;
+    const urlTrailerValidado = url_trailer?.substring(0, 255) || '';
 
     let updateQuery = `
       UPDATE juego 
@@ -240,12 +234,12 @@ export const editarJuego = async (idjuego, juegoData) => {
     `;
     
     let updateParams = [
-      titulo,
-      descripcion || '',
-      precio,
+      tituloValidado,
+      descripcionValidada,
+      precioValidado,
       fecha_lanzamiento || null,
-      clasificacion_edad || 0,
-      url_trailer || ''
+      clasificacionValidada,
+      urlTrailerValidado
     ];
 
     if (url_portada) {
@@ -256,9 +250,32 @@ export const editarJuego = async (idjuego, juegoData) => {
     updateQuery += ` WHERE idjuego = ?`;
     updateParams.push(idjuego);
 
+    // Log para debugging
+    console.log('Query de actualización:', updateQuery);
+    console.log('Parámetros:', updateParams);
+
+    // Ejecutar actualización
     await connection.query(updateQuery, updateParams);
 
-    // Actualizar desarrolladores
+    // Procesar desarrolladores
+    const desarrolladoresArray = JSON.parse(Array.isArray(desarrolladores) ? 
+      JSON.stringify(desarrolladores) : 
+      desarrolladores || '[]'
+    );
+
+    // Procesar editores
+    const editoresArray = JSON.parse(Array.isArray(editores) ? 
+      JSON.stringify(editores) : 
+      editores || '[]'
+    );
+
+    // Procesar géneros
+    const generosArray = JSON.parse(Array.isArray(generos) ? 
+      JSON.stringify(generos) : 
+      generos || '[]'
+    );
+
+    // Actualizar relaciones usando transacción
     await connection.query('DELETE FROM juego_has_desarrollador WHERE juego_idjuego = ?', [idjuego]);
     if (desarrolladoresArray.length > 0) {
       const desarrolladoresValues = desarrolladoresArray.map(dev => [idjuego, dev]);
@@ -268,7 +285,6 @@ export const editarJuego = async (idjuego, juegoData) => {
       );
     }
 
-    // Actualizar editores
     await connection.query('DELETE FROM editor_has_juego WHERE juego_idjuego = ?', [idjuego]);
     if (editoresArray.length > 0) {
       const editoresValues = editoresArray.map(ed => [idjuego, ed]);
@@ -278,7 +294,6 @@ export const editarJuego = async (idjuego, juegoData) => {
       );
     }
 
-    // Actualizar géneros
     await connection.query('DELETE FROM juego_has_genero WHERE juego_idjuego = ?', [idjuego]);
     if (generosArray.length > 0) {
       const generosValues = generosArray.map(gen => [idjuego, gen]);
