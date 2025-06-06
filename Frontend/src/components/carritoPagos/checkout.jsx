@@ -83,15 +83,30 @@ const CheckoutForm = () => {
             <div className="flex gap-8">
               <div className="flex-1">
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="bg-[#1E1E1E] p-6 rounded-lg">
-                    <h2 className="text-white text-lg font-medium mb-4">Dirección de Facturación</h2>
+                  <div className="stripe-form-container">
+                    <h2 className="stripe-section-title">Dirección de Facturación</h2>
                     <div className="grid grid-cols-2 gap-4">
-                      <input type="text" placeholder="Nombre y apellidos" value={formData.nombre} onChange={(e) => setFormData(prev => ({ ...prev, nombre: e.target.value }))} className="w-full p-3 bg-[#2A2A2A] border border-zinc-700 rounded text-white" required/>
-                      <input type="text" placeholder="Dirección" value={formData.direccion} onChange={(e) => setFormData(prev => ({ ...prev, direccion: e.target.value }))} className="w-full p-3 bg-[#2A2A2A] border border-zinc-700 rounded text-white" required/>
+                      <input
+                        type="text"
+                        placeholder="Nombre y apellidos"
+                        value={formData.nombre}
+                        onChange={(e) => setFormData(prev => ({ ...prev, nombre: e.target.value }))}
+                        className="stripe-input"
+                        required
+                      />
+                      <input
+                        type="text"
+                        placeholder="Dirección"
+                        value={formData.direccion}
+                        onChange={(e) => setFormData(prev => ({ ...prev, direccion: e.target.value }))}
+                        className="stripe-input"
+                        required
+                      />
                     </div>
                   </div>
-                  <div className="bg-[#1E1E1E] p-6 rounded-lg">
-                    <h2 className="text-white text-lg font-medium mb-4">Datos de la tarjeta</h2>
+                  
+                  <div className="stripe-form-container">
+                    <h2 className="stripe-section-title">Datos de la tarjeta</h2>
                     <CardElement
                       options={{
                         style: {
@@ -99,27 +114,31 @@ const CheckoutForm = () => {
                             fontSize: '16px',
                             color: '#ffffff',
                             '::placeholder': {
-                              color: '#aab7c4'
+                              color: '#6B7280'
                             }
-                          },
-                          invalid: {
-                            color: '#fa755a',
-                            iconColor: '#fa755a'
                           }
                         }
                       }}
+                      className="stripe-element"
                     />
                   </div>
                 </form>
               </div>
+              
               <div className="w-80">
-                <div className="bg-[#1E1E1E] p-6 rounded-lg sticky top-8">
-                  <h2 className="text-white text-lg font-medium mb-4">Resumen</h2>
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-zinc-400">Total</span>
-                    <span className="text-white text-xl font-medium">{total.toFixed(2)}€</span>
+                <div className="stripe-summary">
+                  <h2 className="stripe-section-title">Resumen</h2>
+                  <div className="stripe-total">
+                    <span className="stripe-total-label">Total</span>
+                    <span className="stripe-total-amount">{total.toFixed(2)}€</span>
                   </div>
-                  <button type="submit" disabled={loading} style={{ backgroundColor: '#FF4C1A' }} className="w-full text-white py-3 rounded font-medium disabled:opacity-50 disabled:cursor-not-allowed">{loading ? 'Procesando...' : 'Pagar'}</button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="stripe-button"
+                  >
+                    {loading ? 'Procesando...' : 'Pagar'}
+                  </button>
                 </div>
               </div>
             </div>

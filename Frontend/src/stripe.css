@@ -1,0 +1,59 @@
+@layer components {
+  .stripe-element {
+    @apply bg-[#272727] border border-zinc-700 rounded-md p-4 text-white w-full;
+  }
+
+  .stripe-element--focus {
+    @apply border-[#FF4C1A] ring-1 ring-[#FF4C1A];
+  }
+
+  .stripe-element--invalid {
+    @apply border-red-500;
+  }
+
+  .stripe-element--webkit-autofill {
+    @apply !bg-[#272727];
+  }
+
+  /* Contenedor del formulario de pago */
+  .stripe-form-container {
+    @apply bg-[#181818] rounded-lg p-6 space-y-4;
+  }
+
+  /* Campos de entrada personalizados */
+  .stripe-input {
+    @apply w-full p-3 bg-[#2A2A2A] border border-zinc-700 rounded 
+           text-white placeholder-zinc-400 focus:border-[#FF4C1A] 
+           focus:ring-1 focus:ring-[#FF4C1A] outline-none;
+  }
+
+  /* Botones */
+  .stripe-button {
+    @apply w-full bg-[#FF4C1A] text-white py-3 rounded-md font-medium
+           hover:bg-[#FF6B3D] transition-colors duration-200
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Títulos de sección */
+  .stripe-section-title {
+    @apply text-white text-lg font-medium mb-4;
+  }
+
+  /* Resumen de pago */
+  .stripe-summary {
+    @apply bg-[#1E1E1E] p-6 rounded-lg sticky top-8;
+  }
+
+  /* Totales */
+  .stripe-total {
+    @apply flex justify-between items-center mb-4;
+  }
+
+  .stripe-total-label {
+    @apply text-zinc-400;
+  }
+
+  .stripe-total-amount {
+    @apply text-white text-xl font-medium;
+  }
+}
