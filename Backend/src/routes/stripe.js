@@ -1,8 +1,8 @@
 import express from 'express';
 import * as stripeController from '../controllers/stripeController.js';
 import { verificarToken } from './middleware.js';
-import path from 'path';
-import fs from 'fs';
+import stripe from '../config/stripe.js';
+import { generarPDFComprobante } from '../services/pdfService.js';
 
 const router = express.Router();
 
@@ -26,6 +26,8 @@ router.get('/descargar-comprobante/:sessionId', verificarToken, async (req, res)
     try {
         const { sessionId } = req.params;
         
+        console.log('Obteniendo sesión:', sessionId);
+        
         const session = await stripe.checkout.sessions.retrieve(sessionId, {
             expand: ['line_items']
         });
@@ -33,6 +35,8 @@ router.get('/descargar-comprobante/:sessionId', verificarToken, async (req, res)
         if (!session) {
             return res.status(404).json({ error: 'Sesión no encontrada' });
         }
+
+        console.log('Preparando datos para PDF');
 
         const datosCompra = {
             sessionId: session.id,
@@ -50,7 +54,15 @@ router.get('/descargar-comprobante/:sessionId', verificarToken, async (req, res)
             fecha: new Date()
         };
 
+        console.log('Generando PDF con datos:', datosCompra);
+
         const pdfBuffer = await generarPDFComprobante(datosCompra);
+
+        if (!pdfBuffer) {
+            throw new Error('No se pudo generar el PDF');
+        }
+
+        console.log('PDF generado correctamente');
 
         res.set({
             'Content-Type': 'application/pdf',
@@ -61,7 +73,7 @@ router.get('/descargar-comprobante/:sessionId', verificarToken, async (req, res)
         res.send(pdfBuffer);
 
     } catch (error) {
-        console.error('Error al generar comprobante:', error);
+        console.error('Error completo:', error);
         res.status(500).json({ 
             error: 'Error al generar el comprobante',
             details: error.message 

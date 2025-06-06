@@ -21,13 +21,13 @@ export const generarPDFComprobante = (datosCompra) => {
 
             // Información de la compra
             doc.fontSize(12)
-               .text(`Fecha: ${new Date(datosCompra.fecha).toLocaleString()}`)
+               .text(`Fecha: ${new Date(datosCompra.fecha).toLocaleString('es-ES')}`)
                .text(`Nº de Pedido: ${datosCompra.sessionId}`)
                .text(`Cliente: ${datosCompra.usuario.nombre}`)
                .text(`Email: ${datosCompra.usuario.email}`)
                .moveDown();
 
-            // Tabla de productos
+            // Lista de productos
             doc.text('Productos:', { underline: true })
                .moveDown();
 
@@ -41,8 +41,11 @@ export const generarPDFComprobante = (datosCompra) => {
                .fontSize(10)
                .text('Gracias por tu compra', { align: 'center' });
 
+            // Finalizar el documento
             doc.end();
+
         } catch (error) {
+            console.error('Error generando PDF:', error);
             reject(error);
         }
     });

@@ -73,22 +73,15 @@ const handleDescargarComprobante = async () => {
 
         if (!response.ok) {
             const errorData = await response.json();
+            console.error('Error response:', errorData);
             throw new Error(errorData.error || 'Error al descargar el comprobante');
         }
 
-        // Verificar que el tipo de contenido es PDF
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/pdf')) {
-            throw new Error('El archivo descargado no es un PDF válido');
-        }
-
-        // Obtener el blob del PDF
         const blob = await response.blob();
         if (blob.size === 0) {
             throw new Error('El archivo PDF está vacío');
         }
         
-        // Crear URL del blob y forzar la descarga
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -96,7 +89,6 @@ const handleDescargarComprobante = async () => {
         document.body.appendChild(a);
         a.click();
         
-        // Limpieza
         setTimeout(() => {
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
@@ -104,7 +96,7 @@ const handleDescargarComprobante = async () => {
 
         toast.success('Comprobante descargado correctamente');
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error completo:', error);
         toast.error(error.message || 'Error al descargar el comprobante');
     }
 };
