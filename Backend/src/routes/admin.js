@@ -48,21 +48,22 @@ const handleMulterError = (err, req, res, next) => {
   next();
 };
 
-// Rutas ordenadas por método
+// Rutas GET existentes
 router.get('/desarrolladores', verificarToken, adminController.mostrarDesarrolladores);
 router.get('/editores', verificarToken, adminController.mostrarEditores);
 router.get('/generos', verificarToken, adminController.mostrarGeneros);
 
+// Rutas POST existentes
 router.post('/register', [verificarToken, verificarAdmin], adminController.registroAdministrativo);
 router.post('/juego', [verificarToken, verificarAdmin], upload, handleMulterError, adminController.crearJuego);
 router.post('/desarrollador', [verificarToken, verificarAdmin], adminController.crearDesarrollador);
 router.post('/editor', [verificarToken, verificarAdmin], adminController.crearEditor);
 router.post('/genero', [verificarToken, verificarAdmin], adminController.crearGenero);
 
-// Cambiar el orden de los middlewares
+// Ruta PUT existente
 router.put('/juego/:idjuego', [verificarToken, verificarAdmin], upload, handleMulterError, adminController.editarJuego);
 
-// Corregir orden y middleware para DELETE
+// Ruta DELETE existente 
 router.delete('/juego/:idjuego', [verificarToken, verificarAdmin], adminController.eliminarJuego);
 
 export default router;

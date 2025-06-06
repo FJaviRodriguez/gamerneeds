@@ -64,9 +64,11 @@ export const mostrarDesarrolladores = async () => {
       throw new Error('No hay token de autenticación');
     }
 
-    console.log('Enviando petición GET /admin/desarrolladores');
-    const response = await api.get('/admin/desarrolladores');
-    console.log('Respuesta recibida:', response.data);
+    const response = await api.get('/admin/desarrolladores', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
     return response.data;
   } catch (error) {
     console.error('Error en mostrarDesarrolladores:', error);
