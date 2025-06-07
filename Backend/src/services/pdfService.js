@@ -23,21 +23,21 @@ export const generarPDFComprobante = (datosCompra) => {
                 primary: '#272727',
                 secondary: '#D65A31',
                 text: '#333333',
-                lightGray: '#666666'
+                lightGray: '#666666',
+                white: '#ffffff'
             };
 
             // Encabezado
             doc.rect(0, 0, doc.page.width, 150)
                .fill(colors.primary);
 
-            // Logo texto centrado
+            // Logo texto dividido en dos colores
+            const centerX = doc.page.width / 2;
             doc.fontSize(35)
-               .fill('#ffffff')
-               .text('GAMERS NEEDS', {
-                   align: 'center',
-                   width: doc.page.width,
-                   y: 45
-               });
+               .fill(colors.white)
+               .text('GAMERS', centerX - 100, 45)
+               .fill(colors.secondary)
+               .text('NEEDS', centerX + 20, 45);
 
             // Línea decorativa
             doc.moveTo(50, 120)
@@ -46,7 +46,7 @@ export const generarPDFComprobante = (datosCompra) => {
 
             // Información del documento
             doc.fontSize(16)
-               .fill('#ffffff')
+               .fill(colors.white)
                .text('Comprobante de Compra', {
                    align: 'center',
                    y: 90
@@ -58,9 +58,9 @@ export const generarPDFComprobante = (datosCompra) => {
                .text('Detalles de la Compra', 50, 180)
                .moveDown();
 
-            // Cuadro de información con más espacio
+            // Cuadro de información más grande
             const infoY = 220;
-            doc.rect(50, infoY, doc.page.width - 100, 120)
+            doc.rect(50, infoY, doc.page.width - 100, 160) // Aumentado de 120 a 160
                .lineWidth(1)
                .stroke(colors.lightGray);
 
@@ -68,12 +68,16 @@ export const generarPDFComprobante = (datosCompra) => {
             doc.fontSize(12)
                .fill(colors.text)
                .text(`Fecha: ${new Date(datosCompra.fecha).toLocaleString('es-ES')}`, 70, infoY + 20)
-               .text(`Nº de Pedido: ${datosCompra.sessionId}`, 70, infoY + 45)
-               .text(`Cliente: ${datosCompra.usuario.nombre}`, 70, infoY + 70)
-               .text(`Email: ${datosCompra.usuario.email}`, 70, infoY + 95);
+               .text(`Nº de Pedido:`, 70, infoY + 50)
+               .text(`${datosCompra.sessionId}`, 70, infoY + 70, { // ID en línea separada
+                   width: doc.page.width - 140,
+                   align: 'left'
+               })
+               .text(`Cliente: ${datosCompra.usuario.nombre}`, 70, infoY + 100)
+               .text(`Email: ${datosCompra.usuario.email}`, 70, infoY + 130);
 
             // Tabla de productos (ajustada hacia abajo)
-            const tableTop = 380;
+            const tableTop = 420; // Ajustado para dar más espacio
             
             // Cabecera de la tabla
             doc.rect(50, tableTop, doc.page.width - 100, 30)
@@ -110,14 +114,20 @@ export const generarPDFComprobante = (datosCompra) => {
                      doc.page.width - 180, 
                      totalY + 12);
 
-            // Pie de página (asegurando que esté al final)
+            // Pie de página
             const footerY = doc.page.height - 100;
             doc.fill(colors.secondary)
-               .fontSize(10)
-               .text('Gracias por confiar en GAMERS NEEDS', {
+               .fontSize(12) // Aumentado de 10 a 12
+               .text('Gracias por confiar en', {
                    align: 'center',
                    width: doc.page.width,
                    y: footerY
+               })
+               .fontSize(14)
+               .text('GAMERS NEEDS', {
+                   align: 'center',
+                   width: doc.page.width,
+                   y: footerY + 20
                });
 
             // Línea decorativa final
