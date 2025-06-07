@@ -240,3 +240,36 @@ export const editarJuego = async (req, res) => {
     });
   }
 };
+
+export const eliminarDesarrollador = async (req, res) => {
+  try {
+    const { iddesarrollador } = req.params;
+    await desarrolladorModel.eliminarDesarrollador(iddesarrollador);
+    res.json({ message: 'Desarrollador eliminado correctamente' });
+  } catch (error) {
+    console.error('Error al eliminar desarrollador:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const eliminarEditor = async (req, res) => {
+  try {
+    const { ideditor } = req.params;
+    await editorModel.eliminarEditor(ideditor);
+    res.json({ message: 'Editor eliminado correctamente' });
+  } catch (error) {
+    console.error('Error al eliminar editor:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const eliminarGenero = async (req, res) => {
+  try {
+    const { idgenero } = req.params;
+    await generoModel.eliminarGenero(idgenero);
+    res.json({ message: 'Género eliminado correctamente' });
+  } catch (error) {
+    console.error('Error al eliminar género:', error);
+    res.status(500).json({ message: error.message });
+  }
+};

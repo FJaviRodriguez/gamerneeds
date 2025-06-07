@@ -40,6 +40,11 @@ const PanelAdmin = () => {
     title: 'Editar Juego',
     path: '/admin/juego/editar',
     description: 'Modifica los juegos existentes'
+    },
+    {
+    title: 'Eliminar Registros',
+    path: '/admin/registros/eliminar',
+    description: 'Eliminar desarrolladores, editores y géneros'
     }
   ];
 

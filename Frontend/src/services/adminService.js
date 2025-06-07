@@ -166,3 +166,45 @@ export const crearGenero = async (generoData) => {
     throw error.response?.data || { message: 'Error al crear el género' };
   }
 };
+
+export const eliminarDesarrollador = async (iddesarrollador) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const response = await api.delete(`/admin/desarrollador/${iddesarrollador}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Error al eliminar el desarrollador' };
+  }
+};
+
+export const eliminarEditor = async (ideditor) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const response = await api.delete(`/admin/editor/${ideditor}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Error al eliminar el editor' };
+  }
+};
+
+export const eliminarGenero = async (idgenero) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const response = await api.delete(`/admin/genero/${idgenero}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Error al eliminar el género' };
+  }
+};

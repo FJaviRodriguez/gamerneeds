@@ -23,3 +23,29 @@ export const mostrarDesarrolladores = async () => {
     throw error;
   }
 };
+
+export const eliminarDesarrollador = async (iddesarrollador) => {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+    
+    // Primero eliminar las relaciones
+    await connection.query(
+      'DELETE FROM juego_has_desarrollador WHERE desarrollador_iddesarrollador = ?',
+      [iddesarrollador]
+    );
+    
+    // Luego eliminar el desarrollador
+    await connection.query(
+      'DELETE FROM desarrollador WHERE iddesarrollador = ?',
+      [iddesarrollador]
+    );
+    
+    await connection.commit();
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
+};

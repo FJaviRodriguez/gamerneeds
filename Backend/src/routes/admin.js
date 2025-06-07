@@ -77,4 +77,9 @@ router.put('/juego/:idjuego', [verificarToken, verificarAdmin], upload, handleMu
 // Ruta DELETE existente 
 router.delete('/juego/:idjuego', [verificarToken, verificarAdmin], adminController.eliminarJuego);
 
+// Nuevas rutas DELETE
+router.delete('/desarrollador/:iddesarrollador', [verificarToken, verificarAdmin], adminController.eliminarDesarrollador);
+router.delete('/editor/:ideditor', [verificarToken, verificarAdmin], adminController.eliminarEditor);
+router.delete('/genero/:idgenero', [verificarToken, verificarAdmin], adminController.eliminarGenero);
+
 export default router;

@@ -23,3 +23,28 @@ export const crearGenero = async (genero) => {
     throw error;
   }
 };
+
+export const eliminarGenero = async (idgenero) => {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    // Primero eliminar las relaciones
+    await connection.query(
+      'DELETE FROM juego_has_genero WHERE genero_idgenero = ?',
+      [idgenero]
+    );
+
+    // Luego eliminar el género
+    await connection.query('DELETE FROM genero WHERE idgenero = ?', [
+      idgenero,
+    ]);
+
+    await connection.commit();
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
+};

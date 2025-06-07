@@ -20,6 +20,7 @@ import CrearEditorPage from './pages/crearEditorPage';
 import EditarJuegoPage from './pages/editarJuegoPage';
 import EditarJuegoFormPage from './pages/editarJuegoFormPage';
 import CrearGeneroPage from './pages/crearGeneroPage';
+import EliminarRegistrosPage from './pages/eliminarRegistrosPage';
 
 function App() {
   return (
@@ -122,6 +123,14 @@ function App() {
           element={
             <RutasProtegidas adminOnly>
               <CrearGeneroPage />
+            </RutasProtegidas>
+          } 
+        />
+        <Route 
+          path="/admin/registros/eliminar" 
+          element={
+            <RutasProtegidas adminOnly>
+              <EliminarRegistrosPage />
             </RutasProtegidas>
           } 
         />

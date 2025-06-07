@@ -164,21 +164,47 @@ export const eliminarJuego = async (idjuego) => {
   try {
     await connection.beginTransaction();
 
-    // Eliminar registros relacionados primero
-    await connection.query('DELETE FROM juego_has_desarrollador WHERE juego_idjuego = ?', [idjuego]);
-    await connection.query('DELETE FROM editor_has_juego WHERE juego_idjuego = ?', [idjuego]);
-    await connection.query('DELETE FROM juego_has_genero WHERE juego_idjuego = ?', [idjuego]);
-    
-    // Obtener la URL de la portada antes de eliminar el juego
-    const [juego] = await connection.query('SELECT url_portada FROM juego WHERE idjuego = ?', [idjuego]);
-    
-    // Eliminar el juego
-    await connection.query('DELETE FROM juego WHERE idjuego = ?', [idjuego]);
-    
+    // 1. Eliminar de biblioteca
+    await connection.query(
+      'DELETE FROM biblioteca WHERE juego_idjuego = ?', 
+      [idjuego]
+    );
+
+    // 2. Eliminar de juego_has_desarrollador
+    await connection.query(
+      'DELETE FROM juego_has_desarrollador WHERE juego_idjuego = ?',
+      [idjuego]
+    );
+
+    // 3. Eliminar de editor_has_juego
+    await connection.query(
+      'DELETE FROM editor_has_juego WHERE juego_idjuego = ?',
+      [idjuego]
+    );
+
+    // 4. Eliminar de juego_has_genero
+    await connection.query(
+      'DELETE FROM juego_has_genero WHERE juego_idjuego = ?',
+      [idjuego]
+    );
+
+    // 5. Obtener la URL de la portada antes de eliminar el juego
+    const [juego] = await connection.query(
+      'SELECT url_portada FROM juego WHERE idjuego = ?',
+      [idjuego]
+    );
+
+    // 6. Eliminar el juego
+    await connection.query(
+      'DELETE FROM juego WHERE idjuego = ?',
+      [idjuego]
+    );
+
     await connection.commit();
     return juego[0]?.url_portada;
   } catch (error) {
     await connection.rollback();
+    console.error('Error en eliminarJuego:', error);
     throw error;
   } finally {
     connection.release();
