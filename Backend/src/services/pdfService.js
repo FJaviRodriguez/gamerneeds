@@ -37,19 +37,16 @@ export const generarPDFComprobante = (datosCompra) => {
 
             // GAMER y NEEDS más juntos y centrados
             doc.fill(colors.white)
-               .text('GAMER', centerX - 140, 35);
+               .text('GAMER', centerX - 100, 35);
 
-            // NEEDS justo después de GAMER
+            // NEEDS justo después de GAMER (más cerca)
             doc.fill(colors.secondary)
-               .text('NEEDS', centerX + 5, 35);
+               .text('NEEDS', centerX, 35);
 
-            // Factura centrada y debajo
+            // Factura centrada usando coordenadas exactas
             doc.fontSize(16)
                .fill(colors.white)
-               .text('Factura', {
-                   align: 'center',
-                   y: 90  // Un poco más abajo para separarlo del logo
-               });
+               .text('Factura', centerX - 25, 90);
 
             // Línea decorativa
             doc.moveTo(50, 120)
