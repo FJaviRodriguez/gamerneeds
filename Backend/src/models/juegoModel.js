@@ -339,3 +339,49 @@ export const editarJuego = async (idjuego, juegoData) => {
     connection.release();
   }
 };
+export const filtrarPrecio = async (rango) => {
+  try {
+    let query = `
+      SELECT DISTINCT
+        juego.*,
+        GROUP_CONCAT(DISTINCT desarrollador.nombre) AS desarrollador,
+        GROUP_CONCAT(DISTINCT editor.nombre) AS editor,
+        GROUP_CONCAT(DISTINCT genero.nombre) AS generos
+      FROM juego
+      LEFT JOIN juego_has_desarrollador ON juego.idjuego = juego_has_desarrollador.juego_idjuego
+      LEFT JOIN desarrollador ON juego_has_desarrollador.desarrollador_iddesarrollador = desarrollador.iddesarrollador
+      LEFT JOIN editor_has_juego ON juego.idjuego = editor_has_juego.juego_idjuego
+      LEFT JOIN editor ON editor_has_juego.editor_ideditor = editor.ideditor
+      LEFT JOIN juego_has_genero ON juego.idjuego = juego_has_genero.juego_idjuego
+      LEFT JOIN genero ON juego_has_genero.genero_idgenero = genero.idgenero
+      WHERE `;
+
+    switch(rango) {
+      case 'menos5':
+        query += 'juego.precio < 5';
+        break;
+      case 'menos15':
+        query += 'juego.precio >= 5 AND juego.precio < 15';
+        break;
+      case 'menos30':
+        query += 'juego.precio >= 15 AND juego.precio < 30';
+        break;
+      case 'menos50':
+        query += 'juego.precio >= 30 AND juego.precio < 50';
+        break;
+      case 'mas50':
+        query += 'juego.precio >= 50';
+        break;
+      default:
+        throw new Error('Rango de precio no válido');
+    }
+
+    query += ' GROUP BY juego.idjuego ORDER BY juego.precio';
+    
+    const [juegos] = await pool.query(query);
+    return juegos;
+  } catch (error) {
+    console.error('Error en filtrarPrecio:', error);
+    throw error;
+  }
+};

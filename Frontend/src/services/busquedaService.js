@@ -27,3 +27,17 @@ export const filtrarGenero = async (generos = []) => {
         throw error;
     }
 };
+export const filtrarPrecio = async (rango) => {
+  try {
+    if (!rango) {
+      return [];
+    }
+    const response = await api.get('/juegos/filtrar-precio', {
+      params: { rango }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error en filtrarPrecio:', error);
+    throw error;
+  }
+};

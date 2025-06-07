@@ -6,6 +6,7 @@ const router = express.Router();
 router.get('/', juegoController.mostrarJuegos);
 router.get('/buscar', juegoController.buscarJuegos);
 router.get('/filtrar', juegoController.filtrarGenero);
+router.get('/filtrar-precio', juegoController.filtrarPrecio);
 router.get('/:idjuego', juegoController.mostrarJuegoPorId);
 
 export default router;
