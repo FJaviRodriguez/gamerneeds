@@ -35,7 +35,7 @@ export const generarPDFComprobante = (datosCompra) => {
             const centerX = doc.page.width / 2;
             doc.fontSize(35)
                .fill(colors.white)
-               .text('GAMERS', centerX - 170, 35, {  // Solo movemos GAMERS más a la izquierda
+               .text('GAMER', centerX - 300, 35, {  // Solo movemos GAMERS más a la izquierda
                    align: 'right'
                })
                .fill(colors.secondary)
@@ -48,7 +48,6 @@ export const generarPDFComprobante = (datosCompra) => {
                .fill(colors.white)
                .text('Comprobante de Compra', {
                    align: 'center',
-                   y: 85
                });
 
             // Línea decorativa
