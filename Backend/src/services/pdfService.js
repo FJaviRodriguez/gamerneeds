@@ -35,11 +35,11 @@ export const generarPDFComprobante = (datosCompra) => {
             const centerX = doc.page.width / 2;
             doc.fontSize(35)
                .fill(colors.white)
-               .text('GAMERS', centerX - 120, 35, {
+               .text('GAMERS', centerX - 150, 35, {  // Movido más a la izquierda (-150 en lugar de -120)
                    align: 'right'
                })
                .fill(colors.secondary)
-               .text('NEEDS', centerX + 20, 35, {
+               .text('NEEDS', centerX + 30, 35, {    // Movido más a la derecha (+30 en lugar de +20)
                    align: 'left'
                });
 
