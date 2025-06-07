@@ -107,7 +107,7 @@ const EliminarRegistros = () => {
                   <button
                     onClick={() => handleEliminar('desarrollador', dev.iddesarrollador, dev.nombre)}
                     disabled={loading}
-                    className="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50"
+                    className="admin-button-primary px-4 py-1"
                   >
                     Eliminar
                   </button>
@@ -130,7 +130,7 @@ const EliminarRegistros = () => {
                   <button
                     onClick={() => handleEliminar('editor', editor.ideditor, editor.nombre)}
                     disabled={loading}
-                    className="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50"
+                    className="admin-button-primary px-4 py-1"
                   >
                     Eliminar
                   </button>
@@ -153,7 +153,7 @@ const EliminarRegistros = () => {
                   <button
                     onClick={() => handleEliminar('genero', genero.idgenero, genero.nombre)}
                     disabled={loading}
-                    className="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50"
+                    className="admin-button-primary px-4 py-1"
                   >
                     Eliminar
                   </button>
@@ -166,7 +166,7 @@ const EliminarRegistros = () => {
         <div className="flex justify-center mt-6">
           <button
             onClick={() => navigate('/panel-admin')}
-            className="px-6 py-3 border border-gray-600 text-white rounded-md hover:bg-zinc-800 transition-colors"
+            className="admin-button-primary px-6 py-3"
           >
             Volver al Panel
           </button>

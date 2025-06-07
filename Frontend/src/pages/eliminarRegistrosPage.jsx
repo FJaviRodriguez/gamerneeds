@@ -5,11 +5,13 @@ import Footer from '../components/common/footer';
 
 const EliminarRegistrosPage = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-[#272727]">
+    <div className="min-h-screen bg-[#272727] flex flex-col w-screen overflow-x-hidden">
       <Header />
-      <div className="flex-grow">
-        <EliminarRegistros />
-      </div>
+      <main className="flex-1 w-full">
+        <div className="container mx-auto px-4 py-8">
+          <EliminarRegistros />
+        </div>
+      </main>
       <Footer />
     </div>
   );

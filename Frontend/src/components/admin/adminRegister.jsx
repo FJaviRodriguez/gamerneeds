@@ -108,8 +108,7 @@ const AdminRegister = () => {
               />
               <button 
                 type="submit" 
-                style={{ backgroundColor: '#FF4C1A' }} 
-                className="w-full text-white py-3 rounded-md hover:opacity-90 transition-opacity duration-200 font-medium text-lg mt-6"
+                className="admin-button-primary w-full py-3"
               >
                 Registrar Usuario
               </button>

@@ -55,14 +55,15 @@ const CrearGenero = () => {
         <div className="flex gap-4 mt-6">
           <button
             type="submit"
-            className="flex-1 bg-[#FF4C1A] text-white py-3 rounded-md hover:opacity-90 transition-opacity duration-200 font-medium text-lg"
+            className="admin-button-primary flex-1 py-3"
           >
-            Crear Género
+            Crear {tipo}
           </button>
+
           <button
             type="button"
             onClick={() => navigate('/panel-admin')}
-            className="px-6 py-3 border border-gray-600 text-white rounded-md hover:bg-zinc-800 transition-colors"
+            className="admin-button-primary px-6 py-3"
           >
             Volver
           </button>
