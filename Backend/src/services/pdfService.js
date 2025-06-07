@@ -117,24 +117,35 @@ export const generarPDFComprobante = (datosCompra) => {
 
             // Pie de página
             const footerY = doc.page.height - 100;
-            doc.fill(colors.secondary)
-               .fontSize(12) // Aumentado de 10 a 12
-               .text('Gracias por confiar en', {
-                   align: 'center',
-                   width: doc.page.width,
-                   y: footerY
-               })
-               .fontSize(14)
-               .text('GAMERS NEEDS', {
-                   align: 'center',
-                   width: doc.page.width,
-                   y: footerY + 20
-               });
 
             // Línea decorativa final
-            doc.moveTo(50, doc.page.height - 50)
-               .lineTo(doc.page.width - 50, doc.page.height - 50)
+            doc.moveTo(50, footerY)
+               .lineTo(doc.page.width - 50, footerY)
                .stroke(colors.secondary);
+
+            // Añadir el logo desde assets
+            try {
+                const logoPath = join(__dirname, '../../assets/logo.png');
+                doc.image(logoPath, 
+                    (doc.page.width - 50) / 2, // Centrado horizontalmente
+                    footerY + 10, // 10px debajo de la línea
+                    {
+                        width: 50, // Ancho del logo
+                        height: 50 // Alto del logo
+                    }
+                );
+            } catch (error) {
+                console.error('Error al cargar el logo:', error);
+            }
+
+            // Texto de agradecimiento debajo del logo
+            doc.fontSize(12)
+               .fill(colors.text)
+               .text('Gracias por confiar en nosotros', {
+                   align: 'center',
+                   width: doc.page.width,
+                   y: footerY + 70 // Debajo del logo
+               });
 
             doc.end();
 
