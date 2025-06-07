@@ -35,11 +35,11 @@ export const generarPDFComprobante = (datosCompra) => {
             const centerX = doc.page.width / 2;
             doc.fontSize(35)
                .fill(colors.white)
-               .text('GAMERS', centerX - 150, 35, {  // Movido más a la izquierda (-150 en lugar de -120)
+               .text('GAMERS', centerX - 170, 35, {  // Solo movemos GAMERS más a la izquierda
                    align: 'right'
                })
                .fill(colors.secondary)
-               .text('NEEDS', centerX + 30, 35, {    // Movido más a la derecha (+30 en lugar de +20)
+               .text('NEEDS', centerX + 30, 35, {    // NEEDS se mantiene igual
                    align: 'left'
                });
 
@@ -48,9 +48,13 @@ export const generarPDFComprobante = (datosCompra) => {
                .fill(colors.white)
                .text('Comprobante de Compra', {
                    align: 'center',
-                   width: doc.page.width,
                    y: 85
                });
+
+            // Línea decorativa
+            doc.moveTo(50, 120)
+               .lineTo(doc.page.width - 50, 120)
+               .stroke(colors.secondary);
 
             // Detalles de la compra (con más espacio desde el encabezado)
             doc.fill(colors.text)
@@ -114,39 +118,26 @@ export const generarPDFComprobante = (datosCompra) => {
                      doc.page.width - 180, 
                      totalY + 12);
 
-            // Pie de página con logo
-            const footerY = doc.page.height - 120;
-
-            // Línea decorativa final
-            doc.moveTo(50, footerY)
-               .lineTo(doc.page.width - 50, footerY)
-               .stroke(colors.secondary);
-
-            // Logo en el pie de página
-            try {
-                const logoPath = join(__dirname, '../../assets/logo.png');
-                if (fs.existsSync(logoPath)) {
-                    doc.image(logoPath, 
-                        (doc.page.width - 60) / 2, // Centrado horizontalmente
-                        footerY + 20, // 20px debajo de la línea
-                        {
-                            width: 60, // Ancho del logo
-                            height: 60 // Alto del logo
-                        }
-                    );
-                }
-            } catch (error) {
-                console.error('Error al cargar el logo:', error);
-            }
-
-            // Texto "Gracias por confiar en GAMERS NEEDS"
+            // Pie de página
+            const footerY = doc.page.height - 100;
             doc.fill(colors.secondary)
-               .fontSize(12)
-               .text('Gracias por confiar en GAMERS NEEDS', {
+               .fontSize(12) // Aumentado de 10 a 12
+               .text('Gracias por confiar en', {
                    align: 'center',
                    width: doc.page.width,
-                   y: footerY + 90 // Debajo del logo
+                   y: footerY
+               })
+               .fontSize(14)
+               .text('GAMERS NEEDS', {
+                   align: 'center',
+                   width: doc.page.width,
+                   y: footerY + 20
                });
+
+            // Línea decorativa final
+            doc.moveTo(50, doc.page.height - 50)
+               .lineTo(doc.page.width - 50, doc.page.height - 50)
+               .stroke(colors.secondary);
 
             doc.end();
 
