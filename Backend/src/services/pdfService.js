@@ -35,20 +35,20 @@ export const generarPDFComprobante = (datosCompra) => {
             const centerX = doc.page.width / 2;
             doc.fontSize(35);
 
-            // Primero GAMER (sin usar align)
+            // GAMER y NEEDS más juntos y centrados
             doc.fill(colors.white)
-               .text('GAMER', centerX - 200, 35);
+               .text('GAMER', centerX - 140, 35);
 
-            // Luego NEEDS
+            // NEEDS justo después de GAMER
             doc.fill(colors.secondary)
-               .text('NEEDS', centerX + 20, 35);
+               .text('NEEDS', centerX + 5, 35);
 
-            // Comprobante de Compra centrado y debajo
+            // Factura centrada y debajo
             doc.fontSize(16)
                .fill(colors.white)
-               .text('Comprobante de Compra', {
+               .text('Factura', {
                    align: 'center',
-                   y: 85  // Posicionado debajo del logo
+                   y: 90  // Un poco más abajo para separarlo del logo
                });
 
             // Línea decorativa
