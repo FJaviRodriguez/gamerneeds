@@ -33,21 +33,22 @@ export const generarPDFComprobante = (datosCompra) => {
 
             // Logo texto con más separación
             const centerX = doc.page.width / 2;
-            doc.fontSize(35)
-               .fill(colors.white)
-               .text('GAMER', centerX - 300, 35, {  // Solo movemos GAMERS más a la izquierda
-                   align: 'right'
-               })
-               .fill(colors.secondary)
-               .text('NEEDS', centerX + 30, 35, {    // NEEDS se mantiene igual
-                   align: 'left'
-               });
+            doc.fontSize(35);
 
-            // Información del documento centrada y debajo del logo
+            // Primero GAMER (sin usar align)
+            doc.fill(colors.white)
+               .text('GAMER', centerX - 200, 35);
+
+            // Luego NEEDS
+            doc.fill(colors.secondary)
+               .text('NEEDS', centerX + 20, 35);
+
+            // Comprobante de Compra centrado y debajo
             doc.fontSize(16)
                .fill(colors.white)
                .text('Comprobante de Compra', {
                    align: 'center',
+                   y: 85  // Posicionado debajo del logo
                });
 
             // Línea decorativa
