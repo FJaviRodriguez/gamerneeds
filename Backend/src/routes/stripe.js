@@ -66,7 +66,7 @@ router.get('/descargar-comprobante/:sessionId', verificarToken, async (req, res)
 
         res.set({
             'Content-Type': 'application/pdf',
-            'Content-Disposition': `attachment; filename=comprobante-${sessionId}.pdf`,
+            'Content-Disposition': `attachment; filename=factura-${sessionId}.pdf`, // Cambiado de comprobante a factura
             'Content-Length': pdfBuffer.length,
         });
         
