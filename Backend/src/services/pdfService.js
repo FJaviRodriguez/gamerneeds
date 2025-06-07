@@ -35,15 +35,15 @@ export const generarPDFComprobante = (datosCompra) => {
             const centerX = doc.page.width / 2;
             doc.fontSize(35);
 
-            // GAMER y NEEDS más juntos y centrados
+            // GAMER y NEEDS más juntos y centrados (pero no demasiado)
             doc.fill(colors.white)
-               .text('GAMER', centerX - 100, 35);
+               .text('GAMER', centerX - 120, 35);
 
-            // NEEDS justo después de GAMER (más cerca)
+            // NEEDS con un poco más de separación
             doc.fill(colors.secondary)
-               .text('NEEDS', centerX, 35);
+               .text('NEEDS', centerX + 10, 35);
 
-            // Factura centrada usando coordenadas exactas
+            // Factura centrada (mantenemos esta parte igual)
             doc.fontSize(16)
                .fill(colors.white)
                .text('Factura', centerX - 25, 90);
