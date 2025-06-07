@@ -57,7 +57,7 @@ const CrearGenero = () => {
             type="submit"
             className="admin-button-primary flex-1 py-3"
           >
-            Crear {tipo}
+            Crear Género
           </button>
 
           <button

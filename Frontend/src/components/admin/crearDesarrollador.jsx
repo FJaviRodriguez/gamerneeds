@@ -73,7 +73,7 @@ const CrearDesarrollador = () => {
             type="submit"
             className="admin-button-primary flex-1 py-3"
           >
-            Crear {tipo}
+            Crear Desarrollador
           </button>
 
           <button
