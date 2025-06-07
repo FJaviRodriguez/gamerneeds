@@ -31,25 +31,25 @@ export const generarPDFComprobante = (datosCompra) => {
             doc.rect(0, 0, doc.page.width, 150)
                .fill(colors.primary);
 
-            // Logo texto dividido en dos colores
+            // Logo texto con más separación
             const centerX = doc.page.width / 2;
             doc.fontSize(35)
                .fill(colors.white)
-               .text('GAMERS', centerX - 100, 45)
+               .text('GAMERS', centerX - 120, 35, {
+                   align: 'right'
+               })
                .fill(colors.secondary)
-               .text('NEEDS', centerX + 20, 45);
+               .text('NEEDS', centerX + 20, 35, {
+                   align: 'left'
+               });
 
-            // Línea decorativa
-            doc.moveTo(50, 120)
-               .lineTo(doc.page.width - 50, 120)
-               .stroke(colors.secondary);
-
-            // Información del documento
+            // Información del documento centrada y debajo del logo
             doc.fontSize(16)
                .fill(colors.white)
                .text('Comprobante de Compra', {
                    align: 'center',
-                   y: 90
+                   width: doc.page.width,
+                   y: 85
                });
 
             // Detalles de la compra (con más espacio desde el encabezado)
@@ -114,26 +114,39 @@ export const generarPDFComprobante = (datosCompra) => {
                      doc.page.width - 180, 
                      totalY + 12);
 
-            // Pie de página
-            const footerY = doc.page.height - 100;
-            doc.fill(colors.secondary)
-               .fontSize(12) // Aumentado de 10 a 12
-               .text('Gracias por confiar en', {
-                   align: 'center',
-                   width: doc.page.width,
-                   y: footerY
-               })
-               .fontSize(14)
-               .text('GAMERS NEEDS', {
-                   align: 'center',
-                   width: doc.page.width,
-                   y: footerY + 20
-               });
+            // Pie de página con logo
+            const footerY = doc.page.height - 120;
 
             // Línea decorativa final
-            doc.moveTo(50, doc.page.height - 50)
-               .lineTo(doc.page.width - 50, doc.page.height - 50)
+            doc.moveTo(50, footerY)
+               .lineTo(doc.page.width - 50, footerY)
                .stroke(colors.secondary);
+
+            // Logo en el pie de página
+            try {
+                const logoPath = join(__dirname, '../../assets/logo.png');
+                if (fs.existsSync(logoPath)) {
+                    doc.image(logoPath, 
+                        (doc.page.width - 60) / 2, // Centrado horizontalmente
+                        footerY + 20, // 20px debajo de la línea
+                        {
+                            width: 60, // Ancho del logo
+                            height: 60 // Alto del logo
+                        }
+                    );
+                }
+            } catch (error) {
+                console.error('Error al cargar el logo:', error);
+            }
+
+            // Texto "Gracias por confiar en GAMERS NEEDS"
+            doc.fill(colors.secondary)
+               .fontSize(12)
+               .text('Gracias por confiar en GAMERS NEEDS', {
+                   align: 'center',
+                   width: doc.page.width,
+                   y: footerY + 90 // Debajo del logo
+               });
 
             doc.end();
 
